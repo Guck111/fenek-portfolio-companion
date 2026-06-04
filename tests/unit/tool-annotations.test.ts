@@ -9,6 +9,7 @@ import { clear, listTools, register, registerTools } from "../../src/brokers/reg
 import { Trading212Broker } from "../../src/brokers/trading212/index.js"
 import { createTrading212Tools } from "../../src/brokers/trading212/tools.js"
 import { createAnalyticsTools } from "../../src/tools/analytics/index.js"
+import { createGettingStartedTool } from "../../src/tools/getting_started.js"
 import { createPlaybookTools } from "../../src/tools/playbooks/index.js"
 
 // Constructing a broker only builds its tool definitions — no network, no auth —
@@ -20,6 +21,7 @@ function registerEveryRealTool(): void {
   register(crypto, createCryptoTools(crypto))
   const bybit = new BybitBroker()
   register(bybit, createBybitTools(bybit))
+  registerTools([createGettingStartedTool()])
   registerTools(createAnalyticsTools())
   registerTools(createPlaybookTools())
 }

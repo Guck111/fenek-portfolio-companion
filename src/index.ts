@@ -9,6 +9,7 @@ import { createTrading212Tools } from "./brokers/trading212/tools.js"
 import { createCorePrompts } from "./prompts/index.js"
 import { startServer } from "./server.js"
 import { createAnalyticsTools } from "./tools/analytics/index.js"
+import { createGettingStartedTool } from "./tools/getting_started.js"
 import { createPlaybookTools } from "./tools/playbooks/index.js"
 
 async function configureBrokers(): Promise<void> {
@@ -57,6 +58,7 @@ async function main(): Promise<void> {
   await configureBrokers()
   await configureCryptoBroker()
   await configureBybitBroker()
+  registerTools([createGettingStartedTool()])
   registerTools(createAnalyticsTools())
   registerTools(createPlaybookTools())
   registerPrompts(createCorePrompts())

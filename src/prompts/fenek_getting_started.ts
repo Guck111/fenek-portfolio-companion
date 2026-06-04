@@ -1,10 +1,11 @@
 import type { PromptBinding } from "../brokers/base.js"
 
-// Onboarding prompt. Registered unconditionally and needs no credentials, so a
-// user can run it right after install — before configuring anything — to learn
-// what the extension does and what to set up. The text is an instruction to the
-// model (it relays the briefing in the user's own language).
-const TEXT = `The user has just installed or is setting up the Fenek Portfolio Companion extension and wants to understand it. Give them a concise, friendly getting-started briefing, in their language, covering:
+// Onboarding briefing. Used by both the prompt below and the tool-form
+// (src/tools/getting_started.ts) so prompt-less clients can reach it too. It is
+// registered unconditionally and needs no credentials, so a user can run it
+// right after install — before configuring anything. The text is an instruction
+// to the model (it relays the briefing in the user's own language).
+export const GETTING_STARTED_TEXT = `The user has just installed or is setting up the Fenek Portfolio Companion extension and wants to understand it. Give them a concise, friendly getting-started briefing, in their language, covering:
 
 - What it is: a strictly READ-ONLY companion that reads the user's portfolio across Trading 212, on-chain Solana and TON wallets, and Bybit, and helps analyze it. It never places trades, moves funds, or gives buy/sell/rebalance advice — it surfaces data and neutral metrics; decisions stay with the user.
 - What can be connected (ALL OPTIONAL — set up only the sources you have, in Settings → Extensions → Fenek Portfolio Companion):
@@ -27,7 +28,7 @@ export function createGettingStartedPrompt(): PromptBinding {
     },
     handler: () =>
       Promise.resolve({
-        messages: [{ role: "user", content: { type: "text", text: TEXT } }],
+        messages: [{ role: "user", content: { type: "text", text: GETTING_STARTED_TEXT } }],
       }),
   }
 }
