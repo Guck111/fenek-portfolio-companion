@@ -1,0 +1,23 @@
+name: DCO
+
+on: pull_request
+
+jobs:
+  dco:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Verify Signed-off-by on every PR commit
+        run: |
+          base='${{ github.event.pull_request.base.sha }}'
+          head='${{ github.event.pull_request.head.sha }}'
+          fail=0
+          for c in $(git rev-list "$base..$head"); do
+            if ! git log -1 --format='%B' "$c" | grep -qiE '^Signed-off-by: .+ <.+@.+>$'; then
+              echo "::error::Commit $c is missing a 'Signed-off-by' trailer (use git commit -s)"
+              fail=1
+            fi
+          done
+          exit $fail

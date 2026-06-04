@@ -1,0 +1,120 @@
+{
+  "$schema": "https://raw.githubusercontent.com/anthropics/mcpb/main/manifest.schema.json",
+  "manifest_version": "0.3",
+  "name": "fenek-portfolio-companion",
+  "display_name": "Fenek Portfolio Companion",
+  "version": "0.1.0",
+  "description": "Read-only aggregator of your portfolio data across EU-available wallets, exchanges and brokers (Trading 212, Bybit, Solana/TON). Data collection only — no recommendations.",
+  "long_description": "An unofficial, open-source MCP server that aggregates your portfolio data across wallets, exchanges and brokers available in Europe — Trading 212, Bybit, and Solana/TON wallets — and exposes it read-only to Claude for analysis. Ask about positions, pies, dividends, balances, concentration, and overlaps in plain language. Strictly data collection plus neutral metrics on your own data; it never recommends trades. No telemetry. API keys are stored in your OS keychain. Not affiliated with any broker. Not financial advice.",
+  "author": {
+    "name": "Fenek Portfolio Companion contributors",
+    "url": "https://github.com/Guck111/fenek-portfolio-companion"
+  },
+  "homepage": "https://github.com/Guck111/fenek-portfolio-companion",
+  "documentation": "https://github.com/Guck111/fenek-portfolio-companion/blob/master/README.md",
+  "support": "https://github.com/Guck111/fenek-portfolio-companion/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Guck111/fenek-portfolio-companion"
+  },
+  "license": "MIT",
+  "keywords": ["investing", "portfolio", "trading212", "bybit", "crypto", "solana", "finance", "read-only", "aggregator"],
+  "icon": "icon.png",
+  "server": {
+    "type": "node",
+    "entry_point": "dist/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": ["${__dirname}/dist/index.js"],
+      "env": {
+        "T212_API_KEY": "${user_config.T212_API_KEY}",
+        "T212_API_SECRET": "${user_config.T212_API_SECRET}",
+        "ENVIRONMENT": "${user_config.ENVIRONMENT}",
+        "LANGUAGE": "${user_config.LANGUAGE}",
+        "SOLANA_ADDRESS": "${user_config.SOLANA_ADDRESS}",
+        "TON_ADDRESS": "${user_config.TON_ADDRESS}",
+        "HELIUS_API_KEY": "${user_config.HELIUS_API_KEY}",
+        "BYBIT_API_KEY": "${user_config.BYBIT_API_KEY}",
+        "BYBIT_API_SECRET": "${user_config.BYBIT_API_SECRET}"
+      }
+    }
+  },
+  "tools_generated": true,
+  "prompts_generated": true,
+  "user_config": {
+    "T212_API_KEY": {
+      "type": "string",
+      "title": "Trading 212 API Key",
+      "description": "Generate in Trading 212 app: Settings → API (Beta). Use READ-ONLY permissions only.",
+      "required": true,
+      "sensitive": true
+    },
+    "T212_API_SECRET": {
+      "type": "string",
+      "title": "Trading 212 API Secret",
+      "description": "Shown once on key generation. Store this carefully.",
+      "required": true,
+      "sensitive": true
+    },
+    "ENVIRONMENT": {
+      "type": "string",
+      "title": "Environment",
+      "description": "Use 'demo' for your paper-trading account, 'live' for the real-money account. Always start with 'demo' and switch to 'live' only after you have verified the data looks right. This tool is read-only either way.",
+      "required": true,
+      "default": "demo"
+    },
+    "LANGUAGE": {
+      "type": "string",
+      "title": "Prompt language",
+      "description": "Language for slash-prompt instructions to Claude. Currently supports 'en' and 'ru'. Default: en.",
+      "required": false,
+      "default": "en"
+    },
+    "SOLANA_ADDRESS": {
+      "type": "string",
+      "title": "Solana wallet address (public)",
+      "description": "Your public Solana address (e.g. from Phantom). Public, not a secret. Leave blank to skip Solana.",
+      "required": false,
+      "sensitive": false
+    },
+    "TON_ADDRESS": {
+      "type": "string",
+      "title": "TON wallet address (public)",
+      "description": "Your public TON address (Telegram Wallet → TON Space). Only the non-custodial TON Space is readable; custodial @wallet balances are not. Leave blank to skip TON.",
+      "required": false,
+      "sensitive": false
+    },
+    "HELIUS_API_KEY": {
+      "type": "string",
+      "title": "Helius API key (free)",
+      "description": "Free key from helius.dev, required only to read Solana holdings. Stored in your OS keychain.",
+      "required": false,
+      "sensitive": true
+    },
+    "BYBIT_API_KEY": {
+      "type": "string",
+      "title": "Bybit API key",
+      "description": "Read-only API key from Bybit (API Management). Enable read access to Account/Wallet only — no Trade, no Withdraw. Mainnet. Leave blank to skip Bybit.",
+      "required": false,
+      "sensitive": true
+    },
+    "BYBIT_API_SECRET": {
+      "type": "string",
+      "title": "Bybit API secret",
+      "description": "Shown once when you create the Bybit API key. Stored in your OS keychain.",
+      "required": false,
+      "sensitive": true
+    }
+  },
+  "localization": {
+    "resources": "locales/${locale}.json",
+    "default_locale": "en-US"
+  },
+  "compatibility": {
+    "claude_desktop": ">=0.10.0",
+    "platforms": ["darwin", "win32"],
+    "runtimes": {
+      "node": ">=20.0.0"
+    }
+  }
+}

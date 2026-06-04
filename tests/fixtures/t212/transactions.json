@@ -1,0 +1,19 @@
+{
+  "items": [
+    {
+      "type": "DEPOSIT",
+      "amount": 1000,
+      "currency": "EUR",
+      "reference": "txn-001",
+      "dateTime": "2024-01-01T00:00:00.000Z"
+    },
+    {
+      "type": "WITHDRAWAL",
+      "amount": -100,
+      "currency": "EUR",
+      "reference": "txn-002",
+      "dateTime": "2024-01-02T00:00:00.000Z"
+    }
+  ],
+  "nextPagePath": "/api/v0/equity/history/transactions?cursor=1700000000000&limit=10"
+}

@@ -1,0 +1,44 @@
+[
+  {
+    "instrument": {
+      "ticker": "DEMOA_EQ",
+      "name": "Demo Alpha",
+      "isin": "GB0000000001",
+      "currency": "GBX"
+    },
+    "createdAt": "2024-01-01T00:00:00.000Z",
+    "quantity": 10,
+    "quantityAvailableForTrading": 10,
+    "quantityInPies": 0,
+    "currentPrice": 1100,
+    "averagePricePaid": 1000,
+    "walletImpact": {
+      "currency": "EUR",
+      "totalCost": 100,
+      "currentValue": 110,
+      "unrealizedProfitLoss": 10,
+      "fxImpact": 0
+    }
+  },
+  {
+    "instrument": {
+      "ticker": "DEMOB_EQ",
+      "name": "Demo Beta",
+      "isin": "GB0000000002",
+      "currency": "GBX"
+    },
+    "createdAt": "2024-01-01T00:00:00.000Z",
+    "quantity": 5,
+    "quantityAvailableForTrading": 5,
+    "quantityInPies": 0,
+    "currentPrice": 2000,
+    "averagePricePaid": 2100,
+    "walletImpact": {
+      "currency": "EUR",
+      "totalCost": 100,
+      "currentValue": 95,
+      "unrealizedProfitLoss": -5,
+      "fxImpact": 0
+    }
+  }
+]

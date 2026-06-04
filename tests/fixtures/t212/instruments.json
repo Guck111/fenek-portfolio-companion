@@ -1,0 +1,38 @@
+[
+  {
+    "ticker": "AAPL_US_EQ",
+    "type": "STOCK",
+    "workingScheduleId": 56,
+    "isin": "US0378331005",
+    "currencyCode": "USD",
+    "name": "Apple",
+    "shortName": "AAPL",
+    "maxOpenQuantity": 10000,
+    "extendedHours": true,
+    "addedOn": "2020-01-01T00:00:00.000Z"
+  },
+  {
+    "ticker": "VOO_US_EQ",
+    "type": "ETF",
+    "workingScheduleId": 56,
+    "isin": "US9229083632",
+    "currencyCode": "USD",
+    "name": "Vanguard S&P 500 ETF",
+    "shortName": "VOO",
+    "maxOpenQuantity": 5000,
+    "extendedHours": true,
+    "addedOn": "2020-01-01T00:00:00.000Z"
+  },
+  {
+    "ticker": "DEMOC_EQ",
+    "type": "STOCK",
+    "workingScheduleId": 60,
+    "isin": "GB0000000003",
+    "currencyCode": "GBX",
+    "name": "Demo Gamma",
+    "shortName": "DEMOC",
+    "maxOpenQuantity": 50000,
+    "extendedHours": false,
+    "addedOn": "2020-01-01T00:00:00.000Z"
+  }
+]

@@ -1,0 +1,23 @@
+{
+  "orders": [
+    {
+      "orderKey": "DemoTriggerKey1111111111111111111111111111111",
+      "userPubkey": "DemoWa11etAddr1111111111111111111111111111111",
+      "inputMint": "So11111111111111111111111111111111111111112",
+      "outputMint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+      "makingAmount": "10",
+      "takingAmount": "2000",
+      "remainingMakingAmount": "10",
+      "remainingTakingAmount": "2000",
+      "rawMakingAmount": "10000000000",
+      "rawTakingAmount": "2000000000",
+      "status": "Open",
+      "createdAt": "2026-05-01T12:00:00Z"
+    }
+  ],
+  "totalPages": 1,
+  "page": 1,
+  "totalItems": 1,
+  "user": "DemoWa11etAddr1111111111111111111111111111111",
+  "orderStatus": "active"
+}

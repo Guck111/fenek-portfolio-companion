@@ -1,0 +1,82 @@
+{
+  "jsonrpc": "2.0",
+  "result": {
+    "total": 4,
+    "limit": 1000,
+    "page": 1,
+    "items": [
+      {
+        "interface": "FungibleToken",
+        "id": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGk4wsdUuK5h",
+        "content": {
+          "$schema": "https://schema.metaplex.com/nft1.0.json",
+          "json_uri": "",
+          "metadata": {
+            "name": "USD Coin",
+            "symbol": "USDC"
+          }
+        },
+        "ownership": {
+          "owner": "DemoWa11etAddr1111111111111111111111111111111",
+          "delegated": false,
+          "frozen": false
+        },
+        "token_info": {
+          "symbol": "USDC",
+          "balance": 42500000,
+          "supply": 6234567890123,
+          "decimals": 6,
+          "token_program": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+          "associated_token_address": "DemoAtaAddr11111111111111111111111111111111111",
+          "price_info": {
+            "price_per_token": 1.0,
+            "total_price": 42.5,
+            "currency": "USDC"
+          }
+        }
+      },
+      {
+        "interface": "FungibleToken",
+        "id": "JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN",
+        "content": {
+          "metadata": {
+            "name": "Jupiter",
+            "symbol": "JUP"
+          }
+        },
+        "token_info": {
+          "symbol": "JUP",
+          "balance": 13000000,
+          "decimals": 6,
+          "token_program": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+          "associated_token_address": "5dEXAMPLEjupAtaAddress0000000000000000000000"
+        }
+      },
+      {
+        "interface": "FungibleToken",
+        "id": "EmptyBalanceMint000000000000000000000000000",
+        "token_info": {
+          "symbol": "DUST",
+          "balance": 0,
+          "decimals": 9
+        }
+      },
+      {
+        "interface": "V1_NFT",
+        "id": "NftMintNoTokenInfo0000000000000000000000000",
+        "content": {
+          "metadata": {
+            "name": "Some NFT",
+            "symbol": "NFT"
+          }
+        }
+      }
+    ],
+    "nativeBalance": {
+      "lamports": 2531000000,
+      "price_per_sol": 152.34,
+      "total_price": 385.58
+    }
+  },
+  "id": "1"
+}

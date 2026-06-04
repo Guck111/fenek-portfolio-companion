@@ -1,0 +1,19 @@
+[
+  {
+    "id": 1,
+    "cash": 0.5,
+    "dividendDetails": {
+      "gained": 0,
+      "reinvested": 0,
+      "inCash": 0
+    },
+    "result": {
+      "priceAvgInvestedValue": 1000,
+      "priceAvgValue": 1100,
+      "priceAvgResult": 100,
+      "priceAvgResultCoef": 0.1
+    },
+    "progress": 0.1,
+    "status": "AHEAD"
+  }
+]

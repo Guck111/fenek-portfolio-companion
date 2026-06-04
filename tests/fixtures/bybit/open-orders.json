@@ -1,0 +1,37 @@
+{
+  "retCode": 0,
+  "retMsg": "OK",
+  "result": {
+    "list": [
+      {
+        "orderId": "1700000000000000001",
+        "symbol": "BTCUSDT",
+        "side": "Buy",
+        "orderType": "Limit",
+        "price": "50000.00",
+        "qty": "0.01",
+        "cumExecQty": "0",
+        "orderStatus": "New",
+        "timeInForce": "GTC",
+        "avgPrice": "0",
+        "createdTime": "1700000000000"
+      },
+      {
+        "orderId": "1700000000000000002",
+        "symbol": "ETHUSDT",
+        "side": "Sell",
+        "orderType": "Limit",
+        "price": "4000.00",
+        "qty": "0.5",
+        "cumExecQty": "0.2",
+        "orderStatus": "PartiallyFilled",
+        "timeInForce": "GTC",
+        "avgPrice": "4000.00",
+        "createdTime": "1700000001000"
+      }
+    ],
+    "nextPageCursor": ""
+  },
+  "retExtInfo": {},
+  "time": 1700000002000
+}

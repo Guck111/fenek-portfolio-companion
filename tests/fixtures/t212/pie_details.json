@@ -1,0 +1,55 @@
+{
+  "instruments": [
+    {
+      "ticker": "DEMOA_EQ",
+      "result": {
+        "priceAvgInvestedValue": 500,
+        "priceAvgValue": 600,
+        "priceAvgResult": 100,
+        "priceAvgResultCoef": 0.2
+      },
+      "expectedShare": 0.5,
+      "currentShare": 0.52,
+      "ownedQuantity": 10,
+      "issues": []
+    },
+    {
+      "ticker": "DEMOB_EQ",
+      "result": {
+        "priceAvgInvestedValue": 300,
+        "priceAvgValue": 290,
+        "priceAvgResult": -10,
+        "priceAvgResultCoef": -0.0333
+      },
+      "expectedShare": 0.3,
+      "currentShare": 0.29,
+      "ownedQuantity": 5,
+      "issues": []
+    },
+    {
+      "ticker": "DEMOC_EQ",
+      "result": {
+        "priceAvgInvestedValue": 200,
+        "priceAvgValue": 210,
+        "priceAvgResult": 10,
+        "priceAvgResultCoef": 0.05
+      },
+      "expectedShare": 0.2,
+      "currentShare": 0.19,
+      "ownedQuantity": 3,
+      "issues": []
+    }
+  ],
+  "settings": {
+    "id": 1,
+    "instrumentShares": null,
+    "name": "Demo Pie",
+    "icon": "Coins",
+    "goal": 100000,
+    "creationDate": 1700000000,
+    "endDate": "2035-01-01T00:00:00.000Z",
+    "initialInvestment": 1000,
+    "dividendCashAction": "REINVEST",
+    "publicUrl": null
+  }
+}

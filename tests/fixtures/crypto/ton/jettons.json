@@ -1,0 +1,40 @@
+{
+  "balances": [
+    {
+      "balance": "25000000",
+      "price": {
+        "prices": { "USD": 1.0 },
+        "diff_24h": { "USD": "+0.01%" }
+      },
+      "wallet_address": {
+        "address": "0:aef0c2e0f3e1d4b5a6c7d8e9f00112233445566778899aabbccddeeff00112233",
+        "is_scam": false,
+        "is_wallet": true
+      },
+      "jetton": {
+        "address": "0:b113a994b5024a16719f69139328eb759596c38a25f59028b146fecdc3621dfe",
+        "name": "Tether USD",
+        "symbol": "USD₮",
+        "decimals": 6,
+        "image": "https://cache.tonapi.io/imgproxy/usdt.webp",
+        "verification": "whitelist"
+      }
+    },
+    {
+      "balance": "1500000000",
+      "wallet_address": {
+        "address": "0:cc11d22e33f44556677889900aabbccddeeff00112233445566778899aabbcc01",
+        "is_scam": false,
+        "is_wallet": true
+      },
+      "jetton": {
+        "address": "0:2f956143c461769579baef2e32cc2d7bc18283f40d20bb03e432cd603ac33ffc",
+        "name": "Notcoin",
+        "symbol": "NOT",
+        "decimals": 9,
+        "image": "https://cache.tonapi.io/imgproxy/not.webp",
+        "verification": "whitelist"
+      }
+    }
+  ]
+}

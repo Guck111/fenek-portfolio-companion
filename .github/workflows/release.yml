@@ -1,0 +1,40 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write       # create the GitHub Release
+  id-token: write       # build provenance attestation
+  attestations: write   # build provenance attestation
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm run test
+      - run: npm run audit
+      - run: npm run build
+      - name: Prune to production dependencies (slim bundle)
+        run: npm prune --omit=dev
+      - name: Pack .mcpb (mcpb from npx cache, not the pruned tree)
+        run: npx -y @anthropic-ai/mcpb@2.1.2 pack
+      - name: Attest build provenance for the bundle
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-path: '*.mcpb'
+      - name: Create GitHub Release with the bundle
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          gh release create "$TAG" ./*.mcpb --title "$TAG" --notes "See CHANGELOG.md for release notes. Verify provenance with: gh attestation verify <file>.mcpb --repo Guck111/fenek-portfolio-companion"

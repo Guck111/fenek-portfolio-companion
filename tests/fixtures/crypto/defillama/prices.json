@@ -1,0 +1,17 @@
+{
+  "coins": {
+    "coingecko:solana": {
+      "decimals": 9,
+      "symbol": "SOL",
+      "price": 152.34,
+      "timestamp": 1717084800,
+      "confidence": 0.99
+    },
+    "coingecko:the-open-network": {
+      "symbol": "TON",
+      "price": 5.18,
+      "timestamp": 1717084800,
+      "confidence": 0.99
+    }
+  }
+}

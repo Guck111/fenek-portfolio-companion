@@ -1,0 +1,11 @@
+{
+  "address": "0:1111111111111111111111111111111111111111111111111111111111111111",
+  "balance": 5500000000,
+  "last_activity": 1717084800,
+  "status": "active",
+  "interfaces": ["wallet_v4r2"],
+  "is_wallet": true,
+  "is_scam": false,
+  "memo_required": false,
+  "get_methods": ["seqno", "get_public_key"]
+}

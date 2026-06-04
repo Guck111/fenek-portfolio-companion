@@ -1,0 +1,51 @@
+{
+  "name": "fenek-portfolio-companion",
+  "version": "0.1.0",
+  "description": "Read-only MCP server for analyzing brokerage portfolios. Trading 212 today, extensible to more brokers.",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "fenek-portfolio-companion": "dist/index.js"
+  },
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "inspect": "npx @modelcontextprotocol/inspector tsx src/index.ts",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src tests && prettier --check src tests",
+    "format": "prettier --write src tests",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "build": "tsc -p tsconfig.build.json",
+    "pack": "mcpb pack",
+    "pack:local": "bash scripts/pack-local.sh",
+    "audit": "npm audit --audit-level=moderate",
+    "preversion": "npm run typecheck && npm run lint && npm run test && npm run audit",
+    "release": "npm run build && npm run pack"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.29.0",
+    "zod": "4.3.6"
+  },
+  "devDependencies": {
+    "@anthropic-ai/mcpb": "2.1.2",
+    "@types/node": "25.6.0",
+    "eslint": "10.2.1",
+    "prettier": "3.8.3",
+    "tsx": "4.21.0",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.59.1",
+    "vitest": "4.1.5"
+  },
+  "overrides": {
+    "brace-expansion": "5.0.6",
+    "fast-uri": "3.1.2",
+    "hono": "4.12.23",
+    "ip-address": "10.2.0",
+    "qs": "6.15.2",
+    "tmp": "0.2.7"
+  }
+}

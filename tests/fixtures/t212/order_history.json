@@ -1,0 +1,54 @@
+{
+  "items": [
+    {
+      "order": {
+        "id": 1,
+        "strategy": "VALUE",
+        "type": "MARKET",
+        "ticker": "DEMOA_EQ",
+        "status": "FILLED",
+        "value": 100,
+        "filledValue": 100,
+        "currency": "EUR",
+        "extendedHours": false,
+        "initiatedFrom": "AUTOINVEST",
+        "side": "BUY",
+        "createdAt": "2024-01-01T00:00:00.000Z",
+        "instrument": {
+          "ticker": "DEMOA_EQ",
+          "name": "Demo Alpha",
+          "isin": "GB0000000001",
+          "currency": "GBX"
+        }
+      },
+      "fill": {
+        "id": 2,
+        "quantity": 1,
+        "price": 1000,
+        "type": "TRADE",
+        "tradingMethod": "OTC",
+        "filledAt": "2024-01-01T00:00:00.000Z",
+        "walletImpact": {
+          "currency": "EUR",
+          "netValue": 100,
+          "fxRate": 5.0,
+          "taxes": [
+            {
+              "name": "STAMP_DUTY_RESERVE_TAX",
+              "quantity": -0.5,
+              "currency": "EUR",
+              "chargedAt": "2024-01-01T00:00:00.000Z"
+            },
+            {
+              "name": "CURRENCY_CONVERSION_FEE",
+              "quantity": -0.2,
+              "currency": "EUR",
+              "chargedAt": "2024-01-01T00:00:00.000Z"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "nextPagePath": "/api/v0/equity/history/orders?cursor=1700000000000&limit=10&instrumentCode"
+}

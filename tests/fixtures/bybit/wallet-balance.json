@@ -1,0 +1,38 @@
+{
+  "retCode": 0,
+  "retMsg": "OK",
+  "result": {
+    "list": [
+      {
+        "accountType": "UNIFIED",
+        "totalEquity": "31000.00",
+        "totalWalletBalance": "31000.00",
+        "coin": [
+          {
+            "coin": "BTC",
+            "walletBalance": "0.5",
+            "usdValue": "30000.00",
+            "free": "0.5",
+            "locked": "0"
+          },
+          {
+            "coin": "USDT",
+            "walletBalance": "1000",
+            "usdValue": "1000.00",
+            "free": "1000",
+            "locked": "0"
+          },
+          {
+            "coin": "SCAM",
+            "walletBalance": "12345",
+            "usdValue": "",
+            "free": "12345",
+            "locked": "0"
+          }
+        ]
+      }
+    ]
+  },
+  "retExtInfo": {},
+  "time": 1700000000000
+}

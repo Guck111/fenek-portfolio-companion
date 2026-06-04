@@ -1,0 +1,40 @@
+# TypeScript sources (compiled output is in dist/)
+src/
+
+# Tests and fixtures
+tests/
+
+# Project documentation (private use)
+docs/
+README.md
+DISCLAIMER.md
+PLAN.md
+CLAUDE.md
+SECURITY.md
+CHANGELOG.md
+
+# Build/lint configs
+tsconfig*.json
+eslint.config.js
+.prettierrc.json
+.eslintcache
+.gitignore
+
+# Editor / VCS / CI
+.git/
+.github/
+.vscode/
+.idea/
+.DS_Store
+
+# Claude Code project state
+.claude/
+
+# Build artifacts other than dist/
+*.mcpb
+release/
+.vitest-cache/
+coverage/
+
+# npm meta we don't need at runtime
+.npmrc

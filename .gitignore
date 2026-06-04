@@ -1,0 +1,15 @@
+node_modules/
+dist/
+release/
+*.mcpb
+.env
+.env.*
+.DS_Store
+*.log
+.vitest-cache/
+coverage/
+# Local-only — Claude tooling, internal planning/spec docs (never publish)
+.claude/
+CLAUDE.md
+PLAN.md
+docs/superpowers/
