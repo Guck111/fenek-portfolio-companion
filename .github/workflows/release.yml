@@ -13,8 +13,8 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: '20'
           cache: 'npm'
@@ -29,7 +29,7 @@ jobs:
       - name: Pack .mcpb (mcpb from npx cache, not the pruned tree)
         run: npx -y @anthropic-ai/mcpb@2.1.2 pack
       - name: Attest build provenance for the bundle
-        uses: actions/attest-build-provenance@v1
+        uses: actions/attest-build-provenance@v4
         with:
           subject-path: '*.mcpb'
       - name: Create GitHub Release with the bundle
