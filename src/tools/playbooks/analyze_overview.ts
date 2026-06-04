@@ -1,8 +1,8 @@
 import type { ToolBinding } from "../../brokers/base.js"
-import { getMessages, type Locale } from "../../i18n/index.js"
+import { getMessages } from "../../i18n/index.js"
 
-export function createAnalyzeOverviewPlaybook(locale: Locale): ToolBinding {
-  const m = getMessages(locale).analyze_overview
+export function createAnalyzeOverviewPlaybook(): ToolBinding {
+  const m = getMessages().analyze_overview
   return {
     tool: {
       name: "analyze_overview",

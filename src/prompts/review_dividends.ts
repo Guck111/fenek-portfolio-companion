@@ -1,10 +1,10 @@
 import type { PromptBinding } from "../brokers/base.js"
-import { getMessages, type Locale } from "../i18n/index.js"
+import { getMessages } from "../i18n/index.js"
 
 const YEAR_RE = /^\d{4}$/
 
-export function createReviewDividendsPrompt(locale: Locale): PromptBinding {
-  const m = getMessages(locale).review_dividends
+export function createReviewDividendsPrompt(): PromptBinding {
+  const m = getMessages().review_dividends
   return {
     prompt: {
       name: "review_dividends",

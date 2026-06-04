@@ -1,7 +1,7 @@
 import { z } from "zod"
 
 import type { ToolBinding } from "../../brokers/base.js"
-import { getMessages, type Locale } from "../../i18n/index.js"
+import { getMessages } from "../../i18n/index.js"
 import { parseArgs } from "../result.js"
 
 const Args = z
@@ -13,8 +13,8 @@ const Args = z
   })
   .strict()
 
-export function createReviewDividendsPlaybook(locale: Locale): ToolBinding {
-  const m = getMessages(locale).review_dividends
+export function createReviewDividendsPlaybook(): ToolBinding {
+  const m = getMessages().review_dividends
   return {
     tool: {
       name: "review_dividends",

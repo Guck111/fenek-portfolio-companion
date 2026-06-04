@@ -1,8 +1,8 @@
 import type { PromptBinding } from "../brokers/base.js"
-import { getMessages, type Locale } from "../i18n/index.js"
+import { getMessages } from "../i18n/index.js"
 
-export function createReviewPiePrompt(locale: Locale): PromptBinding {
-  const m = getMessages(locale).review_pie
+export function createReviewPiePrompt(): PromptBinding {
+  const m = getMessages().review_pie
   return {
     prompt: {
       name: "review_pie",

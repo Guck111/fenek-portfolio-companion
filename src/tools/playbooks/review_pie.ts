@@ -1,13 +1,13 @@
 import { z } from "zod"
 
 import type { ToolBinding } from "../../brokers/base.js"
-import { getMessages, type Locale } from "../../i18n/index.js"
+import { getMessages } from "../../i18n/index.js"
 import { parseArgs } from "../result.js"
 
 const Args = z.object({ pie_id: z.string().min(1) }).strict()
 
-export function createReviewPiePlaybook(locale: Locale): ToolBinding {
-  const m = getMessages(locale).review_pie
+export function createReviewPiePlaybook(): ToolBinding {
+  const m = getMessages().review_pie
   return {
     tool: {
       name: "review_pie",

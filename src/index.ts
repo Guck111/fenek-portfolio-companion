@@ -7,7 +7,6 @@ import { createCryptoTools } from "./brokers/crypto/tools.js"
 import { register, registerPrompts, registerTools } from "./brokers/registry.js"
 import { Trading212Broker } from "./brokers/trading212/index.js"
 import { createTrading212Tools } from "./brokers/trading212/tools.js"
-import { parseLocale } from "./i18n/index.js"
 import { createCorePrompts } from "./prompts/index.js"
 import { startServer } from "./server.js"
 import { createAnalyticsTools } from "./tools/analytics/index.js"
@@ -69,9 +68,8 @@ async function main(): Promise<void> {
   await configureCryptoBroker()
   await configureBybitBroker()
   registerTools(createAnalyticsTools())
-  const locale = parseLocale(process.env["LANGUAGE"])
-  registerTools(createPlaybookTools(locale))
-  registerPrompts(createCorePrompts(locale))
+  registerTools(createPlaybookTools())
+  registerPrompts(createCorePrompts())
   await startServer()
 }
 

@@ -1,8 +1,8 @@
 import type { PromptBinding } from "../brokers/base.js"
-import { getMessages, type Locale } from "../i18n/index.js"
+import { getMessages } from "../i18n/index.js"
 
-export function createAnalyzeOverviewPrompt(locale: Locale): PromptBinding {
-  const m = getMessages(locale).analyze_overview
+export function createAnalyzeOverviewPrompt(): PromptBinding {
+  const m = getMessages().analyze_overview
   return {
     prompt: {
       name: "analyze_overview",

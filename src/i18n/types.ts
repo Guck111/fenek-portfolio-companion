@@ -1,5 +1,3 @@
-export type Locale = "en" | "ru"
-
 export interface PromptMessages {
   readonly disclaimer: string
   readonly analyze_overview: {
@@ -22,5 +20,3 @@ export interface PromptMessages {
     readonly text_with_year: (year: string) => string
   }
 }
-
-export const ALL_LOCALES: readonly Locale[] = ["en", "ru"]

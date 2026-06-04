@@ -21,7 +21,7 @@ function registerEveryRealTool(): void {
   const bybit = new BybitBroker()
   register(bybit, createBybitTools(bybit))
   registerTools(createAnalyticsTools())
-  registerTools(createPlaybookTools("en"))
+  registerTools(createPlaybookTools())
 }
 
 function bindingWithTool(tool: ToolBinding["tool"]): ToolBinding {

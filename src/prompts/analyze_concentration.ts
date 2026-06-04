@@ -1,8 +1,8 @@
 import type { PromptBinding } from "../brokers/base.js"
-import { getMessages, type Locale } from "../i18n/index.js"
+import { getMessages } from "../i18n/index.js"
 
-export function createAnalyzeConcentrationPrompt(locale: Locale): PromptBinding {
-  const m = getMessages(locale).analyze_concentration
+export function createAnalyzeConcentrationPrompt(): PromptBinding {
+  const m = getMessages().analyze_concentration
   return {
     prompt: {
       name: "analyze_concentration",
