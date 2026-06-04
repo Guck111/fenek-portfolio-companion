@@ -53,10 +53,8 @@ is per-provider and read-only by design:
 
 | `user_config` key | Sensitive | Required | Purpose |
 |---|---|---|---|
-| `T212_API_KEY` | yes (keychain) | yes | Trading 212 read-only API key |
-| `T212_API_SECRET` | yes (keychain) | yes | Trading 212 API secret |
-| `ENVIRONMENT` | no | yes | `demo` (default) or `live` |
-| `LANGUAGE` | no | no | Prompt language: `en` (default) or `ru` |
+| `T212_API_KEY` | yes (keychain) | no | Trading 212 read-only API key |
+| `T212_API_SECRET` | yes (keychain) | no | Trading 212 API secret |
 | `SOLANA_ADDRESS` | no (public address) | no | Public Solana wallet address |
 | `TON_ADDRESS` | no (public address) | no | Public TON (TON Space) wallet address |
 | `HELIUS_API_KEY` | yes (keychain) | no | Free Helius key, only to read Solana holdings |
@@ -124,8 +122,9 @@ human-readable `annotations.title`. 22 tools total.
 
 ### Prompts (slash-commands)
 
-`analyze_overview`, `analyze_concentration`, `review_pie`, `review_dividends` — available
-in English and Russian (`LANGUAGE`).
+`fenek_getting_started` (a credential-free onboarding overview), plus `analyze_overview`,
+`analyze_concentration`, `review_pie`, `review_dividends`. English; the model replies in
+the user's language conversationally.
 
 ### Notes for the reviewer
 
@@ -178,10 +177,12 @@ virtual positions and one pie, so the tools return data rather than empty arrays
 - `T212_API_KEY` / `T212_API_SECRET`: a **read-only** key generated in the demo account
   (*Settings → API (Beta)*) with scopes **Account, Portfolio, Pies — Read, History,
   Metadata, Orders — Read** only. No Orders — Place, no Deposits/Withdrawals.
-- `ENVIRONMENT`: `demo`
 
-Try: `portfolio_overview`, `t212_get_positions`, `t212_get_pies`, then `t212_get_pie`
-with an id from the pies list, and the `analyze_overview` playbook.
+The server auto-detects demo vs live from the key — there is no environment field to set.
+
+Try: `fenek_getting_started` for the overview, then `portfolio_overview`,
+`t212_get_positions`, `t212_get_pies`, then `t212_get_pie` with an id from the pies list,
+and the `analyze_overview` playbook.
 
 ### 2. Crypto wallet (public address — no account needed)
 

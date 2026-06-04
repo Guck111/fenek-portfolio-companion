@@ -21,8 +21,8 @@ For local development install, see [CONTRIBUTING.md](CONTRIBUTING.md).
 When installing, Claude Desktop will prompt for:
 
 - **Trading 212 API Key + Secret** — generated in Trading 212: *Settings → API (Beta)*. Enable **READ-ONLY** scopes only: *Account data, Portfolio, Pies — Read, History, Metadata, Orders — Read*. **Do not** enable Orders — Place, Deposits, or Withdrawals. This server does not need them and will never call them.
-- **Environment** — `demo` (paper trading) by default. Switch to `live` only after verifying behavior on a demo account.
-- **Language** — `en` (default) or `ru` for slash-prompt instructions to Claude.
+
+Whether your key belongs to a **demo** (paper) or **live** account is detected automatically from the key — there is no environment switch to set, and the server is read-only against either. New here? Run the **`/fenek_getting_started`** prompt in chat for a guided overview — it needs no keys.
 
 Credentials are stored by Claude Desktop in your operating system's keychain (macOS Keychain / Windows Credential Manager). They are never logged, never written to disk by this server, and never transmitted anywhere except the Trading 212 API endpoints you configured. See [PRIVACY.md](PRIVACY.md).
 

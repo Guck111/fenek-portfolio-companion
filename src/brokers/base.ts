@@ -22,8 +22,6 @@ export interface PromptBinding {
   readonly handler: (args: Readonly<Record<string, string>> | undefined) => Promise<GetPromptResult>
 }
 
-export type BrokerEnvironment = "demo" | "live"
-
 export interface BrokerCapabilities {
   readonly pies: boolean
   readonly dividends: boolean
@@ -31,7 +29,6 @@ export interface BrokerCapabilities {
 }
 
 export interface BrokerConfig {
-  readonly environment: BrokerEnvironment
   readonly credentials: Readonly<Record<string, string>>
 }
 

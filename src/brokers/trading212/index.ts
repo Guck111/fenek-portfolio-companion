@@ -66,11 +66,7 @@ export class Trading212Broker implements IBroker {
         new Error("T212_API_KEY and T212_API_SECRET are required in credentials"),
       )
     }
-    this.client = new Trading212Client({
-      apiKey,
-      apiSecret,
-      environment: config.environment,
-    })
+    this.client = new Trading212Client({ apiKey, apiSecret })
     return Promise.resolve()
   }
 

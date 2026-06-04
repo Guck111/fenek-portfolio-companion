@@ -30,7 +30,6 @@
       "env": {
         "T212_API_KEY": "${user_config.T212_API_KEY}",
         "T212_API_SECRET": "${user_config.T212_API_SECRET}",
-        "ENVIRONMENT": "${user_config.ENVIRONMENT}",
         "SOLANA_ADDRESS": "${user_config.SOLANA_ADDRESS}",
         "TON_ADDRESS": "${user_config.TON_ADDRESS}",
         "HELIUS_API_KEY": "${user_config.HELIUS_API_KEY}",
@@ -46,22 +45,15 @@
       "type": "string",
       "title": "Trading 212 API Key",
       "description": "Generate in Trading 212 app: Settings → API (Beta). Use READ-ONLY permissions only.",
-      "required": true,
+      "required": false,
       "sensitive": true
     },
     "T212_API_SECRET": {
       "type": "string",
       "title": "Trading 212 API Secret",
       "description": "Shown once on key generation. Store this carefully.",
-      "required": true,
+      "required": false,
       "sensitive": true
-    },
-    "ENVIRONMENT": {
-      "type": "string",
-      "title": "Environment",
-      "description": "Use 'demo' for your paper-trading account, 'live' for the real-money account. Always start with 'demo' and switch to 'live' only after you have verified the data looks right. This tool is read-only either way.",
-      "required": true,
-      "default": "demo"
     },
     "SOLANA_ADDRESS": {
       "type": "string",

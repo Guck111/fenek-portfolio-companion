@@ -4,25 +4,25 @@ import { AuthError, BrokerApiError, RateLimitError, ValidationError } from "../.
 
 const BROKER_ID = "t212"
 
-export type T212Environment = "demo" | "live"
-
 export interface T212ClientConfig {
   readonly apiKey: string
   readonly apiSecret: string
-  readonly environment: T212Environment
 }
 
-const BASE_URLS: Record<T212Environment, string> = {
-  demo: "https://demo.trading212.com/api/v0",
-  live: "https://live.trading212.com/api/v0",
-}
+const LIVE_BASE_URL = "https://live.trading212.com/api/v0"
+const DEMO_BASE_URL = "https://demo.trading212.com/api/v0"
+// A T212 API key is bound to one environment, so we don't ask the user which —
+// we probe `live` first (most users want their real account) and fall back to
+// `demo` only when `live` reports the key is unrecognized (401). See request().
+const CANDIDATE_BASE_URLS = [LIVE_BASE_URL, DEMO_BASE_URL] as const
 
 const MAX_RETRIES = 2
 const NETWORK_BACKOFF_BASE_MS = 500
 
 export class Trading212Client {
   private readonly authHeader: string
-  private readonly baseUrl: string
+  // Resolved on the first request (live vs demo), then cached for the process.
+  private baseUrl: string | null = null
 
   constructor(config: T212ClientConfig) {
     if (!config.apiKey || !config.apiSecret) {
@@ -30,11 +30,10 @@ export class Trading212Client {
     }
     const credentials = Buffer.from(`${config.apiKey}:${config.apiSecret}`).toString("base64")
     this.authHeader = `Basic ${credentials}`
-    this.baseUrl = BASE_URLS[config.environment]
   }
 
   async getJson<T>(path: string, schema: z.ZodType<T>): Promise<T> {
-    const res = await this.fetchWithRetry(path)
+    const res = await this.request(path)
 
     if (res.status === 401) {
       throw new AuthError("Invalid Trading 212 credentials", BROKER_ID)
@@ -81,8 +80,34 @@ export class Trading212Client {
     return parsed.data
   }
 
-  private async fetchWithRetry(path: string): Promise<Response> {
-    const url = `${this.baseUrl}${path}`
+  // Resolves the environment host on first use. Falls back to the next candidate
+  // only on a 401 (key not recognized there); locks onto the first host that
+  // authenticates the key (2xx) or recognizes it but lacks scope (403). A 429 /
+  // 5xx / network error is inconclusive — it is surfaced without locking, so the
+  // host is re-detected next time rather than pinned to the wrong environment.
+  private async request(path: string): Promise<Response> {
+    if (this.baseUrl !== null) {
+      return this.fetchWithRetry(this.baseUrl, path)
+    }
+    let lastUnauthorized: Response | undefined
+    for (const candidate of CANDIDATE_BASE_URLS) {
+      const res = await this.fetchWithRetry(candidate, path)
+      if (res.status === 401) {
+        lastUnauthorized = res
+        continue
+      }
+      if (res.ok || res.status === 403) {
+        this.baseUrl = candidate
+      }
+      return res
+    }
+    // Every candidate returned 401 — surface the auth failure (getJson maps it).
+    if (lastUnauthorized !== undefined) return lastUnauthorized
+    throw new AuthError("Invalid Trading 212 credentials", BROKER_ID)
+  }
+
+  private async fetchWithRetry(baseUrl: string, path: string): Promise<Response> {
+    const url = `${baseUrl}${path}`
     let lastNetworkError: unknown
 
     for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {

@@ -1,4 +1,3 @@
-import type { BrokerEnvironment } from "./brokers/base.js"
 import { controlPlaneCheck } from "./control-plane.js"
 import { BybitBroker } from "./brokers/bybit/index.js"
 import { createBybitTools } from "./brokers/bybit/tools.js"
@@ -17,10 +16,8 @@ async function configureBrokers(): Promise<void> {
   const apiSecret = process.env["T212_API_SECRET"]
   if (apiKey === undefined || apiSecret === undefined) return
 
-  const environment = readEnvironment()
   const broker = new Trading212Broker()
   await broker.authenticate({
-    environment,
     credentials: { T212_API_KEY: apiKey, T212_API_SECRET: apiSecret },
   })
   register(broker, createTrading212Tools(broker))
@@ -34,7 +31,6 @@ async function configureCryptoBroker(): Promise<void> {
 
   const broker = new CryptoBroker()
   await broker.authenticate({
-    environment: readEnvironment(),
     credentials: {
       ...(solanaAddress !== undefined ? { SOLANA_ADDRESS: solanaAddress } : {}),
       ...(tonAddress !== undefined ? { TON_ADDRESS: tonAddress } : {}),
@@ -51,15 +47,9 @@ async function configureBybitBroker(): Promise<void> {
 
   const broker = new BybitBroker()
   await broker.authenticate({
-    environment: readEnvironment(),
     credentials: { BYBIT_API_KEY: apiKey, BYBIT_API_SECRET: apiSecret },
   })
   register(broker, createBybitTools(broker))
-}
-
-function readEnvironment(): BrokerEnvironment {
-  const raw = (process.env["ENVIRONMENT"] ?? "demo").toLowerCase()
-  return raw === "live" ? "live" : "demo"
 }
 
 async function main(): Promise<void> {
