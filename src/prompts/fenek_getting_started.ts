@@ -1,0 +1,33 @@
+import type { PromptBinding } from "../brokers/base.js"
+
+// Onboarding prompt. Registered unconditionally and needs no credentials, so a
+// user can run it right after install — before configuring anything — to learn
+// what the extension does and what to set up. The text is an instruction to the
+// model (it relays the briefing in the user's own language).
+const TEXT = `The user has just installed or is setting up the Fenek Portfolio Companion extension and wants to understand it. Give them a concise, friendly getting-started briefing, in their language, covering:
+
+- What it is: a strictly READ-ONLY companion that reads the user's portfolio across Trading 212, on-chain Solana and TON wallets, and Bybit, and helps analyze it. It never places trades, moves funds, or gives buy/sell/rebalance advice — it surfaces data and neutral metrics; decisions stay with the user.
+- What can be connected (ALL OPTIONAL — set up only the sources you have, in Settings → Extensions → Fenek Portfolio Companion):
+  - Trading 212 — a READ-ONLY API key + secret (Trading 212 app: Settings → API (Beta)). Gives positions, pies, dividends, cash transactions, and order history.
+  - Solana wallet — your public wallet address plus a free Helius API key (helius.dev). Gives on-chain holdings valued in USD, and open Jupiter limit orders.
+  - TON wallet — your public TON Space address (Telegram Wallet). Gives on-chain holdings valued in USD.
+  - Bybit — a READ-ONLY API key + secret (Account/Wallet read only; no Trade, no Withdraw). Gives coin balances and open orders.
+- What you can ask once connected: total value and breakdown by currency, your largest positions, concentration by ticker across accounts, overlap between pies, dividend history, and open orders. Different currencies are reported side by side and never summed (no FX conversion).
+- Privacy and safety: everything runs locally on your machine, API keys are stored in your operating system's keychain, there is zero telemetry, and the only outbound network traffic is to the provider APIs you configured.
+- Language: you can talk to me in any language — just write in it and I will reply in kind.
+
+Keep it brief. If nothing is configured yet, tell the user to open the extension settings and add at least one source to begin.`
+
+export function createGettingStartedPrompt(): PromptBinding {
+  return {
+    prompt: {
+      name: "fenek_getting_started",
+      description:
+        "Explains what Fenek Portfolio Companion does, which sources it supports (Trading 212, Solana, TON, Bybit), and how to configure them. Needs no API keys — run it before setting anything up.",
+    },
+    handler: () =>
+      Promise.resolve({
+        messages: [{ role: "user", content: { type: "text", text: TEXT } }],
+      }),
+  }
+}

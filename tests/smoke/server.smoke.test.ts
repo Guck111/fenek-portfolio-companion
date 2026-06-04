@@ -9,7 +9,7 @@ const here = path.dirname(fileURLToPath(import.meta.url))
 const entryPoint = path.resolve(here, "../../src/index.ts")
 
 describe("server smoke", () => {
-  it("lists 4 cross-broker tools and 4 core prompts when no broker is configured", async () => {
+  it("lists 4 cross-broker tools and 5 core prompts when no broker is configured", async () => {
     const transport = new StdioClientTransport({
       command: process.execPath,
       args: ["--import", "tsx", entryPoint],
@@ -36,6 +36,7 @@ describe("server smoke", () => {
       expect(promptNames).toEqual([
         "analyze_concentration",
         "analyze_overview",
+        "fenek_getting_started",
         "review_dividends",
         "review_pie",
       ])
