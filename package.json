@@ -12,6 +12,7 @@
     "inspect": "npx @modelcontextprotocol/inspector tsx src/index.ts",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src tests && prettier --check src tests",
+    "knip": "knip",
     "format": "prettier --write src tests",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -19,7 +20,7 @@
     "pack": "mcpb pack",
     "pack:local": "bash scripts/pack-local.sh",
     "audit": "npm audit --audit-level=moderate",
-    "preversion": "npm run typecheck && npm run lint && npm run test && npm run audit",
+    "preversion": "npm run typecheck && npm run lint && npm run knip && npm run test && npm run audit",
     "release": "npm run build && npm run pack"
   },
   "engines": {
@@ -34,6 +35,7 @@
     "@anthropic-ai/mcpb": "2.1.2",
     "@types/node": "25.6.0",
     "eslint": "10.2.1",
+    "knip": "6.15.0",
     "prettier": "3.8.3",
     "tsx": "4.21.0",
     "typescript": "6.0.3",
