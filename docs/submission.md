@@ -71,7 +71,7 @@ playbook tools (they simply report empty aggregates).
 
 **Every tool is read-only.** `annotations.readOnlyHint: true` is stamped centrally in the
 tool registry, so no tool can be exposed without it; each tool also carries a
-human-readable `annotations.title`. 22 tools total.
+human-readable `annotations.title`. 23 tools total.
 
 ### Trading 212 (registered when `T212_API_KEY` is set)
 
@@ -120,6 +120,14 @@ human-readable `annotations.title`. 22 tools total.
 | `review_pie` | Playbook: Review a Pie | ✅ |
 | `review_dividends` | Playbook: Review Dividends | ✅ |
 
+### Onboarding (always registered)
+
+| Tool name | Title | Read-only |
+|---|---|---|
+| `fenek_getting_started` | Fenek: Getting Started | ✅ |
+
+Credential-free; also exposed as a prompt of the same name.
+
 ### Prompts (slash-commands)
 
 `fenek_getting_started` (a credential-free onboarding overview), plus `analyze_overview`,
@@ -133,6 +141,9 @@ the user's language conversationally.
 - **Errors.** Provider 4xx/5xx map to typed, human-readable errors. On 401/403 the server
   names the missing API-key scope so the user can fix it. 429 triggers bounded exponential
   backoff (max 3 attempts) before a structured error.
+- **Partial-failure resilience.** The cross-broker `portfolio_*` tools do not fail wholesale
+  when one source errors (e.g. an expired key): they return the healthy brokers' data and
+  list the failures in an `errors` field.
 - **No safe/unsafe mixing.** There are no write tools, so no tool blends read and write
   behavior. The read-only posture is enforced structurally in the registry.
 - **Server `instructions`.** At `initialize`, the server briefs the client that it is
