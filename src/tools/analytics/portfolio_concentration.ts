@@ -5,6 +5,7 @@ import { list as listBrokers } from "../../brokers/registry.js"
 import { parseArgs, safeRun } from "../result.js"
 
 import { addToBucket, bucketToMoneyList, roundBucket } from "./aggregation.js"
+import { collectBroker, type BrokerFailure } from "./resilience.js"
 
 const Args = z
   .object({
@@ -63,9 +64,11 @@ async function buildConcentration(topN: number, minShare: number): Promise<unkno
   const brokers = listBrokers()
   const map = new Map<string, TickerAggregate>()
   let portfolioValueByCurrency: Record<string, number> = {}
+  const errors: BrokerFailure[] = []
 
   for (const broker of brokers) {
-    const positions = await broker.getPositions()
+    const positions = await collectBroker(broker, () => broker.getPositions(), errors)
+    if (positions === undefined) continue
     for (const p of positions) {
       let entry = map.get(p.ticker)
       if (entry === undefined) {
@@ -131,6 +134,7 @@ async function buildConcentration(topN: number, minShare: number): Promise<unkno
           }
         : {}),
     })),
+    errors,
   }
 }
 

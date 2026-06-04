@@ -5,6 +5,8 @@ import type { ToolBinding } from "../../brokers/base.js"
 import { list as listBrokers } from "../../brokers/registry.js"
 import { parseArgs, safeRun } from "../result.js"
 
+import { toBrokerFailure, type BrokerFailure } from "./resilience.js"
+
 const Args = z.object({}).strict()
 
 export function createPortfolioPieOverlapTool(): ToolBinding {
@@ -45,28 +47,33 @@ async function buildOverlap(): Promise<unknown> {
   )
 
   if (eligibleBrokers.length === 0) {
-    return { eligibleBrokers: 0, overlappingTickers: [] }
+    return { eligibleBrokers: 0, overlappingTickers: [], errors: [] }
   }
 
   const memberships = new Map<string, PieMembership[]>()
+  const errors: BrokerFailure[] = []
 
   for (const broker of eligibleBrokers) {
-    const pies = await broker.getPies()
-    for (const pie of pies) {
-      const detail = await broker.getPie(pie.id)
-      for (const slice of detail.slices) {
-        const list = memberships.get(slice.ticker) ?? []
-        list.push({
-          brokerId: broker.id,
-          brokerName: broker.name,
-          pieId: detail.id,
-          pieName: detail.name,
-          targetWeight: slice.targetWeight,
-          currentWeight: slice.currentWeight,
-          quantity: slice.quantity,
-        })
-        memberships.set(slice.ticker, list)
+    try {
+      const pies = await broker.getPies()
+      for (const pie of pies) {
+        const detail = await broker.getPie(pie.id)
+        for (const slice of detail.slices) {
+          const list = memberships.get(slice.ticker) ?? []
+          list.push({
+            brokerId: broker.id,
+            brokerName: broker.name,
+            pieId: detail.id,
+            pieName: detail.name,
+            targetWeight: slice.targetWeight,
+            currentWeight: slice.currentWeight,
+            quantity: slice.quantity,
+          })
+          memberships.set(slice.ticker, list)
+        }
       }
+    } catch (error) {
+      errors.push(toBrokerFailure(broker, error))
     }
   }
 
@@ -83,5 +90,6 @@ async function buildOverlap(): Promise<unknown> {
   return {
     eligibleBrokers: eligibleBrokers.length,
     overlappingTickers: overlapping,
+    errors,
   }
 }

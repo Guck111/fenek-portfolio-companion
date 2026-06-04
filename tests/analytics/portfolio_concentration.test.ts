@@ -14,6 +14,7 @@ interface ConcentrationOutput {
     marketValue: { amount: number; currency: string }[]
     sharePercent?: number
   }[]
+  errors: { brokerId: string; brokerName: string; error: string }[]
 }
 
 function position(opts: {
@@ -100,5 +101,24 @@ describe("portfolio_concentration", () => {
     ) as ConcentrationOutput
     expect(filtered.concentrations).toHaveLength(1)
     expect(filtered.concentrations[0]?.ticker).toBe("BIG")
+  })
+
+  it("keeps aggregating the healthy brokers when one broker fails", async () => {
+    register(
+      makeFakeBroker({
+        id: "good",
+        positions: [position({ brokerId: "good", ticker: "AAPL", qty: 10, value: 2000 })],
+      }),
+      [],
+    )
+    register(makeFakeBroker({ id: "bad", positionsError: new Error("Helius HTTP 401") }), [])
+
+    const result = await callTool("portfolio_concentration", {})
+    expect(result.isError).toBeUndefined()
+    const data = parseToolResult(result) as ConcentrationOutput
+    expect(data.concentrations.map((c) => c.ticker)).toContain("AAPL")
+    expect(data.errors).toHaveLength(1)
+    expect(data.errors[0]?.brokerId).toBe("bad")
+    expect(data.errors[0]?.error).toMatch(/401/)
   })
 })

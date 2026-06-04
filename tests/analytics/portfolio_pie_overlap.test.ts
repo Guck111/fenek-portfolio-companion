@@ -13,6 +13,7 @@ interface OverlapOutput {
     pieCount: number
     memberships: { pieId: string; pieName: string; targetWeight: number }[]
   }[]
+  errors: { brokerId: string; brokerName: string; error: string }[]
 }
 
 const m = (amount: number) => ({ amount, currency: "USD" })
@@ -97,5 +98,50 @@ describe("portfolio_pie_overlap", () => {
     expect(voo?.pieCount).toBe(2)
     const pieIds = voo?.memberships.map((m) => m.pieId).sort()
     expect(pieIds).toEqual(["p1", "p2"])
+  })
+
+  it("keeps analyzing the healthy brokers when one broker fails", async () => {
+    const pie1 = makePie("p1", "Tech", [{ ticker: "VOO", weight: 1 }])
+    const pie2 = makePie("p2", "Core", [{ ticker: "VOO", weight: 1 }])
+    register(
+      makeFakeBroker({
+        id: "good",
+        pies: [
+          {
+            brokerId: "good",
+            id: "p1",
+            name: "Tech",
+            invested: m(1000),
+            currentValue: m(1100),
+            unrealizedPnL: m(100),
+          },
+          {
+            brokerId: "good",
+            id: "p2",
+            name: "Core",
+            invested: m(1000),
+            currentValue: m(1100),
+            unrealizedPnL: m(100),
+          },
+        ],
+        pieDetails: { p1: pie1, p2: pie2 },
+      }),
+      [],
+    )
+    register(
+      makeFakeBroker({
+        id: "bad",
+        capabilities: { pies: true },
+        piesError: new Error("Bybit HTTP 500"),
+      }),
+      [],
+    )
+
+    const result = await callTool("portfolio_pie_overlap", {})
+    expect(result.isError).toBeUndefined()
+    const data = parseToolResult(result) as OverlapOutput
+    expect(data.overlappingTickers.map((t) => t.ticker)).toContain("VOO")
+    expect(data.errors).toHaveLength(1)
+    expect(data.errors[0]?.brokerId).toBe("bad")
   })
 })

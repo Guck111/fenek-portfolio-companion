@@ -16,6 +16,7 @@ interface HistoryOutput {
     gross: { amount: number; currency: string }[]
     net: { amount: number; currency: string }[]
   }[]
+  errors: { brokerId: string; brokerName: string; error: string }[]
 }
 
 function div(opts: {
@@ -99,5 +100,30 @@ describe("portfolio_dividend_history", () => {
     expect(data.groups.find((g) => g.group === "MSFT")?.gross).toEqual([
       { amount: 7, currency: "USD" },
     ])
+  })
+
+  it("keeps aggregating dividends when one broker fails", async () => {
+    register(
+      makeFakeBroker({
+        id: "good",
+        dividends: [div({ ticker: "KO", date: "2025-03-01T00:00:00Z", gross: 10 })],
+      }),
+      [],
+    )
+    register(
+      makeFakeBroker({
+        id: "bad",
+        capabilities: { dividends: true },
+        dividendsError: new Error("Trading 212 rate limit exceeded"),
+      }),
+      [],
+    )
+
+    const result = await callTool("portfolio_dividend_history", {})
+    expect(result.isError).toBeUndefined()
+    const data = parseToolResult(result) as HistoryOutput
+    expect(data.totalDividends).toBe(1)
+    expect(data.errors).toHaveLength(1)
+    expect(data.errors[0]?.brokerId).toBe("bad")
   })
 })

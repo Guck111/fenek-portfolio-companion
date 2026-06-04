@@ -15,6 +15,7 @@ import {
   roundMoney,
   type MoneyByCurrency,
 } from "./aggregation.js"
+import { collectBroker, type BrokerFailure } from "./resilience.js"
 
 const Args = z
   .object({
@@ -66,12 +67,15 @@ async function buildOverview(topN: number): Promise<unknown> {
       brokers: [],
       totals: emptyTotals(),
       topPositions: [],
+      errors: [],
     }
   }
 
   const snapshots: BrokerSnapshot[] = []
+  const errors: BrokerFailure[] = []
   for (const broker of brokers) {
-    const positions = await broker.getPositions()
+    const positions = await collectBroker(broker, () => broker.getPositions(), errors)
+    if (positions === undefined) continue
     let account: Account | null = null
     try {
       account = await broker.getAccount()
@@ -146,6 +150,7 @@ async function buildOverview(topN: number): Promise<unknown> {
         ? { unrealizedPnL: roundMoney(entry.position.unrealizedPnL) }
         : {}),
     })),
+    errors,
   }
 }
 

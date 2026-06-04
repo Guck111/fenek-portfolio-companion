@@ -7,6 +7,7 @@ import { list as listBrokers } from "../../brokers/registry.js"
 import { parseArgs, safeRun } from "../result.js"
 
 import { addToBucket, bucketToMoneyList, roundBucket } from "./aggregation.js"
+import { toBrokerFailure, type BrokerFailure } from "./resilience.js"
 
 const Args = z
   .object({
@@ -76,7 +77,7 @@ async function buildHistory(
 ): Promise<unknown> {
   const eligible = listBrokers().filter((b): b is IBroker => b.capabilities.dividends)
   if (eligible.length === 0) {
-    return { eligibleBrokers: 0, groups: [] }
+    return { eligibleBrokers: 0, groups: [], errors: [] }
   }
 
   const fromMs = fromDate !== undefined ? Date.parse(fromDate) : Number.NEGATIVE_INFINITY
@@ -84,20 +85,29 @@ async function buildHistory(
 
   const all: Dividend[] = []
   const truncatedBrokers: string[] = []
+  const errors: BrokerFailure[] = []
 
   for (const broker of eligible) {
-    let cursor: string | undefined
-    let pages = 0
-    while (pages < maxPages) {
-      const opts =
-        cursor !== undefined ? { limit: DEFAULT_PAGE_LIMIT, cursor } : { limit: DEFAULT_PAGE_LIMIT }
-      const page = await broker.getDividends(opts)
-      for (const d of page.items) all.push(d)
-      pages++
-      if (!page.hasMore || page.nextCursor === undefined) break
-      cursor = page.nextCursor
+    try {
+      const collected: Dividend[] = []
+      let cursor: string | undefined
+      let pages = 0
+      while (pages < maxPages) {
+        const opts =
+          cursor !== undefined
+            ? { limit: DEFAULT_PAGE_LIMIT, cursor }
+            : { limit: DEFAULT_PAGE_LIMIT }
+        const page = await broker.getDividends(opts)
+        for (const d of page.items) collected.push(d)
+        pages++
+        if (!page.hasMore || page.nextCursor === undefined) break
+        cursor = page.nextCursor
+      }
+      for (const d of collected) all.push(d)
+      if (cursor !== undefined && pages === maxPages) truncatedBrokers.push(broker.id)
+    } catch (error) {
+      errors.push(toBrokerFailure(broker, error))
     }
-    if (cursor !== undefined && pages === maxPages) truncatedBrokers.push(broker.id)
   }
 
   const filtered = all.filter((d) => {
@@ -149,6 +159,7 @@ async function buildHistory(
     truncatedBrokers,
     groupBy,
     groups: sortedGroups,
+    errors,
   }
 }
 

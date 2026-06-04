@@ -18,6 +18,7 @@ interface Overview {
     brokerId: string
     marketValue: { amount: number; currency: string }
   }[]
+  errors: { brokerId: string; brokerName: string; error: string }[]
 }
 
 describe("portfolio_overview", () => {
@@ -131,5 +132,39 @@ describe("portfolio_overview", () => {
     expect(data.totals.cash).toContainEqual({ amount: 100, currency: "USD" })
     expect(data.totals.cash).toContainEqual({ amount: 50, currency: "EUR" })
     expect(data.totals.cash).toHaveLength(2)
+  })
+
+  it("keeps aggregating the healthy brokers when one broker fails", async () => {
+    register(
+      makeFakeBroker({
+        id: "good",
+        accountError: new Error("403 forbidden"),
+        positions: [
+          {
+            brokerId: "good",
+            ticker: "AAPL",
+            currency: "USD",
+            quantity: 10,
+            averagePrice: { amount: 150, currency: "USD" },
+            currentPrice: { amount: 200, currency: "USD" },
+            marketValue: { amount: 2000, currency: "USD" },
+            unrealizedPnL: { amount: 500, currency: "USD" },
+          },
+        ],
+      }),
+      [],
+    )
+    register(makeFakeBroker({ id: "bad", positionsError: new Error("Helius HTTP 401") }), [])
+
+    const result = await callTool("portfolio_overview", {})
+    expect(result.isError).toBeUndefined()
+    const data = parseToolResult(result) as Overview
+    // The healthy broker is still aggregated.
+    expect(data.totals.marketValue).toEqual([{ amount: 2000, currency: "USD" }])
+    expect(data.brokers.map((b) => b.id)).toEqual(["good"])
+    // The failure is surfaced, not swallowed and not fatal.
+    expect(data.errors).toHaveLength(1)
+    expect(data.errors[0]?.brokerId).toBe("bad")
+    expect(data.errors[0]?.error).toMatch(/401/)
   })
 })

@@ -15,8 +15,15 @@ Connector configuration simplified.
 - Config fields are grouped by provider with clearer titles and shorter descriptions.
 
 ### Added
-- `fenek_getting_started` prompt — a credential-free overview of what the extension does
-  and how to set it up, runnable before any keys are entered.
+- `fenek_getting_started` — a credential-free overview of what the extension does and how
+  to set it up, runnable before any keys are entered. Exposed as both a prompt and a tool,
+  so clients that surface only tools (not prompts) can reach it too.
+
+### Fixed
+- Cross-broker tools (`portfolio_overview`, `portfolio_concentration`,
+  `portfolio_pie_overlap`, `portfolio_dividend_history`) no longer fail entirely when a
+  single broker errors (e.g. an expired key → 401). They return the healthy brokers' data
+  and report per-broker failures in an `errors` field.
 
 ### Removed
 - The `LANGUAGE` setting and the Russian prompt translations. Prompts are English; the

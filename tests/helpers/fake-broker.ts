@@ -15,9 +15,12 @@ export interface FakeBrokerData {
   readonly account?: Account
   readonly accountError?: Error
   readonly positions?: readonly Position[]
+  readonly positionsError?: Error
   readonly transactions?: readonly Transaction[]
   readonly dividends?: readonly Dividend[]
+  readonly dividendsError?: Error
   readonly pies?: readonly Pie[]
+  readonly piesError?: Error
   readonly pieDetails?: Readonly<Record<string, PieDetails>>
 }
 
@@ -39,14 +42,23 @@ export function makeFakeBroker(data: FakeBrokerData): IBroker {
       if (data.account !== undefined) return Promise.resolve(data.account)
       return Promise.reject(new Error("account not stubbed"))
     },
-    getPositions: () => Promise.resolve(data.positions ?? []),
+    getPositions: () =>
+      data.positionsError !== undefined
+        ? Promise.reject(data.positionsError)
+        : Promise.resolve(data.positions ?? []),
     getTransactions: () => Promise.resolve(makePage(data.transactions ?? [])),
-    getDividends: () => Promise.resolve(makePage(data.dividends ?? [])),
+    getDividends: () =>
+      data.dividendsError !== undefined
+        ? Promise.reject(data.dividendsError)
+        : Promise.resolve(makePage(data.dividends ?? [])),
   }
 
   if (capabilities.pies) {
     return Object.assign(broker, {
-      getPies: () => Promise.resolve(data.pies ?? []),
+      getPies: () =>
+        data.piesError !== undefined
+          ? Promise.reject(data.piesError)
+          : Promise.resolve(data.pies ?? []),
       getPie: (id: string): Promise<PieDetails> => {
         const detail = data.pieDetails?.[id]
         if (detail !== undefined) return Promise.resolve(detail)
