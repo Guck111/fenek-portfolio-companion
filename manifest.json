@@ -43,50 +43,50 @@
   "user_config": {
     "T212_API_KEY": {
       "type": "string",
-      "title": "Trading 212 API Key",
-      "description": "Generate in Trading 212 app: Settings → API (Beta). Use READ-ONLY permissions only.",
+      "title": "Trading 212 · API Key",
+      "description": "Read-only key: Trading 212 → Settings → API (Beta). New here? Run the /fenek_getting_started prompt in chat first — no keys needed. Blank to skip Trading 212.",
       "required": false,
       "sensitive": true
     },
     "T212_API_SECRET": {
       "type": "string",
-      "title": "Trading 212 API Secret",
-      "description": "Shown once on key generation. Store this carefully.",
+      "title": "Trading 212 · API Secret",
+      "description": "Shown once when you create the key.",
       "required": false,
       "sensitive": true
     },
     "SOLANA_ADDRESS": {
       "type": "string",
-      "title": "Solana wallet address (public)",
-      "description": "Your public Solana address (e.g. from Phantom). Public, not a secret. Leave blank to skip Solana.",
-      "required": false,
-      "sensitive": false
-    },
-    "TON_ADDRESS": {
-      "type": "string",
-      "title": "TON wallet address (public)",
-      "description": "Your public TON address (Telegram Wallet → TON Space). Only the non-custodial TON Space is readable; custodial @wallet balances are not. Leave blank to skip TON.",
+      "title": "Solana · Wallet address (public)",
+      "description": "Your public Solana address (e.g. Phantom). Public, not a secret. Blank to skip Solana.",
       "required": false,
       "sensitive": false
     },
     "HELIUS_API_KEY": {
       "type": "string",
-      "title": "Helius API key (free)",
-      "description": "Free key from helius.dev, required only to read Solana holdings. Stored in your OS keychain.",
+      "title": "Solana · Helius API key (free)",
+      "description": "Free key from helius.dev — only needed to read Solana holdings. Stored in your OS keychain.",
       "required": false,
       "sensitive": true
     },
+    "TON_ADDRESS": {
+      "type": "string",
+      "title": "TON · Wallet address (public)",
+      "description": "Your public TON Space address (Telegram Wallet). Blank to skip TON.",
+      "required": false,
+      "sensitive": false
+    },
     "BYBIT_API_KEY": {
       "type": "string",
-      "title": "Bybit API key",
-      "description": "Read-only API key from Bybit (API Management). Enable read access to Account/Wallet only — no Trade, no Withdraw. Mainnet. Leave blank to skip Bybit.",
+      "title": "Bybit · API key",
+      "description": "Read-only key (Account/Wallet read only — no Trade, no Withdraw). Blank to skip Bybit.",
       "required": false,
       "sensitive": true
     },
     "BYBIT_API_SECRET": {
       "type": "string",
-      "title": "Bybit API secret",
-      "description": "Shown once when you create the Bybit API key. Stored in your OS keychain.",
+      "title": "Bybit · API secret",
+      "description": "Shown once when you create the Bybit key. Stored in your OS keychain.",
       "required": false,
       "sensitive": true
     }
