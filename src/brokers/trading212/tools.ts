@@ -37,6 +37,7 @@ export function createTrading212Tools(broker: Trading212Broker): readonly ToolBi
     {
       tool: {
         name: "t212_get_account",
+        annotations: { title: "Trading 212: Account Summary" },
         description:
           "Returns Trading 212 account summary: account id, base currency, free cash, invested capital, total portfolio value, unrealized P&L. Requires the API key to have the 'Account' scope enabled.",
         inputSchema: { type: "object", properties: {}, additionalProperties: false },
@@ -50,6 +51,7 @@ export function createTrading212Tools(broker: Trading212Broker): readonly ToolBi
     {
       tool: {
         name: "t212_get_positions",
+        annotations: { title: "Trading 212: Open Positions" },
         description:
           "Returns all currently open Trading 212 positions with quantity, average price paid, current price, market value (in account currency), and unrealized P&L per holding.",
         inputSchema: { type: "object", properties: {}, additionalProperties: false },
@@ -63,6 +65,7 @@ export function createTrading212Tools(broker: Trading212Broker): readonly ToolBi
     {
       tool: {
         name: "t212_get_pies",
+        annotations: { title: "Trading 212: Pies (Portfolios)" },
         description:
           "Lists all Trading 212 pies (custom portfolios) with id, total invested, current value, unrealized P&L, dividend totals, and progress toward target. Use t212_get_pie for slice-level detail.",
         inputSchema: { type: "object", properties: {}, additionalProperties: false },
@@ -76,6 +79,7 @@ export function createTrading212Tools(broker: Trading212Broker): readonly ToolBi
     {
       tool: {
         name: "t212_get_pie",
+        annotations: { title: "Trading 212: Pie Details" },
         description:
           "Returns full details of one Trading 212 pie: name, slices (each instrument with target weight, current weight, quantity, invested, current value, unrealized P&L), totals.",
         inputSchema: {
@@ -96,6 +100,7 @@ export function createTrading212Tools(broker: Trading212Broker): readonly ToolBi
     {
       tool: {
         name: "t212_get_dividends",
+        annotations: { title: "Trading 212: Dividends" },
         description:
           "Returns paginated Trading 212 dividend payments. Default limit 20, max 50. Pass `cursor` from a previous response's nextCursor to fetch the next page.",
         inputSchema: {
@@ -116,6 +121,7 @@ export function createTrading212Tools(broker: Trading212Broker): readonly ToolBi
     {
       tool: {
         name: "t212_get_transactions",
+        annotations: { title: "Trading 212: Cash Transactions" },
         description:
           "Returns paginated cash transactions (deposits, withdrawals, fees, interest) for the Trading 212 account. Default limit 20, max 50.",
         inputSchema: {
@@ -136,6 +142,7 @@ export function createTrading212Tools(broker: Trading212Broker): readonly ToolBi
     {
       tool: {
         name: "t212_get_order_history",
+        annotations: { title: "Trading 212: Order History" },
         description:
           "Returns paginated executed-order history for Trading 212: order details, fill price/quantity, FX rate, taxes/fees per fill. Use for trade history analysis.",
         inputSchema: {
@@ -156,6 +163,7 @@ export function createTrading212Tools(broker: Trading212Broker): readonly ToolBi
     {
       tool: {
         name: "t212_get_open_orders",
+        annotations: { title: "Trading 212: Open Orders" },
         description:
           "Returns currently pending (unfilled) orders on the Trading 212 account. Returns an empty array if there are none.",
         inputSchema: { type: "object", properties: {}, additionalProperties: false },
@@ -169,6 +177,7 @@ export function createTrading212Tools(broker: Trading212Broker): readonly ToolBi
     {
       tool: {
         name: "t212_search_instrument",
+        annotations: { title: "Trading 212: Search Instruments" },
         description:
           "Searches the Trading 212 instrument catalog by ticker, short name, or full name (case-insensitive substring). Returns up to `limit` matches with ticker, ISIN, currency, and exchange schedule id. The catalog is cached locally for 6 hours after first call.",
         inputSchema: {

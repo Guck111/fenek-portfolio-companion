@@ -81,6 +81,17 @@ The `bybit_get_open_orders` tool lists your open (unfilled) orders (spot + USDT/
 | [CONTRIBUTING.md](CONTRIBUTING.md) | How to contribute (DCO required) |
 | [docs/adding-a-broker.md](docs/adding-a-broker.md) | Adding a new broker adapter |
 
+## Privacy Policy
+
+This server runs entirely on your machine and sends **zero telemetry**. No analytics,
+no error reporting, no usage statistics, no "phone home." The only outbound network
+traffic is to the broker/exchange/price API endpoints you configure (e.g. Trading 212,
+Bybit, DefiLlama, Helius, TON, Jupiter). Your API keys are stored in your operating
+system's keychain by Claude Desktop, are never logged, and are transmitted only to the
+broker endpoints they belong to.
+
+Full policy: **[PRIVACY.md](PRIVACY.md)**.
+
 ## License
 
 MIT — see [LICENSE](LICENSE).

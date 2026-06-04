@@ -24,6 +24,7 @@ export function createPortfolioDividendHistoryTool(): ToolBinding {
   return {
     tool: {
       name: "portfolio_dividend_history",
+      annotations: { title: "Portfolio: Dividend History (All Brokers)" },
       description:
         "Aggregates dividend payments across all brokers that support dividends. Groups by year (default), month, or ticker. Each group reports gross/net amounts per currency and the number of payments. Pagination is bounded by maxPagesPerBroker (default 5 pages of 50 = up to 250 dividends per broker).",
       inputSchema: {

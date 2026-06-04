@@ -11,6 +11,18 @@ const brokers = new Map<string, IBroker>()
 const tools = new Map<string, ToolBinding>()
 const prompts = new Map<string, PromptBinding>()
 
+// Single chokepoint for storing a tool. This server is strictly read-only by
+// design, so `readOnlyHint` is stamped here centrally — an adapter cannot forget
+// it, and a binding cannot override it to false. A human-readable `title`
+// declared on the tool is preserved as-is.
+function setTool(binding: ToolBinding): void {
+  const tool: Tool = {
+    ...binding.tool,
+    annotations: { ...binding.tool.annotations, readOnlyHint: true },
+  }
+  tools.set(tool.name, { ...binding, tool })
+}
+
 export function register(broker: IBroker, toolBindings: readonly ToolBinding[] = []): void {
   if (brokers.has(broker.id)) {
     throw new Error(`Broker '${broker.id}' is already registered`)
@@ -22,7 +34,7 @@ export function register(broker: IBroker, toolBindings: readonly ToolBinding[] =
   }
   brokers.set(broker.id, broker)
   for (const binding of toolBindings) {
-    tools.set(binding.tool.name, binding)
+    setTool(binding)
   }
 }
 
@@ -56,7 +68,7 @@ export function registerTools(toolBindings: readonly ToolBinding[]): void {
     }
   }
   for (const binding of toolBindings) {
-    tools.set(binding.tool.name, binding)
+    setTool(binding)
   }
 }
 

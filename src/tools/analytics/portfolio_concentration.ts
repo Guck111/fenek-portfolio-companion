@@ -19,6 +19,7 @@ export function createPortfolioConcentrationTool(): ToolBinding {
   return {
     tool: {
       name: "portfolio_concentration",
+      annotations: { title: "Portfolio: Concentration by Ticker (All Brokers)" },
       description:
         "Aggregates each ticker's total market value across all configured brokers and reports its share of the total portfolio. Useful for finding overlap when the same instrument (e.g. VOO, AAPL) is held in multiple accounts or pies. Shares are computed within each currency bucket — totals across mixed currencies are not converted.",
       inputSchema: {

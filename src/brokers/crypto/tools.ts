@@ -16,6 +16,7 @@ export function createCryptoTools(broker: CryptoBroker): readonly ToolBinding[] 
     {
       tool: {
         name: "crypto_get_positions",
+        annotations: { title: "Crypto Wallets: Holdings" },
         description:
           "Returns the user's on-chain crypto holdings (Solana and TON wallets configured by address) valued in USD: token symbol, quantity, current price, and market value. No cost basis or P&L (on-chain wallets do not record purchase price). Unpriced/spam tokens are omitted.",
         inputSchema: { type: "object", properties: {}, additionalProperties: false },
@@ -29,6 +30,7 @@ export function createCryptoTools(broker: CryptoBroker): readonly ToolBinding[] 
     {
       tool: {
         name: "crypto_get_prices",
+        annotations: { title: "Crypto Wallets: Token Prices (Watchlist)" },
         description:
           "Returns current USD prices for arbitrary crypto assets (watchlist). Each coin is a DefiLlama id like 'coingecko:solana', 'coingecko:the-open-network', 'solana:<mint>', or 'ton:<jetton-address>'. Use for assets the user does not hold.",
         inputSchema: {
@@ -59,6 +61,7 @@ export function createCryptoTools(broker: CryptoBroker): readonly ToolBinding[] 
     {
       tool: {
         name: "crypto_get_limit_orders",
+        annotations: { title: "Crypto Wallets: Jupiter Limit Orders (Solana)" },
         description:
           "Returns open limit orders on Jupiter (Solana) for the configured wallet address, via Jupiter's public Trigger v1 API (pair, side, limit price, quantity, filled quantity, status). IMPORTANT: Jupiter's current Limit Order V2 keeps order details private (hidden by Jupiter until execution), so V2 orders are NOT exposed by any public API — an empty result does NOT mean the user has no open orders; advise checking jup.ag directly. Funds locked by open orders still show up as reduced wallet balances in crypto_get_positions. Read-only.",
         inputSchema: { type: "object", properties: {}, additionalProperties: false },

@@ -18,6 +18,7 @@ export function createReviewDividendsPlaybook(locale: Locale): ToolBinding {
   return {
     tool: {
       name: "review_dividends",
+      annotations: { title: "Playbook: Review Dividends" },
       description: `${m.description} (Tool form of the review_dividends prompt — clients that don't surface MCP prompts in their UI can still invoke this as a tool.)`,
       inputSchema: {
         type: "object",

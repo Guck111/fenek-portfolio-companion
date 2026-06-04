@@ -11,6 +11,7 @@ export function createReviewPiePlaybook(locale: Locale): ToolBinding {
   return {
     tool: {
       name: "review_pie",
+      annotations: { title: "Playbook: Review a Pie" },
       description: `${m.description} (Tool form of the review_pie prompt — clients that don't surface MCP prompts in their UI can still invoke this as a tool.)`,
       inputSchema: {
         type: "object",

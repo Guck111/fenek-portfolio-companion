@@ -28,6 +28,7 @@ export function createPortfolioOverviewTool(): ToolBinding {
   return {
     tool: {
       name: "portfolio_overview",
+      annotations: { title: "Portfolio: Overview (All Brokers)" },
       description:
         "Aggregates a snapshot across all configured brokers: cash, invested capital, total market value, and unrealized P&L grouped by currency (no FX conversion). Includes the largest positions ranked by raw market-value amount; ranking is accurate for single-currency portfolios but only approximate when multiple currencies are mixed.",
       inputSchema: {
