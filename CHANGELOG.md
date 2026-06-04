@@ -4,6 +4,24 @@ All notable changes to this project are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2026-06-04
+
+Connector configuration simplified.
+
+### Changed
+- Trading 212 demo vs live is now detected automatically from the API key; the
+  `ENVIRONMENT` setting is gone. Every credential field is optional, so you configure
+  only the sources you use.
+- Config fields are grouped by provider with clearer titles and shorter descriptions.
+
+### Added
+- `fenek_getting_started` prompt — a credential-free overview of what the extension does
+  and how to set it up, runnable before any keys are entered.
+
+### Removed
+- The `LANGUAGE` setting and the Russian prompt translations. Prompts are English; the
+  model replies in the user's language conversationally.
+
 ## [0.1.1] - 2026-06-04
 
 Directory-compliance and metadata release ahead of the Anthropic MCP Directory submission.
@@ -32,5 +50,6 @@ First public release, submitted to the Anthropic MCP Directory.
 - Strictly read-only. API keys stored in the OS keychain. No telemetry; the only
   outbound host is the broker API the user configures.
 
+[0.2.0]: https://github.com/Guck111/fenek-portfolio-companion/releases/tag/v0.2.0
 [0.1.1]: https://github.com/Guck111/fenek-portfolio-companion/releases/tag/v0.1.1
 [0.1.0]: https://github.com/Guck111/fenek-portfolio-companion/releases/tag/v0.1.0

@@ -1,6 +1,6 @@
 {
   "name": "fenek-portfolio-companion",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Read-only MCP server for analyzing brokerage portfolios. Trading 212 today, extensible to more brokers.",
   "type": "module",
   "main": "dist/index.js",
