@@ -3,6 +3,8 @@ import { describe, it, expect } from "vitest"
 import {
   base58Decode,
   base58checkDecode,
+  base64UrlToBytes,
+  crc16Xmodem,
   decodeSegwitAddress,
 } from "../../../src/brokers/crypto/codec.js"
 
@@ -88,5 +90,23 @@ describe("decodeSegwitAddress (bech32 / bech32m)", () => {
   it("rejects strings with no separator or non-charset data", () => {
     expect(decodeSegwitAddress("notbech32atall")).toBeNull()
     expect(decodeSegwitAddress("bc1bbbbbbbbbbbb")).toBeNull()
+  })
+})
+
+describe("crc16Xmodem", () => {
+  it("matches the canonical CRC-16/XMODEM check value for '123456789'", () => {
+    const data = new TextEncoder().encode("123456789")
+    expect(crc16Xmodem(data)).toBe(0x31c3)
+  })
+})
+
+describe("base64UrlToBytes", () => {
+  it("decodes url-safe base64 to bytes", () => {
+    expect(base64UrlToBytes("AAAA")).toEqual(new Uint8Array([0, 0, 0]))
+    expect(base64UrlToBytes("____")).toEqual(new Uint8Array([0xff, 0xff, 0xff]))
+  })
+
+  it("returns null for characters outside the base64url alphabet", () => {
+    expect(base64UrlToBytes("not base64!")).toBeNull()
   })
 })

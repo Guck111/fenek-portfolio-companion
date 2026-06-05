@@ -176,3 +176,24 @@ export function decodeSegwitAddress(raw: string): SegwitAddress | null {
 
   return { hrp, version, program: new Uint8Array(program) }
 }
+
+// --- base64url + CRC16 (TON user-friendly addresses) -----------------------
+
+/** CRC-16/XMODEM (poly 0x1021, init 0x0000) — the checksum TON user-friendly addresses carry. */
+export function crc16Xmodem(data: Uint8Array): number {
+  let crc = 0
+  for (const byte of data) {
+    crc ^= byte << 8
+    for (let i = 0; i < 8; i++) {
+      crc = (crc & 0x8000) !== 0 ? ((crc << 1) ^ 0x1021) & 0xffff : (crc << 1) & 0xffff
+    }
+  }
+  return crc & 0xffff
+}
+
+/** Decode url-safe (or standard) base64 to bytes; null if it holds other characters. */
+export function base64UrlToBytes(input: string): Uint8Array | null {
+  if (!/^[A-Za-z0-9+/_=-]*$/.test(input)) return null
+  const normalized = input.replace(/-/g, "+").replace(/_/g, "/")
+  return new Uint8Array(Buffer.from(normalized, "base64"))
+}

@@ -3,6 +3,7 @@ import { describe, it, expect } from "vitest"
 import { detectBitcoin } from "../../../src/brokers/crypto/chains/bitcoin/detect.js"
 import { detectDogecoin } from "../../../src/brokers/crypto/chains/dogecoin/detect.js"
 import { detectSolana } from "../../../src/brokers/crypto/chains/solana/detect.js"
+import { detectTon } from "../../../src/brokers/crypto/chains/ton/detect.js"
 import { detectChain } from "../../../src/brokers/crypto/registry.js"
 
 describe("detectSolana", () => {
@@ -65,12 +66,29 @@ describe("detectBitcoin", () => {
   })
 })
 
+describe("detectTon", () => {
+  it("accepts a user-friendly TON address with a valid CRC16", () => {
+    expect(detectTon("UQDvuEbnbSAL2cgDsSBKklmonE2J13waCvzHRCLRb9V5kKiM")).toBe(true)
+  })
+
+  it("rejects a TON address whose checksum no longer matches", () => {
+    expect(detectTon("UQDvuEbnbSAL2cgDsSBKklmonE2J13waCvzHRCLRb9V5kKiN")).toBe(false)
+  })
+
+  it("rejects addresses of other chains and wrong length", () => {
+    expect(detectTon("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v")).toBe(false) // Solana
+    expect(detectTon("1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa")).toBe(false) // Bitcoin
+    expect(detectTon("garbage")).toBe(false)
+  })
+})
+
 describe("detectChain", () => {
   it("routes an address to the chain whose validator accepts it", () => {
     expect(detectChain("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v")).toBe("solana")
     expect(detectChain("DH5yaieqoZN36fDVciNyRueRGvGLR3mr7L")).toBe("dogecoin")
     expect(detectChain("1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa")).toBe("bitcoin")
     expect(detectChain("bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4")).toBe("bitcoin")
+    expect(detectChain("UQDvuEbnbSAL2cgDsSBKklmonE2J13waCvzHRCLRb9V5kKiM")).toBe("ton")
   })
 
   it("returns null when no registered chain recognises the address", () => {
