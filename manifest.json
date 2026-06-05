@@ -3,12 +3,12 @@
   "manifest_version": "0.3",
   "name": "fenek-portfolio-companion",
   "display_name": "Fenek Portfolio Companion",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Read-only aggregator of your portfolio data across EU-available wallets, exchanges and brokers (Trading 212, Bybit, Solana/TON). Data collection only — no recommendations.",
   "long_description": "An unofficial, open-source MCP server that aggregates your portfolio data across wallets, exchanges and brokers available in Europe — Trading 212, Bybit, and Solana/TON wallets — and exposes it read-only to Claude for analysis. Ask about positions, pies, dividends, balances, concentration, and overlaps in plain language. Strictly data collection plus neutral metrics on your own data; it never recommends trades. No telemetry. API keys are stored in your OS keychain.\n\nNew here? After installing, run the fenek_getting_started prompt (or tool) in chat — it explains what to set up and which sources are supported, and needs no keys. All fields below are optional: fill in only the sources you have.\n\nNot affiliated with any broker. Not financial advice.",
   "author": {
-    "name": "Fenek Portfolio Companion contributors",
-    "url": "https://github.com/Guck111/fenek-portfolio-companion"
+    "name": "Arseni",
+    "url": "https://github.com/Guck111"
   },
   "homepage": "https://github.com/Guck111/fenek-portfolio-companion",
   "documentation": "https://github.com/Guck111/fenek-portfolio-companion/blob/master/README.md",
