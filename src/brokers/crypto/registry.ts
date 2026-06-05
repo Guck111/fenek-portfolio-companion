@@ -1,3 +1,4 @@
+import { detectBitcoin } from "./chains/bitcoin/detect.js"
 import { detectDogecoin } from "./chains/dogecoin/detect.js"
 import { detectSolana } from "./chains/solana/detect.js"
 
@@ -10,7 +11,7 @@ import { detectSolana } from "./chains/solana/detect.js"
  */
 
 /** Normalised chain namespaces the detector can recognise. EVM chains collapse to one id. */
-export type ChainId = "solana" | "dogecoin"
+export type ChainId = "solana" | "dogecoin" | "bitcoin"
 
 export interface ChainModule {
   readonly id: ChainId
@@ -25,6 +26,7 @@ export interface ChainModule {
 export const CHAINS: readonly ChainModule[] = [
   { id: "solana", detect: detectSolana },
   { id: "dogecoin", detect: detectDogecoin },
+  { id: "bitcoin", detect: detectBitcoin },
 ]
 
 /** Return the chain whose validator accepts `raw`, or null if none recognise it. */
