@@ -1,6 +1,11 @@
 import { describe, it, expect } from "vitest"
 
-import { CHAINS, groupAddressesByChain } from "../../../src/brokers/crypto/registry.js"
+import {
+  CHAINS,
+  groupAddressesByChain,
+  readHoldings,
+} from "../../../src/brokers/crypto/registry.js"
+import type { RawHolding } from "../../../src/brokers/crypto/types.js"
 
 const SOL = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
 const TON = "UQDvuEbnbSAL2cgDsSBKklmonE2J13waCvzHRCLRb9V5kKiM"
@@ -37,5 +42,32 @@ describe("CHAINS readers", () => {
   it("leaves chains without a built reader undefined", () => {
     expect(CHAINS.find((c) => c.id === "bitcoin")?.read).toBeUndefined()
     expect(CHAINS.find((c) => c.id === "dogecoin")?.read).toBeUndefined()
+  })
+})
+
+describe("readHoldings", () => {
+  const solHolding: RawHolding = {
+    chain: "solana",
+    symbol: "SOL",
+    amount: 1,
+    coinId: "coingecko:solana",
+  }
+
+  it("reads per chain, isolates a failing reader, and reports unrecognised addresses", async () => {
+    const readers: Partial<Record<string, (a: string) => Promise<RawHolding[]>>> = {
+      solana: () => Promise.resolve([solHolding]),
+      ton: () => Promise.reject(new Error("rpc down")),
+    }
+    const result = await readHoldings([SOL, TON, "garbage!!!"], (c) => readers[c])
+    expect(result.holdings).toEqual([solHolding])
+    expect(result.failed).toEqual([TON])
+    expect(result.unrecognized).toEqual(["garbage!!!"])
+  })
+
+  it("skips chains that have no reader", async () => {
+    const result = await readHoldings([BTC], () => undefined)
+    expect(result.holdings).toEqual([])
+    expect(result.failed).toEqual([])
+    expect(result.unrecognized).toEqual([])
   })
 })
