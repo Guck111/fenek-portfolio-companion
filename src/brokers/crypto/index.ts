@@ -6,22 +6,16 @@ import type { Position } from "../../domain/position.js"
 import type { Transaction } from "../../domain/transaction.js"
 import type { BrokerCapabilities, BrokerConfig, IBroker } from "../base.js"
 
-import { fetchSolanaHoldings } from "./chains/solana.js"
-import { fetchTonHoldings } from "./chains/ton.js"
-import type { RawHolding } from "./types.js"
 import { fetchJupiterOrders, mapJupiterOrders } from "./jupiter.js"
+import { parseAddresses } from "./parse.js"
 import { getPrices } from "./prices.js"
+import { CHAINS, groupAddressesByChain, readHoldings } from "./registry.js"
 import { resolveSymbols } from "./tokens.js"
+import type { RawHolding } from "./types.js"
 
 const BROKER_ID = "crypto"
 const BROKER_NAME = "Crypto Wallets"
 const USD = "USD"
-
-interface CryptoCredentials {
-  solanaAddress?: string
-  tonAddress?: string
-  heliusApiKey?: string
-}
 
 export function assemblePositions(
   holdings: readonly RawHolding[],
@@ -68,30 +62,19 @@ export class CryptoBroker implements IBroker {
     transactions: false,
   }
 
-  private creds: CryptoCredentials = {}
+  private addresses: readonly string[] = []
 
   authenticate(config: BrokerConfig): Promise<void> {
-    const solanaAddress = config.credentials["SOLANA_ADDRESS"]
-    const tonAddress = config.credentials["TON_ADDRESS"]
-    const heliusApiKey = config.credentials["HELIUS_API_KEY"]
-    this.creds = {
-      ...(solanaAddress !== undefined ? { solanaAddress } : {}),
-      ...(tonAddress !== undefined ? { tonAddress } : {}),
-      ...(heliusApiKey !== undefined ? { heliusApiKey } : {}),
-    }
+    const field = config.credentials["WALLET_ADDRESSES"]
+    this.addresses = field === undefined ? [] : parseAddresses(field)
     return Promise.resolve()
   }
 
   private async loadHoldings(): Promise<RawHolding[]> {
-    const holdings: RawHolding[] = []
-    if (this.creds.solanaAddress !== undefined && this.creds.heliusApiKey !== undefined) {
-      holdings.push(
-        ...(await fetchSolanaHoldings(this.creds.solanaAddress, this.creds.heliusApiKey)),
-      )
-    }
-    if (this.creds.tonAddress !== undefined) {
-      holdings.push(...(await fetchTonHoldings(this.creds.tonAddress)))
-    }
+    const { holdings } = await readHoldings(
+      this.addresses,
+      (chain) => CHAINS.find((c) => c.id === chain)?.read,
+    )
     return holdings
   }
 
@@ -107,11 +90,19 @@ export class CryptoBroker implements IBroker {
   }
 
   async getLimitOrders(): Promise<readonly OpenOrder[]> {
-    if (this.creds.solanaAddress === undefined) return []
-    const orders = await fetchJupiterOrders(this.creds.solanaAddress)
-    const mints = [...new Set(orders.flatMap((o) => [o.inputMint, o.outputMint]))]
-    const symbols = await resolveSymbols(mints)
-    return mapJupiterOrders(orders, symbols)
+    const solanaAddresses = groupAddressesByChain(this.addresses).byChain.get("solana") ?? []
+    const out: OpenOrder[] = []
+    for (const address of solanaAddresses) {
+      try {
+        const orders = await fetchJupiterOrders(address)
+        const mints = [...new Set(orders.flatMap((o) => [o.inputMint, o.outputMint]))]
+        const symbols = await resolveSymbols(mints)
+        out.push(...mapJupiterOrders(orders, symbols))
+      } catch {
+        // isolate per-address failure; other Solana addresses still report
+      }
+    }
+    return out
   }
 
   getTransactions(): Promise<Page<Transaction>> {
