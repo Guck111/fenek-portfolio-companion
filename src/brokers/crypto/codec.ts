@@ -83,3 +83,96 @@ export function base58checkDecode(input: string): Base58CheckResult | null {
   }
   return { version: body[0] ?? 0, payload: body.subarray(1) }
 }
+
+// --- bech32 / bech32m (BIP-173 / BIP-350) ----------------------------------
+
+const BECH32_CHARSET = "qpzry9x8gf2tvdw0s3jn54khce6mua7l"
+/** Final checksum constant: 1 for bech32 (witness v0), 0x2bc830a3 for bech32m (v1+). */
+const BECH32_CONST = 1
+const BECH32M_CONST = 0x2bc830a3
+
+function bech32Polymod(values: readonly number[]): number {
+  const gen = [0x3b6a57b2, 0x26508e6d, 0x1ea119fa, 0x3d4233dd, 0x2a1462b3]
+  let chk = 1
+  for (const value of values) {
+    const top = chk >>> 25
+    chk = ((chk & 0x1ffffff) << 5) ^ value
+    for (let i = 0; i < 5; i++) {
+      if ((top >> i) & 1) chk ^= gen[i] ?? 0
+    }
+  }
+  return chk >>> 0
+}
+
+function hrpExpand(hrp: string): number[] {
+  const high: number[] = []
+  const low: number[] = []
+  for (let i = 0; i < hrp.length; i++) {
+    const c = hrp.charCodeAt(i)
+    high.push(c >> 5)
+    low.push(c & 31)
+  }
+  return [...high, 0, ...low]
+}
+
+/** Regroup `from`-bit values into `to`-bit values; null if leftover bits are non-zero (no pad). */
+function convertBits(data: readonly number[], from: number, to: number): number[] | null {
+  let acc = 0
+  let bits = 0
+  const out: number[] = []
+  const maxv = (1 << to) - 1
+  for (const value of data) {
+    acc = (acc << from) | value
+    bits += from
+    while (bits >= to) {
+      bits -= to
+      out.push((acc >> bits) & maxv)
+    }
+  }
+  if (bits >= from || ((acc << (to - bits)) & maxv) !== 0) return null
+  return out
+}
+
+export interface SegwitAddress {
+  readonly hrp: string
+  /** Witness version, 0–16. */
+  readonly version: number
+  /** Decoded witness program bytes. */
+  readonly program: Uint8Array
+}
+
+/**
+ * Decode a segwit (bech32/bech32m) address, verifying the checksum with the
+ * scheme required by its witness version (v0 → bech32, v1+ → bech32m) and the
+ * BIP-141 program-length rules. Returns hrp/version/program, or `null` if the
+ * string is mixed-case, malformed, or fails the checksum. Chains key on `hrp`.
+ */
+export function decodeSegwitAddress(raw: string): SegwitAddress | null {
+  const hasLower = raw !== raw.toUpperCase()
+  const hasUpper = raw !== raw.toLowerCase()
+  if (hasLower && hasUpper) return null
+  const s = raw.toLowerCase()
+  if (s.length < 8 || s.length > 90) return null
+
+  const sep = s.lastIndexOf("1")
+  if (sep < 1 || s.length - sep - 1 < 6) return null
+  const hrp = s.slice(0, sep)
+
+  const values: number[] = []
+  for (const ch of s.slice(sep + 1)) {
+    const v = BECH32_CHARSET.indexOf(ch)
+    if (v === -1) return null
+    values.push(v)
+  }
+
+  const version = values[0]
+  if (version === undefined || version > 16) return null
+  const expected = version === 0 ? BECH32_CONST : BECH32M_CONST
+  if (bech32Polymod([...hrpExpand(hrp), ...values]) !== expected) return null
+
+  const program = convertBits(values.slice(1, values.length - 6), 5, 8)
+  if (program === null || program.length < 2 || program.length > 40) return null
+  if (version === 0 && program.length !== 20 && program.length !== 32) return null
+
+  return { hrp, version, program: new Uint8Array(program) }
+}

@@ -1,6 +1,10 @@
 import { describe, it, expect } from "vitest"
 
-import { base58Decode, base58checkDecode } from "../../../src/brokers/crypto/codec.js"
+import {
+  base58Decode,
+  base58checkDecode,
+  decodeSegwitAddress,
+} from "../../../src/brokers/crypto/codec.js"
 
 describe("base58Decode (Bitcoin alphabet)", () => {
   it("decodes canonical base58 vectors", () => {
@@ -52,5 +56,37 @@ describe("base58checkDecode", () => {
 
   it("returns null for input too short to hold a checksum", () => {
     expect(base58checkDecode("2g")).toBeNull()
+  })
+})
+
+describe("decodeSegwitAddress (bech32 / bech32m)", () => {
+  it("decodes a v0 P2WPKH mainnet address (bech32, BIP-173 vector)", () => {
+    const a = decodeSegwitAddress("bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4")
+    expect(a).not.toBeNull()
+    expect(a?.hrp).toBe("bc")
+    expect(a?.version).toBe(0)
+    expect(a?.program.length).toBe(20)
+  })
+
+  it("decodes a v1 taproot mainnet address (bech32m, BIP-350 vector)", () => {
+    const a = decodeSegwitAddress("bc1p0xlxvlhemja6c4dqv22uapctqupfhlxm9h8z3k2e72q4k9hcz7vqzk5jj0")
+    expect(a).not.toBeNull()
+    expect(a?.hrp).toBe("bc")
+    expect(a?.version).toBe(1)
+    expect(a?.program.length).toBe(32)
+  })
+
+  it("accepts all-uppercase but rejects mixed case", () => {
+    expect(decodeSegwitAddress("BC1QW508D6QEJXTDG4Y5R3ZARVARY0C5XW7KV8F3T4")).not.toBeNull()
+    expect(decodeSegwitAddress("bc1QW508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4")).toBeNull()
+  })
+
+  it("rejects a corrupted checksum", () => {
+    expect(decodeSegwitAddress("bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t5")).toBeNull()
+  })
+
+  it("rejects strings with no separator or non-charset data", () => {
+    expect(decodeSegwitAddress("notbech32atall")).toBeNull()
+    expect(decodeSegwitAddress("bc1bbbbbbbbbbbb")).toBeNull()
   })
 })
