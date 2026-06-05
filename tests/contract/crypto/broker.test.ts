@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest"
 
 import { assemblePositions, assembleAccount } from "../../../src/brokers/crypto/index.js"
-import type { RawHolding } from "../../../src/brokers/crypto/chains/solana.js"
+import type { RawHolding } from "../../../src/brokers/crypto/types.js"
 
 const holdings: RawHolding[] = [
   { chain: "solana", symbol: "SOL", amount: 10, coinId: "coingecko:solana" },

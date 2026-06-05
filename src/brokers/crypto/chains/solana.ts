@@ -1,17 +1,11 @@
 import { BrokerApiError } from "../../../utils/errors.js"
 import { withBackoff, type RetryDecision } from "../../../utils/ratelimit.js"
 import { HeliusRpcResponse, type HeliusAssetsResult } from "../schemas.js"
+import type { RawHolding } from "../types.js"
 
 const BROKER_ID = "crypto"
 const SOL_COIN_ID = "coingecko:solana"
 const LAMPORTS_PER_SOL = 1_000_000_000
-
-export interface RawHolding {
-  readonly chain: "solana" | "ton"
-  readonly symbol: string
-  readonly amount: number
-  readonly coinId: string // DefiLlama coin id for pricing
-}
 
 export function mapSolanaAssets(result: HeliusAssetsResult): RawHolding[] {
   const out: RawHolding[] = []

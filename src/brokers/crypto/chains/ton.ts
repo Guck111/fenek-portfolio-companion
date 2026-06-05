@@ -2,7 +2,7 @@ import { BrokerApiError } from "../../../utils/errors.js"
 import { withBackoff, type RetryDecision } from "../../../utils/ratelimit.js"
 import { TonAccount, TonJettonsResponse } from "../schemas.js"
 
-import type { RawHolding } from "./solana.js"
+import type { RawHolding } from "../types.js"
 
 const BROKER_ID = "crypto"
 const TON_COIN_ID = "coingecko:the-open-network"
