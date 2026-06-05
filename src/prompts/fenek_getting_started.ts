@@ -10,8 +10,7 @@ export const GETTING_STARTED_TEXT = `The user has just installed or is setting u
 - What it is: a strictly READ-ONLY companion that reads the user's portfolio across Trading 212, on-chain Solana and TON wallets, and Bybit, and helps analyze it. It never places trades, moves funds, or gives buy/sell/rebalance advice — it surfaces data and neutral metrics; decisions stay with the user.
 - What can be connected (ALL OPTIONAL — set up only the sources you have, in Settings → Extensions → Fenek Portfolio Companion):
   - Trading 212 — a READ-ONLY API key + secret (Trading 212 app: Settings → API (Beta)). Gives positions, pies, dividends, cash transactions, and order history.
-  - Solana wallet — your public wallet address plus a free Helius API key (helius.dev). Gives on-chain holdings valued in USD, and open Jupiter limit orders.
-  - TON wallet — your public TON Space address (Telegram Wallet). Gives on-chain holdings valued in USD.
+  - Crypto wallets — paste your public wallet addresses into one field (any separator; the chain of each is detected automatically). Solana and TON holdings are read keyless — no API key needed — valued in USD, plus open Jupiter limit orders on Solana.
   - Bybit — a READ-ONLY API key + secret (Account/Wallet read only; no Trade, no Withdraw). Gives coin balances and open orders.
 - What you can ask once connected: total value and breakdown by currency, your largest positions, concentration by ticker across accounts, overlap between pies, dividend history, and open orders. Different currencies are reported side by side and never summed (no FX conversion).
 - Privacy and safety: everything runs locally on your machine, API keys are stored in your operating system's keychain, there is zero telemetry, and the only outbound network traffic is to the provider APIs you configured.

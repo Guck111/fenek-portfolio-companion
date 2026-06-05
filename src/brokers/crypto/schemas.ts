@@ -1,29 +1,5 @@
 import { z } from "zod"
 
-// --- Helius getAssetsByOwner (DAS) ---
-export const HeliusTokenInfo = z.object({
-  balance: z.number().optional(),
-  decimals: z.number().optional(),
-  symbol: z.string().optional(),
-})
-export const HeliusAsset = z.object({
-  id: z.string(),
-  interface: z.string().optional(),
-  token_info: HeliusTokenInfo.optional(),
-})
-export const HeliusNativeBalance = z.object({
-  lamports: z.number().optional(),
-})
-export const HeliusAssetsResult = z.object({
-  items: z.array(HeliusAsset),
-  nativeBalance: HeliusNativeBalance.optional(),
-})
-export const HeliusRpcResponse = z.object({
-  result: HeliusAssetsResult,
-})
-export type HeliusAsset = z.infer<typeof HeliusAsset>
-export type HeliusAssetsResult = z.infer<typeof HeliusAssetsResult>
-
 // --- Solana JSON-RPC (public node, keyless) ---
 export const SolanaBalanceResponse = z.object({
   result: z.object({ value: z.number() }),
