@@ -1,3 +1,5 @@
+import { createHash } from "node:crypto"
+
 /**
  * Address codecs shared by the chain detectors.
  *
@@ -50,4 +52,34 @@ export function base58Decode(
     out[leadingZeros + i] = bytes[bytes.length - 1 - i] ?? 0
   }
   return out
+}
+
+/** Double SHA-256 (the base58check checksum hash) via Node's built-in crypto — no dependency. */
+function doubleSha256(data: Uint8Array): Uint8Array {
+  const first = createHash("sha256").update(data).digest()
+  return new Uint8Array(createHash("sha256").update(first).digest())
+}
+
+export interface Base58CheckResult {
+  /** Leading version byte — the network/coin discriminator. */
+  readonly version: number
+  /** Payload after the version byte (e.g. the 20-byte hash160). */
+  readonly payload: Uint8Array
+}
+
+/**
+ * Decode a base58check string, verifying its trailing 4-byte double-SHA-256
+ * checksum. Returns the version byte and payload, or `null` if the input is not
+ * base58 or the checksum fails. Chains discriminate on `version` + payload length.
+ */
+export function base58checkDecode(input: string): Base58CheckResult | null {
+  const raw = base58Decode(input)
+  if (raw === null || raw.length < 5) return null
+  const body = raw.subarray(0, raw.length - 4)
+  const checksum = raw.subarray(raw.length - 4)
+  const expected = doubleSha256(body).subarray(0, 4)
+  for (let i = 0; i < 4; i++) {
+    if (checksum[i] !== expected[i]) return null
+  }
+  return { version: body[0] ?? 0, payload: body.subarray(1) }
 }

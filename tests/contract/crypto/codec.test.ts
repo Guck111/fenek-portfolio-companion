@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest"
 
-import { base58Decode } from "../../../src/brokers/crypto/codec.js"
+import { base58Decode, base58checkDecode } from "../../../src/brokers/crypto/codec.js"
 
 describe("base58Decode (Bitcoin alphabet)", () => {
   it("decodes canonical base58 vectors", () => {
@@ -29,5 +29,28 @@ describe("base58Decode (Bitcoin alphabet)", () => {
   it("rejects whitespace and punctuation", () => {
     expect(base58Decode("a3 gV")).toBeNull()
     expect(base58Decode("hello+world")).toBeNull()
+  })
+})
+
+describe("base58checkDecode", () => {
+  it("decodes a valid payload and verifies the checksum", () => {
+    // Bitcoin genesis coinbase address (P2PKH, version byte 0x00).
+    const decoded = base58checkDecode("1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa")
+    expect(decoded).not.toBeNull()
+    expect(decoded?.version).toBe(0x00)
+    expect(decoded?.payload.length).toBe(20)
+  })
+
+  it("returns null when the checksum does not match", () => {
+    // Same address with the last character flipped: still base58, bad checksum.
+    expect(base58checkDecode("1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNb")).toBeNull()
+  })
+
+  it("returns null for non-base58 input", () => {
+    expect(base58checkDecode("not valid base58!")).toBeNull()
+  })
+
+  it("returns null for input too short to hold a checksum", () => {
+    expect(base58checkDecode("2g")).toBeNull()
   })
 })
