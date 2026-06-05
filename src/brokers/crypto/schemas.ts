@@ -24,6 +24,32 @@ export const HeliusRpcResponse = z.object({
 export type HeliusAsset = z.infer<typeof HeliusAsset>
 export type HeliusAssetsResult = z.infer<typeof HeliusAssetsResult>
 
+// --- Solana JSON-RPC (public node, keyless) ---
+export const SolanaBalanceResponse = z.object({
+  result: z.object({ value: z.number() }),
+})
+export const SolanaTokenAmount = z.object({
+  amount: z.string(), // raw integer string
+  decimals: z.number(),
+  uiAmount: z.number().nullable().optional(),
+})
+export const SolanaTokenAccount = z.object({
+  account: z.object({
+    data: z.object({
+      parsed: z.object({
+        info: z.object({
+          mint: z.string(),
+          tokenAmount: SolanaTokenAmount,
+        }),
+      }),
+    }),
+  }),
+})
+export const SolanaTokenAccountsResponse = z.object({
+  result: z.object({ value: z.array(SolanaTokenAccount) }),
+})
+export type SolanaTokenAccount = z.infer<typeof SolanaTokenAccount>
+
 // --- tonapi ---
 export const TonAccount = z.object({
   balance: z.number(), // nanoton

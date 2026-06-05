@@ -1,0 +1,30 @@
+{
+  "result": {
+    "value": [
+      {
+        "account": {
+          "data": {
+            "parsed": {
+              "info": {
+                "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+                "tokenAmount": { "amount": "2500000", "decimals": 6, "uiAmount": 2.5 }
+              }
+            }
+          }
+        }
+      },
+      {
+        "account": {
+          "data": {
+            "parsed": {
+              "info": {
+                "mint": "5ScamMint111111111111111111111111111111111",
+                "tokenAmount": { "amount": "0", "decimals": 0, "uiAmount": 0 }
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+}
