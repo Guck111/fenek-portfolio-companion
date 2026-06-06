@@ -1,9 +1,7 @@
-import { BrokerApiError } from "../../../../utils/errors.js"
-import { withBackoff, type RetryDecision } from "../../../../utils/ratelimit.js"
+import { fetchJson } from "../../http.js"
 import { EsploraAddress } from "../../schemas.js"
 import type { RawHolding } from "../../types.js"
 
-const BROKER_ID = "crypto"
 const SATS_PER_COIN = 100_000_000
 
 export interface EsploraChain {
@@ -45,23 +43,16 @@ export function mapEsploraBalance(chain: EsploraChain, sats: number): RawHolding
   return [{ chain: chain.chain, symbol: chain.symbol, amount, coinId: chain.coinId }]
 }
 
-function retryOn5xx(error: unknown): RetryDecision {
-  return error instanceof BrokerApiError && (error.statusCode ?? 0) >= 500
-}
-
 /**
  * Read one address's native-coin balance from an Esplora instance. A single
  * address is not a whole HD wallet — xpub expansion is out of scope (design §8).
  */
 export function esploraReader(chain: EsploraChain): (address: string) => Promise<RawHolding[]> {
   return async (address) => {
-    const raw = await withBackoff(async () => {
-      const res = await fetch(`${chain.baseUrl}/address/${address}`)
-      if (!res.ok) {
-        throw new BrokerApiError(`Esplora HTTP ${String(res.status)}`, BROKER_ID, res.status)
-      }
-      return res.json()
-    }, retryOn5xx)
+    const raw = await fetchJson(
+      `${chain.baseUrl}/address/${encodeURIComponent(address)}`,
+      "Esplora",
+    )
     return mapEsploraBalance(chain, esploraBalanceSats(EsploraAddress.parse(raw)))
   }
 }

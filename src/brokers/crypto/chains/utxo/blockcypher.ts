@@ -1,9 +1,7 @@
-import { BrokerApiError } from "../../../../utils/errors.js"
-import { withBackoff, type RetryDecision } from "../../../../utils/ratelimit.js"
+import { fetchJson } from "../../http.js"
 import { BlockcypherBalance } from "../../schemas.js"
 import type { RawHolding } from "../../types.js"
 
-const BROKER_ID = "crypto"
 const SATS_PER_COIN = 100_000_000
 
 export interface BlockcypherChain {
@@ -31,23 +29,13 @@ export function mapBlockcypherBalance(chain: BlockcypherChain, sats: number): Ra
   return [{ chain: chain.chain, symbol: chain.symbol, amount, coinId: chain.coinId }]
 }
 
-function retryOn5xx(error: unknown): RetryDecision {
-  return error instanceof BrokerApiError && (error.statusCode ?? 0) >= 500
-}
-
 /** One address's native-coin balance via blockcypher. Single address, not a whole HD wallet (design §8). */
 export function blockcypherReader(
   chain: BlockcypherChain,
 ): (address: string) => Promise<RawHolding[]> {
   return async (address) => {
-    const url = `https://api.blockcypher.com/v1/${chain.coin}/main/addrs/${address}/balance`
-    const raw = await withBackoff(async () => {
-      const res = await fetch(url)
-      if (!res.ok) {
-        throw new BrokerApiError(`Blockcypher HTTP ${String(res.status)}`, BROKER_ID, res.status)
-      }
-      return res.json()
-    }, retryOn5xx)
+    const url = `https://api.blockcypher.com/v1/${chain.coin}/main/addrs/${encodeURIComponent(address)}/balance`
+    const raw = await fetchJson(url, "Blockcypher")
     return mapBlockcypherBalance(chain, BlockcypherBalance.parse(raw).final_balance)
   }
 }

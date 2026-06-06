@@ -1,5 +1,4 @@
-import { BrokerApiError } from "../../../../utils/errors.js"
-import { withBackoff, type RetryDecision } from "../../../../utils/ratelimit.js"
+import { fetchJson } from "../../http.js"
 import {
   SolanaBalanceResponse,
   SolanaTokenAccountsResponse,
@@ -8,7 +7,6 @@ import {
 import { resolveSymbols, shortMint } from "../../tokens.js"
 import type { RawHolding } from "../../types.js"
 
-const BROKER_ID = "crypto"
 const SOL_COIN_ID = "coingecko:solana"
 const LAMPORTS_PER_SOL = 1_000_000_000
 
@@ -42,22 +40,12 @@ export function mapSolanaHoldings(
   return out
 }
 
-function retryOn5xx(error: unknown): RetryDecision {
-  return error instanceof BrokerApiError && (error.statusCode ?? 0) >= 500
-}
-
-async function rpc(method: string, params: unknown): Promise<unknown> {
-  return withBackoff(async () => {
-    const res = await fetch(RPC_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }),
-    })
-    if (!res.ok) {
-      throw new BrokerApiError(`Solana RPC HTTP ${String(res.status)}`, BROKER_ID, res.status)
-    }
-    return res.json()
-  }, retryOn5xx)
+function rpc(method: string, params: unknown): Promise<unknown> {
+  return fetchJson(RPC_URL, "Solana RPC", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }),
+  })
 }
 
 async function fetchTokenAccounts(
@@ -73,12 +61,14 @@ async function fetchTokenAccounts(
 }
 
 export async function fetchSolanaHoldings(address: string): Promise<RawHolding[]> {
-  const balanceRaw = await rpc("getBalance", [address])
+  // The three RPC calls are independent — run them concurrently (one round-trip, not three).
+  const [balanceRaw, tokenAccounts, token2022Accounts] = await Promise.all([
+    rpc("getBalance", [address]),
+    fetchTokenAccounts(address, TOKEN_PROGRAM),
+    fetchTokenAccounts(address, TOKEN_2022_PROGRAM),
+  ])
   const lamports = SolanaBalanceResponse.parse(balanceRaw).result.value
-  const accounts = [
-    ...(await fetchTokenAccounts(address, TOKEN_PROGRAM)),
-    ...(await fetchTokenAccounts(address, TOKEN_2022_PROGRAM)),
-  ]
+  const accounts = [...tokenAccounts, ...token2022Accounts]
   const mints = [...new Set(accounts.map((a) => a.account.data.parsed.info.mint))]
   const symbols = await resolveSymbols(mints)
   return mapSolanaHoldings(lamports, accounts, symbols)
