@@ -5,7 +5,7 @@
  * widens as readers for more networks are added.
  */
 export interface RawHolding {
-  readonly chain: "solana" | "ton" | "bitcoin"
+  readonly chain: "solana" | "ton" | "bitcoin" | "litecoin"
   readonly symbol: string
   readonly amount: number
   readonly coinId: string

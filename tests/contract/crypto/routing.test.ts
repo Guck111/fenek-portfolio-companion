@@ -34,10 +34,11 @@ describe("groupAddressesByChain", () => {
 })
 
 describe("CHAINS readers", () => {
-  it("wires keyless readers for Solana, TON, and Bitcoin", () => {
+  it("wires keyless readers for Solana, TON, Bitcoin, and Litecoin", () => {
     expect(CHAINS.find((c) => c.id === "solana")?.read).toBeTypeOf("function")
     expect(CHAINS.find((c) => c.id === "ton")?.read).toBeTypeOf("function")
     expect(CHAINS.find((c) => c.id === "bitcoin")?.read).toBeTypeOf("function")
+    expect(CHAINS.find((c) => c.id === "litecoin")?.read).toBeTypeOf("function")
   })
 
   it("leaves chains without a built reader undefined", () => {

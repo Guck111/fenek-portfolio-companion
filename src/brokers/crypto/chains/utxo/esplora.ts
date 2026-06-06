@@ -22,6 +22,14 @@ export const BITCOIN: EsploraChain = {
   coinId: "coingecko:bitcoin",
 }
 
+/** Litecoin via litecoinspace.org — a keyless Esplora instance (same API as mempool.space). */
+export const LITECOIN: EsploraChain = {
+  baseUrl: "https://litecoinspace.org/api",
+  chain: "litecoin",
+  symbol: "LTC",
+  coinId: "coingecko:litecoin",
+}
+
 /** Net balance in satoshis: confirmed plus mempool, each funded minus spent. */
 export function esploraBalanceSats(stats: EsploraAddress): number {
   return (

@@ -1,10 +1,11 @@
 import { detectBitcoin } from "./chains/bitcoin/detect.js"
 import { detectDogecoin } from "./chains/dogecoin/detect.js"
+import { detectLitecoin } from "./chains/litecoin/detect.js"
 import { detectSolana } from "./chains/solana/detect.js"
 import { fetchSolanaHoldings } from "./chains/solana/read.js"
 import { fetchTonHoldings } from "./chains/ton.js"
 import { detectTon } from "./chains/ton/detect.js"
-import { BITCOIN, esploraReader } from "./chains/utxo/esplora.js"
+import { BITCOIN, LITECOIN, esploraReader } from "./chains/utxo/esplora.js"
 import type { RawHolding } from "./types.js"
 
 /**
@@ -16,7 +17,7 @@ import type { RawHolding } from "./types.js"
  */
 
 /** Normalised chain namespaces the detector can recognise. EVM chains collapse to one id. */
-export type ChainId = "solana" | "dogecoin" | "bitcoin" | "ton"
+export type ChainId = "solana" | "dogecoin" | "bitcoin" | "ton" | "litecoin"
 
 export interface ChainModule {
   readonly id: ChainId
@@ -34,6 +35,7 @@ export const CHAINS: readonly ChainModule[] = [
   { id: "solana", detect: detectSolana, read: fetchSolanaHoldings },
   { id: "dogecoin", detect: detectDogecoin },
   { id: "bitcoin", detect: detectBitcoin, read: esploraReader(BITCOIN) },
+  { id: "litecoin", detect: detectLitecoin, read: esploraReader(LITECOIN) },
   { id: "ton", detect: detectTon, read: fetchTonHoldings },
 ]
 

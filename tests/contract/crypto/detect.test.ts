@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest"
 
 import { detectBitcoin } from "../../../src/brokers/crypto/chains/bitcoin/detect.js"
 import { detectDogecoin } from "../../../src/brokers/crypto/chains/dogecoin/detect.js"
+import { detectLitecoin } from "../../../src/brokers/crypto/chains/litecoin/detect.js"
 import { detectSolana } from "../../../src/brokers/crypto/chains/solana/detect.js"
 import { detectTon } from "../../../src/brokers/crypto/chains/ton/detect.js"
 import { detectChain } from "../../../src/brokers/crypto/registry.js"
@@ -82,6 +83,24 @@ describe("detectTon", () => {
   })
 })
 
+describe("detectLitecoin", () => {
+  it("accepts legacy P2PKH (L, 0x30) and P2SH (M, 0x32) addresses", () => {
+    expect(detectLitecoin("LhK2kQwiaAvhjWY799cZvMyYwnQAcxkarr")).toBe(true)
+    expect(detectLitecoin("M7zVKQKmtV5Rc7erVGVVC3khZbXxsS5HEX")).toBe(true)
+  })
+
+  it("accepts native segwit 'ltc1' addresses", () => {
+    expect(detectLitecoin("ltc1qqypqxpq9qcrsszg2pvxq6rs0zqg3yyc5dyg36p")).toBe(true)
+  })
+
+  it("rejects Bitcoin (incl. bc1) and other-chain addresses", () => {
+    expect(detectLitecoin("1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa")).toBe(false) // BTC 0x00
+    expect(detectLitecoin("bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4")).toBe(false) // BTC segwit
+    expect(detectLitecoin("DH5yaieqoZN36fDVciNyRueRGvGLR3mr7L")).toBe(false) // Dogecoin 0x1e
+    expect(detectLitecoin("garbage")).toBe(false)
+  })
+})
+
 describe("detectChain", () => {
   it("routes an address to the chain whose validator accepts it", () => {
     expect(detectChain("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v")).toBe("solana")
@@ -89,6 +108,7 @@ describe("detectChain", () => {
     expect(detectChain("1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa")).toBe("bitcoin")
     expect(detectChain("bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4")).toBe("bitcoin")
     expect(detectChain("UQDvuEbnbSAL2cgDsSBKklmonE2J13waCvzHRCLRb9V5kKiM")).toBe("ton")
+    expect(detectChain("M7zVKQKmtV5Rc7erVGVVC3khZbXxsS5HEX")).toBe("litecoin")
   })
 
   it("returns null when no registered chain recognises the address", () => {
