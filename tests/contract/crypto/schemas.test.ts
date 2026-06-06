@@ -4,7 +4,6 @@ import path from "node:path"
 import fs from "node:fs"
 
 import {
-  HeliusRpcResponse,
   TonAccount,
   TonJettonsResponse,
   DefiLlamaPricesResponse,
@@ -20,11 +19,6 @@ function readFixture(rel: string): unknown {
 }
 
 describe("crypto schemas", () => {
-  it("parses Helius getAssetsByOwner", () => {
-    expect(
-      HeliusRpcResponse.safeParse(readFixture("helius/get_assets_by_owner.json")).success,
-    ).toBe(true)
-  })
   it("parses tonapi account", () => {
     expect(TonAccount.safeParse(readFixture("ton/account.json")).success).toBe(true)
   })

@@ -3,7 +3,7 @@
   "manifest_version": "0.3",
   "name": "fenek-portfolio-companion",
   "display_name": "Fenek Portfolio Companion",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "Read-only aggregator of your portfolio data across EU-available wallets, exchanges and brokers (Trading 212, Bybit, Solana/TON). Data collection only — no recommendations.",
   "long_description": "An unofficial, open-source MCP server that aggregates your portfolio data across wallets, exchanges and brokers available in Europe — Trading 212, Bybit, and Solana/TON wallets — and exposes it read-only to Claude for analysis. Ask about positions, pies, dividends, balances, concentration, and overlaps in plain language. Strictly data collection plus neutral metrics on your own data; it never recommends trades. No telemetry. API keys are stored in your OS keychain.\n\nNew here? After installing, run the fenek_getting_started prompt (or tool) in chat — it explains what to set up and which sources are supported, and needs no keys. All fields below are optional: fill in only the sources you have.\n\nNot affiliated with any broker. Not financial advice.",
   "author": {
@@ -30,9 +30,7 @@
       "env": {
         "T212_API_KEY": "${user_config.T212_API_KEY}",
         "T212_API_SECRET": "${user_config.T212_API_SECRET}",
-        "SOLANA_ADDRESS": "${user_config.SOLANA_ADDRESS}",
-        "TON_ADDRESS": "${user_config.TON_ADDRESS}",
-        "HELIUS_API_KEY": "${user_config.HELIUS_API_KEY}",
+        "WALLET_ADDRESSES": "${user_config.WALLET_ADDRESSES}",
         "BYBIT_API_KEY": "${user_config.BYBIT_API_KEY}",
         "BYBIT_API_SECRET": "${user_config.BYBIT_API_SECRET}"
       }
@@ -55,24 +53,10 @@
       "required": false,
       "sensitive": true
     },
-    "SOLANA_ADDRESS": {
+    "WALLET_ADDRESSES": {
       "type": "string",
-      "title": "Solana · Wallet address (public)",
-      "description": "Your public Solana address (e.g. Phantom). Public, not a secret. Blank to skip Solana.",
-      "required": false,
-      "sensitive": false
-    },
-    "HELIUS_API_KEY": {
-      "type": "string",
-      "title": "Solana · Helius API key (free)",
-      "description": "Free key from helius.dev — only needed to read Solana holdings. Stored in your OS keychain.",
-      "required": false,
-      "sensitive": true
-    },
-    "TON_ADDRESS": {
-      "type": "string",
-      "title": "TON · Wallet address (public)",
-      "description": "Your public TON Space address (Telegram Wallet). Blank to skip TON.",
+      "title": "Crypto · Wallet addresses (public)",
+      "description": "Public wallet addresses separated by commas, spaces, or new lines; the chain of each is detected automatically. Solana and TON holdings are read keyless — no API key. These are public addresses, not secrets. Blank to skip crypto.",
       "required": false,
       "sensitive": false
     },

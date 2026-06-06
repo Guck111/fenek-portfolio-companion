@@ -1,0 +1,58 @@
+import { fetchJson } from "../../http.js"
+import { EsploraAddress } from "../../schemas.js"
+import type { RawHolding } from "../../types.js"
+
+const SATS_PER_COIN = 100_000_000
+
+export interface EsploraChain {
+  /** Esplora API base, e.g. https://mempool.space/api (blockstream.info/api is identical). */
+  readonly baseUrl: string
+  readonly chain: RawHolding["chain"]
+  readonly symbol: string
+  readonly coinId: string
+}
+
+/** Bitcoin via mempool.space — fully keyless, generous per-IP limits. */
+export const BITCOIN: EsploraChain = {
+  baseUrl: "https://mempool.space/api",
+  chain: "bitcoin",
+  symbol: "BTC",
+  coinId: "coingecko:bitcoin",
+}
+
+/** Litecoin via litecoinspace.org — a keyless Esplora instance (same API as mempool.space). */
+export const LITECOIN: EsploraChain = {
+  baseUrl: "https://litecoinspace.org/api",
+  chain: "litecoin",
+  symbol: "LTC",
+  coinId: "coingecko:litecoin",
+}
+
+/** Net balance in satoshis: confirmed plus mempool, each funded minus spent. */
+export function esploraBalanceSats(stats: EsploraAddress): number {
+  return (
+    stats.chain_stats.funded_txo_sum -
+    stats.chain_stats.spent_txo_sum +
+    (stats.mempool_stats.funded_txo_sum - stats.mempool_stats.spent_txo_sum)
+  )
+}
+
+export function mapEsploraBalance(chain: EsploraChain, sats: number): RawHolding[] {
+  const amount = sats / SATS_PER_COIN
+  if (!Number.isFinite(amount) || amount <= 0) return []
+  return [{ chain: chain.chain, symbol: chain.symbol, amount, coinId: chain.coinId }]
+}
+
+/**
+ * Read one address's native-coin balance from an Esplora instance. A single
+ * address is not a whole HD wallet — xpub expansion is out of scope (design §8).
+ */
+export function esploraReader(chain: EsploraChain): (address: string) => Promise<RawHolding[]> {
+  return async (address) => {
+    const raw = await fetchJson(
+      `${chain.baseUrl}/address/${encodeURIComponent(address)}`,
+      "Esplora",
+    )
+    return mapEsploraBalance(chain, esploraBalanceSats(EsploraAddress.parse(raw)))
+  }
+}

@@ -55,9 +55,7 @@ is per-provider and read-only by design:
 |---|---|---|---|
 | `T212_API_KEY` | yes (keychain) | no | Trading 212 read-only API key |
 | `T212_API_SECRET` | yes (keychain) | no | Trading 212 API secret |
-| `SOLANA_ADDRESS` | no (public address) | no | Public Solana wallet address |
-| `TON_ADDRESS` | no (public address) | no | Public TON (TON Space) wallet address |
-| `HELIUS_API_KEY` | yes (keychain) | no | Free Helius key, only to read Solana holdings |
+| `WALLET_ADDRESSES` | no (public addresses) | no | Public wallet addresses (Solana, TON, Bitcoin, Litecoin, Dogecoin), any separator; chain auto-detected, read keyless |
 | `BYBIT_API_KEY` | yes (keychain) | no | Bybit read-only API key |
 | `BYBIT_API_SECRET` | yes (keychain) | no | Bybit API secret |
 
@@ -87,7 +85,7 @@ human-readable `annotations.title`. 23 tools total.
 | `t212_get_open_orders` | Trading 212: Open Orders | ✅ |
 | `t212_search_instrument` | Trading 212: Search Instruments | ✅ |
 
-### Crypto wallets — Solana / TON (registered when `SOLANA_ADDRESS` or `TON_ADDRESS` is set)
+### Crypto wallets — Solana, TON, Bitcoin, Litecoin, Dogecoin (registered when `WALLET_ADDRESSES` is set)
 
 | Tool name | Title | Read-only |
 |---|---|---|
@@ -195,14 +193,14 @@ Try: `fenek_getting_started` for the overview, then `portfolio_overview`,
 `t212_get_positions`, `t212_get_pies`, then `t212_get_pie` with an id from the pies list,
 and the `analyze_overview` playbook.
 
-### 2. Crypto wallet (public address — no account needed)
+### 2. Crypto wallets (public addresses — no account or API key needed)
 
-A **public** Solana (and optionally TON) address that holds a few tokens — a non-personal
-address, not the maintainer's own wallet. Public addresses cannot move funds.
+One or more **public** addresses holding a few tokens — non-personal, not the maintainer's
+own wallet. Public addresses cannot move funds. Every chain is read keyless (no API key).
 
-- `SOLANA_ADDRESS`: the public Solana address
-- `HELIUS_API_KEY`: a free key from https://helius.dev (required only to read Solana)
-- `TON_ADDRESS` *(optional)*: a public TON Space address
+- `WALLET_ADDRESSES`: public wallet addresses separated by commas, spaces, or new lines. The
+  chain of each (Solana, TON, Bitcoin, Litecoin, Dogecoin) is auto-detected from its format —
+  e.g. a Solana address and a Bitcoin `bc1…` address in the same field.
 
 Try: `crypto_get_positions`, then `portfolio_overview` (the crypto USD total appears as its
 own currency bucket — currencies are never summed).

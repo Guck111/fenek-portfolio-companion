@@ -1,10 +1,7 @@
-import { BrokerApiError } from "../../../utils/errors.js"
-import { withBackoff, type RetryDecision } from "../../../utils/ratelimit.js"
+import { fetchJson } from "../http.js"
 import { TonAccount, TonJettonsResponse } from "../schemas.js"
+import type { RawHolding } from "../types.js"
 
-import type { RawHolding } from "./solana.js"
-
-const BROKER_ID = "crypto"
 const TON_COIN_ID = "coingecko:the-open-network"
 const NANO = 1_000_000_000
 
@@ -28,24 +25,12 @@ export function mapTonHoldings(account: TonAccount, jettons: TonJettonsResponse)
   return out
 }
 
-function retryOn5xx(error: unknown): RetryDecision {
-  return error instanceof BrokerApiError && (error.statusCode ?? 0) >= 500
-}
-
-async function getJson(url: string): Promise<unknown> {
-  return withBackoff(async () => {
-    const res = await fetch(url)
-    if (!res.ok) {
-      throw new BrokerApiError(`tonapi HTTP ${String(res.status)}`, BROKER_ID, res.status)
-    }
-    return res.json()
-  }, retryOn5xx)
-}
-
 export async function fetchTonHoldings(address: string): Promise<RawHolding[]> {
-  const account = TonAccount.parse(await getJson(`https://tonapi.io/v2/accounts/${address}`))
-  const jettons = TonJettonsResponse.parse(
-    await getJson(`https://tonapi.io/v2/accounts/${address}/jettons`),
-  )
-  return mapTonHoldings(account, jettons)
+  const enc = encodeURIComponent(address)
+  // The two tonapi calls are independent — run them concurrently.
+  const [accountRaw, jettonsRaw] = await Promise.all([
+    fetchJson(`https://tonapi.io/v2/accounts/${enc}`, "tonapi"),
+    fetchJson(`https://tonapi.io/v2/accounts/${enc}/jettons`, "tonapi"),
+  ])
+  return mapTonHoldings(TonAccount.parse(accountRaw), TonJettonsResponse.parse(jettonsRaw))
 }

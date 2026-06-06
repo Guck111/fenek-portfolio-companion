@@ -25,19 +25,11 @@ async function configureBrokers(): Promise<void> {
 }
 
 async function configureCryptoBroker(): Promise<void> {
-  const solanaAddress = process.env["SOLANA_ADDRESS"]
-  const tonAddress = process.env["TON_ADDRESS"]
-  const heliusApiKey = process.env["HELIUS_API_KEY"]
-  if (solanaAddress === undefined && tonAddress === undefined) return
+  const walletAddresses = process.env["WALLET_ADDRESSES"]
+  if (walletAddresses === undefined || walletAddresses.trim() === "") return
 
   const broker = new CryptoBroker()
-  await broker.authenticate({
-    credentials: {
-      ...(solanaAddress !== undefined ? { SOLANA_ADDRESS: solanaAddress } : {}),
-      ...(tonAddress !== undefined ? { TON_ADDRESS: tonAddress } : {}),
-      ...(heliusApiKey !== undefined ? { HELIUS_API_KEY: heliusApiKey } : {}),
-    },
-  })
+  await broker.authenticate({ credentials: { WALLET_ADDRESSES: walletAddresses } })
   register(broker, createCryptoTools(broker))
 }
 

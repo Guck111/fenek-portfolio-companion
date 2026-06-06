@@ -1,28 +1,46 @@
 import { z } from "zod"
 
-// --- Helius getAssetsByOwner (DAS) ---
-export const HeliusTokenInfo = z.object({
-  balance: z.number().optional(),
-  decimals: z.number().optional(),
-  symbol: z.string().optional(),
+// --- Solana JSON-RPC (public node, keyless) ---
+export const SolanaBalanceResponse = z.object({
+  result: z.object({ value: z.number() }),
 })
-export const HeliusAsset = z.object({
-  id: z.string(),
-  interface: z.string().optional(),
-  token_info: HeliusTokenInfo.optional(),
+export const SolanaTokenAmount = z.object({
+  amount: z.string(), // raw integer string
+  decimals: z.number(),
+  uiAmount: z.number().nullable().optional(),
 })
-export const HeliusNativeBalance = z.object({
-  lamports: z.number().optional(),
+export const SolanaTokenAccount = z.object({
+  account: z.object({
+    data: z.object({
+      parsed: z.object({
+        info: z.object({
+          mint: z.string(),
+          tokenAmount: SolanaTokenAmount,
+        }),
+      }),
+    }),
+  }),
 })
-export const HeliusAssetsResult = z.object({
-  items: z.array(HeliusAsset),
-  nativeBalance: HeliusNativeBalance.optional(),
+export const SolanaTokenAccountsResponse = z.object({
+  result: z.object({ value: z.array(SolanaTokenAccount) }),
 })
-export const HeliusRpcResponse = z.object({
-  result: HeliusAssetsResult,
+export type SolanaTokenAccount = z.infer<typeof SolanaTokenAccount>
+
+// --- esplora (mempool.space / blockstream — keyless UTXO balance) ---
+const EsploraTxoStats = z.object({
+  funded_txo_sum: z.number(),
+  spent_txo_sum: z.number(),
 })
-export type HeliusAsset = z.infer<typeof HeliusAsset>
-export type HeliusAssetsResult = z.infer<typeof HeliusAssetsResult>
+export const EsploraAddress = z.object({
+  chain_stats: EsploraTxoStats,
+  mempool_stats: EsploraTxoStats,
+})
+export type EsploraAddress = z.infer<typeof EsploraAddress>
+
+// --- blockcypher (keyless UTXO balance — used where Esplora has no instance, e.g. Dogecoin) ---
+export const BlockcypherBalance = z.object({
+  final_balance: z.number(), // confirmed + unconfirmed, in the coin's smallest unit
+})
 
 // --- tonapi ---
 export const TonAccount = z.object({

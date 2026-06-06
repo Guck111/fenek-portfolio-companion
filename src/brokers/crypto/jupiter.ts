@@ -1,30 +1,14 @@
 import type { OpenOrder } from "../../domain/order.js"
-import { BrokerApiError } from "../../utils/errors.js"
-import { withBackoff, type RetryDecision } from "../../utils/ratelimit.js"
 
+import { fetchJson } from "./http.js"
 import { JupiterTriggerOrdersResponse, type JupiterTriggerOrder } from "./schemas.js"
 
 const BROKER_ID = "crypto"
 const BASE = "https://lite-api.jup.ag/trigger/v1/getTriggerOrders"
 
-function retryOn5xx(error: unknown): RetryDecision {
-  return error instanceof BrokerApiError && (error.statusCode ?? 0) >= 500
-}
-
 async function fetchPage(address: string, page: number): Promise<JupiterTriggerOrdersResponse> {
   const url = `${BASE}?user=${encodeURIComponent(address)}&orderStatus=active&page=${String(page)}`
-  const raw = await withBackoff(async () => {
-    const res = await fetch(url)
-    if (!res.ok) {
-      throw new BrokerApiError(
-        `Jupiter getTriggerOrders HTTP ${String(res.status)}`,
-        BROKER_ID,
-        res.status,
-      )
-    }
-    return res.json()
-  }, retryOn5xx)
-  return JupiterTriggerOrdersResponse.parse(raw)
+  return JupiterTriggerOrdersResponse.parse(await fetchJson(url, "Jupiter getTriggerOrders"))
 }
 
 // Fetch all pages of active trigger (limit) orders for a Solana address.

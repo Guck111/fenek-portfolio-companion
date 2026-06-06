@@ -1,6 +1,6 @@
 # Fenek Portfolio Companion
 
-Read-only MCP server that aggregates your portfolio data across wallets, exchanges and brokers available in Europe — currently Trading 212, Bybit, and Solana/TON wallets — and gives Claude access to it for analysis. It is a data aggregator: it collects your data and computes neutral metrics on it, and never makes recommendations. Architected to add more sources without changing the core or existing adapters.
+Read-only MCP server that aggregates your portfolio data across wallets, exchanges and brokers available in Europe — currently Trading 212, Bybit, and Solana, TON, Bitcoin, Litecoin and Dogecoin wallets — and gives Claude access to it for analysis. It is a data aggregator: it collects your data and computes neutral metrics on it, and never makes recommendations. Architected to add more sources without changing the core or existing adapters.
 
 > **NOT FINANCIAL ADVICE.** This is an informational tool. You are solely responsible for any decisions you make based on its output. The author is not a registered investment advisor in any jurisdiction. Read [DISCLAIMER.md](DISCLAIMER.md) before using.
 >
@@ -26,18 +26,19 @@ Whether your key belongs to a **demo** (paper) or **live** account is detected a
 
 Credentials are stored by Claude Desktop in your operating system's keychain (macOS Keychain / Windows Credential Manager). They are never logged, never written to disk by this server, and never transmitted anywhere except the Trading 212 API endpoints you configured. See [PRIVACY.md](PRIVACY.md).
 
-### Crypto wallets (Solana + TON) — optional
+### Crypto wallets — optional
 
-In addition to (or instead of) Trading 212, you can surface on-chain holdings by **public wallet address**. This is opt-in and additive — leave the fields blank to skip it entirely.
+In addition to (or instead of) Trading 212, you can surface on-chain holdings by **public wallet address**. Opt-in and additive — leave the field blank to skip it entirely.
 
-- **Solana wallet address** — your public address (e.g. from Phantom). A public address is not a secret; it cannot move funds.
-- **TON wallet address** — your public address from Telegram Wallet → **TON Space** (the non-custodial part). The custodial `@wallet` balance is **not** readable by anyone and is out of scope.
-- **Helius API key** — a free key from [helius.dev](https://helius.dev), required **only** to read Solana holdings. It is stored in your OS keychain. TON needs no key.
+- **Wallet addresses** — paste one or more public addresses into a single field, separated by commas, spaces, or new lines. The chain of each is detected automatically from its format. Supported today: **Solana, TON, Bitcoin, Litecoin, Dogecoin**. A public address is not a secret; it cannot move funds.
+- **No API keys, ever.** Every chain is read keyless via public endpoints (the Solana public RPC, [mempool.space](https://mempool.space), [blockcypher](https://www.blockcypher.com), tonapi) — nothing to sign up for. TON's non-custodial **TON Space** address is readable; the custodial Telegram `@wallet` balance is not, and is out of scope.
 
 Notes and limitations:
 
 - **USD valuation only.** Holdings are priced in USD via [DefiLlama](https://defillama.com). On-chain wallets carry no cost basis, so **no average price and no profit/loss** are reported for crypto. In `portfolio_overview` the crypto USD total appears as its own currency bucket alongside your Trading 212 currency — the two are never summed (no FX conversion).
 - **Spam/unpriced tokens are omitted.** Only tokens with a non-zero balance and a resolvable price are shown.
+- **One address, not a whole wallet.** For account chains (Solana, TON) an address is the entire account. For UTXO chains (Bitcoin, Litecoin, Dogecoin) a single address is only part of an HD wallet — paste each address you want counted; xpub expansion is out of scope.
+- **Skipped addresses are reported.** If an address isn't recognized, or its chain isn't readable yet, `crypto_get_positions` lists it so you know it was skipped rather than silently dropped.
 - **Jupiter limit orders (limited).** `crypto_get_limit_orders` reads open orders from Jupiter's public Trigger v1 API (no extra key — `lite-api.jup.ag`). **Heads-up:** Jupiter's current **Limit Order V2 keeps order details private** (hidden until execution), so those orders are not exposed by any public API and won't appear here — an empty result does **not** mean you have none; check jup.ag. Funds locked by open V2 orders are still visible indirectly as reduced wallet balances.
 - Read-only and not financial advice, exactly like the rest of this server.
 
@@ -86,7 +87,7 @@ The `bybit_get_open_orders` tool lists your open (unfilled) orders (spot + USDT/
 This server runs entirely on your machine and sends **zero telemetry**. No analytics,
 no error reporting, no usage statistics, no "phone home." The only outbound network
 traffic is to the broker/exchange/price API endpoints you configure (e.g. Trading 212,
-Bybit, DefiLlama, Helius, TON, Jupiter). Your API keys are stored in your operating
+Bybit, DefiLlama, the Solana public RPC, mempool.space, blockcypher, tonapi, Jupiter). Your API keys are stored in your operating
 system's keychain by Claude Desktop, are never logged, and are transmitted only to the
 broker endpoints they belong to.
 
