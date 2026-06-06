@@ -1,10 +1,8 @@
 import { TTLCache } from "../../utils/cache.js"
-import { BrokerApiError } from "../../utils/errors.js"
-import { withBackoff, type RetryDecision } from "../../utils/ratelimit.js"
 
+import { fetchJson } from "./http.js"
 import { JupiterTokenSearchResponse } from "./schemas.js"
 
-const BROKER_ID = "crypto"
 const BASE = "https://lite-api.jup.ag/tokens/v2/search"
 const TTL_MS = 6 * 60 * 60 * 1000 // token metadata is static; cache 6h
 
@@ -12,10 +10,6 @@ const cache = new TTLCache<string, string>(TTL_MS)
 
 export function shortMint(mint: string): string {
   return mint.length <= 10 ? mint : `${mint.slice(0, 4)}…${mint.slice(-4)}`
-}
-
-function retryOn5xx(error: unknown): RetryDecision {
-  return error instanceof BrokerApiError && (error.statusCode ?? 0) >= 500
 }
 
 // Resolve mint -> symbol. Best-effort: network/parse failure falls back to a
@@ -32,18 +26,9 @@ export async function resolveSymbols(mints: readonly string[]): Promise<Map<stri
   if (missing.length > 0) {
     try {
       const url = `${BASE}?query=${encodeURIComponent(missing.join(","))}`
-      const raw = await withBackoff(async () => {
-        const res = await fetch(url)
-        if (!res.ok) {
-          throw new BrokerApiError(
-            `Jupiter token search HTTP ${String(res.status)}`,
-            BROKER_ID,
-            res.status,
-          )
-        }
-        return res.json()
-      }, retryOn5xx)
-      const parsed = JupiterTokenSearchResponse.safeParse(raw)
+      const parsed = JupiterTokenSearchResponse.safeParse(
+        await fetchJson(url, "Jupiter token search"),
+      )
       if (parsed.success) {
         for (const t of parsed.data) {
           if (t.symbol !== undefined) {
