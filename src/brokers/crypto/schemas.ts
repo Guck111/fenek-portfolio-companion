@@ -37,6 +37,11 @@ export const EsploraAddress = z.object({
 })
 export type EsploraAddress = z.infer<typeof EsploraAddress>
 
+// --- blockcypher (keyless UTXO balance — used where Esplora has no instance, e.g. Dogecoin) ---
+export const BlockcypherBalance = z.object({
+  final_balance: z.number(), // confirmed + unconfirmed, in the coin's smallest unit
+})
+
 // --- tonapi ---
 export const TonAccount = z.object({
   balance: z.number(), // nanoton

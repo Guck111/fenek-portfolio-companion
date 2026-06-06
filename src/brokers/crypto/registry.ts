@@ -5,6 +5,7 @@ import { detectSolana } from "./chains/solana/detect.js"
 import { fetchSolanaHoldings } from "./chains/solana/read.js"
 import { fetchTonHoldings } from "./chains/ton.js"
 import { detectTon } from "./chains/ton/detect.js"
+import { DOGECOIN, blockcypherReader } from "./chains/utxo/blockcypher.js"
 import { BITCOIN, LITECOIN, esploraReader } from "./chains/utxo/esplora.js"
 import type { RawHolding } from "./types.js"
 
@@ -33,7 +34,7 @@ export interface ChainModule {
 /** Registered chains, tried in order by {@link detectChain}. */
 export const CHAINS: readonly ChainModule[] = [
   { id: "solana", detect: detectSolana, read: fetchSolanaHoldings },
-  { id: "dogecoin", detect: detectDogecoin },
+  { id: "dogecoin", detect: detectDogecoin, read: blockcypherReader(DOGECOIN) },
   { id: "bitcoin", detect: detectBitcoin, read: esploraReader(BITCOIN) },
   { id: "litecoin", detect: detectLitecoin, read: esploraReader(LITECOIN) },
   { id: "ton", detect: detectTon, read: fetchTonHoldings },
