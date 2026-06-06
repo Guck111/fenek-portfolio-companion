@@ -63,12 +63,14 @@ describe("readHoldings", () => {
     expect(result.holdings).toEqual([solHolding])
     expect(result.failed).toEqual([TON])
     expect(result.unrecognized).toEqual(["garbage!!!"])
+    expect(result.unsupported).toEqual([])
   })
 
-  it("skips chains that have no reader", async () => {
+  it("reports detected addresses with no reader as unsupported, with their chain", async () => {
     const result = await readHoldings([BTC], () => undefined)
     expect(result.holdings).toEqual([])
     expect(result.failed).toEqual([])
     expect(result.unrecognized).toEqual([])
+    expect(result.unsupported).toEqual([{ address: BTC, chain: "bitcoin" }])
   })
 })

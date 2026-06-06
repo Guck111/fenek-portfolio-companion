@@ -9,7 +9,7 @@ import type { BrokerCapabilities, BrokerConfig, IBroker } from "../base.js"
 import { fetchJupiterOrders, mapJupiterOrders } from "./jupiter.js"
 import { parseAddresses } from "./parse.js"
 import { getPrices } from "./prices.js"
-import { CHAINS, groupAddressesByChain, readHoldings } from "./registry.js"
+import { CHAINS, groupAddressesByChain, readHoldings, type UnsupportedAddress } from "./registry.js"
 import { resolveSymbols } from "./tokens.js"
 import type { RawHolding } from "./types.js"
 
@@ -53,6 +53,13 @@ export function assembleAccount(positions: readonly Position[]): Account {
   }
 }
 
+export interface CryptoReport {
+  readonly positions: readonly Position[]
+  readonly unrecognized: readonly string[]
+  readonly unsupported: readonly UnsupportedAddress[]
+  readonly failed: readonly string[]
+}
+
 export class CryptoBroker implements IBroker {
   readonly id = BROKER_ID
   readonly name = BROKER_NAME
@@ -70,23 +77,27 @@ export class CryptoBroker implements IBroker {
     return Promise.resolve()
   }
 
-  private async loadHoldings(): Promise<RawHolding[]> {
-    const { holdings } = await readHoldings(
+  private async load(): Promise<CryptoReport> {
+    const { holdings, unrecognized, unsupported, failed } = await readHoldings(
       this.addresses,
       (chain) => CHAINS.find((c) => c.id === chain)?.read,
     )
-    return holdings
+    const prices = await getPrices([...new Set(holdings.map((h) => h.coinId))])
+    const { positions } = assemblePositions(holdings, prices)
+    return { positions, unrecognized, unsupported, failed }
   }
 
   async getPositions(): Promise<readonly Position[]> {
-    const holdings = await this.loadHoldings()
-    const prices = await getPrices([...new Set(holdings.map((h) => h.coinId))])
-    return assemblePositions(holdings, prices).positions
+    return (await this.load()).positions
   }
 
   async getAccount(): Promise<Account> {
-    const positions = await this.getPositions()
-    return assembleAccount(positions)
+    return assembleAccount(await this.getPositions())
+  }
+
+  /** Crypto-specific: positions plus per-address diagnostics (unrecognized / unsupported / failed). */
+  async getReport(): Promise<CryptoReport> {
+    return this.load()
   }
 
   async getLimitOrders(): Promise<readonly OpenOrder[]> {

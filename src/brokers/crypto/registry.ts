@@ -73,11 +73,18 @@ export function groupAddressesByChain(addresses: readonly string[]): AddressRout
 
 export type ChainReader = (address: string) => Promise<RawHolding[]>
 
+export interface UnsupportedAddress {
+  readonly address: string
+  readonly chain: ChainId
+}
+
 export interface ReadResult {
   /** Holdings collected across every address that read successfully. */
   readonly holdings: RawHolding[]
   /** Addresses no chain recognised. */
   readonly unrecognized: readonly string[]
+  /** Addresses detected to a chain that has no reader yet — surfaced, not silently dropped. */
+  readonly unsupported: readonly UnsupportedAddress[]
   /** Recognised addresses whose reader threw — isolated, so the rest still load. */
   readonly failed: string[]
 }
@@ -94,9 +101,13 @@ export async function readHoldings(
   const { byChain, unrecognized } = groupAddressesByChain(addresses)
   const holdings: RawHolding[] = []
   const failed: string[] = []
+  const unsupported: UnsupportedAddress[] = []
   for (const [chain, addrs] of byChain) {
     const read = readerFor(chain)
-    if (read === undefined) continue
+    if (read === undefined) {
+      for (const address of addrs) unsupported.push({ address, chain })
+      continue
+    }
     for (const address of addrs) {
       try {
         holdings.push(...(await read(address)))
@@ -105,5 +116,5 @@ export async function readHoldings(
       }
     }
   }
-  return { holdings, unrecognized, failed }
+  return { holdings, unrecognized, unsupported, failed }
 }
