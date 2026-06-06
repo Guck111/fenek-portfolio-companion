@@ -212,6 +212,38 @@ Inspector should list all your `myb_*` tools alongside the existing
 
 ---
 
+## Adding a chain to the crypto adapter
+
+The crypto broker (`src/brokers/crypto/`) reads many chains behind one
+"Wallet addresses" field, so it has its own sub-registry that mirrors the broker
+registry. Adding a chain is **one folder plus one line** — you should not need to
+touch the broker, the parser, or any other chain.
+
+1. **Detector** — `src/brokers/crypto/chains/<id>/detect.ts` exports
+   `(raw: string) => boolean`, true only when `raw` is a well-formed address of
+   that chain. Validate by decoding + checksum, never by leading characters;
+   reuse the codecs in `src/brokers/crypto/codec.ts` (base58 / base58check /
+   bech32+bech32m / base64url / CRC-16) or add one there with canonical vectors.
+2. **Keyless reader** — a `(address: string) => Promise<RawHolding[]>` reading
+   balances from a **public, keyless** endpoint via the shared `fetchJson` in
+   `src/brokers/crypto/http.ts` (it backs off on 5xx + 429). Reuse an existing
+   reader when the API shape matches (Esplora for BTC/LTC, blockcypher for Doge)
+   instead of writing a new one. A single UTXO address is not a whole HD
+   wallet — xpub expansion is out of scope.
+3. **Register** — add one `{ id, detect, read }` line to `CHAINS` in
+   `src/brokers/crypto/registry.ts` and widen `RawHolding["chain"]` in
+   `types.ts`. A chain may register `detect` without `read` while its reader is
+   pending; such addresses are surfaced to the user as "unsupported", not dropped.
+4. **Symbols & prices** — token symbols resolve through the keyless Jupiter
+   resolver (`tokens.ts`); USD prices come from DefiLlama (`prices.ts`) keyed by
+   each holding's `coinId`.
+5. **Tests** — detector vectors in `tests/contract/crypto/detect.test.ts` (real
+   public addresses, or synthetic-but-valid ones cross-checked through the
+   decoders) and a mapper test against a synthetic fixture; verify the reader
+   live against a known address before relying on it.
+
+---
+
 ## Anti-patterns
 
 These should NOT be needed when adding a broker. If they are, stop and fix

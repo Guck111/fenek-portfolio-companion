@@ -10,7 +10,7 @@ When you use this software:
 
 1. Claude Desktop launches the server as a local subprocess on your machine.
 2. The server reads your API credentials from environment variables provided by Claude Desktop's user-config mechanism, which uses your operating system's keychain (macOS Keychain / Windows Credential Manager).
-3. The server makes HTTPS requests to the broker API endpoints you configured (e.g., `live.trading212.com` or `demo.trading212.com`).
+3. The server makes HTTPS requests to the API endpoints for the sources you configured — for example `live.trading212.com` / `demo.trading212.com` for Trading 212, the Bybit API, and, for crypto wallets, public blockchain and price endpoints (a public Solana RPC node, `mempool.space`, `blockcypher`, `tonapi`, DefiLlama). Crypto reads are **keyless**: only your public wallet address is sent — no key or secret is involved.
 4. The server returns parsed responses to Claude Desktop on your local machine.
 5. **No data leaves your machine to any destination other than the broker.** The author and contributors have no servers, no analytics endpoints, no error-reporting services involved in this data flow.
 

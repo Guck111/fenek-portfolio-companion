@@ -59,7 +59,7 @@ The `bybit_get_open_orders` tool lists your open (unfilled) orders (spot + USDT/
 ## What it can do
 
 - Show positions, pies, transactions, dividends
-- Read on-chain crypto holdings (Solana + TON) by public address, valued in USD, plus look up USD prices for any watchlist coin
+- Read on-chain crypto holdings (Solana, TON, Bitcoin, Litecoin, Dogecoin) by public address — keyless, valued in USD — plus look up USD prices for any watchlist coin
 - See open Jupiter (Solana) limit orders — legacy Trigger v1 only; current Limit Order V2 is private (see Crypto notes)
 - Read Bybit coin balances (UNIFIED account) valued in USD by the exchange
 - See open (unfilled) orders on Bybit (spot + USDT/USDC perpetuals)
