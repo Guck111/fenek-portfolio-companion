@@ -34,13 +34,13 @@ describe("groupAddressesByChain", () => {
 })
 
 describe("CHAINS readers", () => {
-  it("wires keyless readers for Solana and TON", () => {
+  it("wires keyless readers for Solana, TON, and Bitcoin", () => {
     expect(CHAINS.find((c) => c.id === "solana")?.read).toBeTypeOf("function")
     expect(CHAINS.find((c) => c.id === "ton")?.read).toBeTypeOf("function")
+    expect(CHAINS.find((c) => c.id === "bitcoin")?.read).toBeTypeOf("function")
   })
 
   it("leaves chains without a built reader undefined", () => {
-    expect(CHAINS.find((c) => c.id === "bitcoin")?.read).toBeUndefined()
     expect(CHAINS.find((c) => c.id === "dogecoin")?.read).toBeUndefined()
   })
 })

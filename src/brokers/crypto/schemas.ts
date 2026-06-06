@@ -26,6 +26,17 @@ export const SolanaTokenAccountsResponse = z.object({
 })
 export type SolanaTokenAccount = z.infer<typeof SolanaTokenAccount>
 
+// --- esplora (mempool.space / blockstream — keyless UTXO balance) ---
+const EsploraTxoStats = z.object({
+  funded_txo_sum: z.number(),
+  spent_txo_sum: z.number(),
+})
+export const EsploraAddress = z.object({
+  chain_stats: EsploraTxoStats,
+  mempool_stats: EsploraTxoStats,
+})
+export type EsploraAddress = z.infer<typeof EsploraAddress>
+
 // --- tonapi ---
 export const TonAccount = z.object({
   balance: z.number(), // nanoton
