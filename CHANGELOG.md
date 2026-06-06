@@ -4,6 +4,25 @@ All notable changes to this project are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2026-06-06
+
+### Added
+- Crypto wallets now cover **Bitcoin, Litecoin, and Dogecoin** alongside Solana and TON —
+  all read **keyless**, with no API keys, via public endpoints.
+- A single **Wallet addresses** field replaces the separate per-chain fields: paste any mix
+  of addresses (commas, spaces, or new lines) and each address's chain is detected
+  automatically from its format and checksum.
+- `crypto_get_positions` reports addresses it skipped — unrecognized, on a not-yet-supported
+  chain, or failed to load — instead of dropping them silently.
+
+### Changed
+- **Solana is now keyless.** Holdings are read from a public Solana RPC node (native SOL plus
+  SPL Token and Token-2022 accounts); the Helius API key is no longer used.
+
+### Removed
+- The `SOLANA_ADDRESS`, `TON_ADDRESS`, and `HELIUS_API_KEY` configuration fields, replaced by
+  the single keyless **Wallet addresses** field.
+
 ## [0.2.2] - 2026-06-05
 
 ### Changed
