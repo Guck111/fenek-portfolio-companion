@@ -7,6 +7,7 @@ import {
   mapWalletBalance,
   mapAccountDetail,
   mapDerivativePositions,
+  mapKeyInfo,
   assembleAccount,
   mapOpenOrders,
 } from "../../../src/brokers/bybit/index.js"
@@ -153,6 +154,42 @@ describe("bybit mapDerivativePositions", () => {
       "inverse",
     )
     expect(empty).toHaveLength(0)
+  })
+})
+
+describe("bybit mapKeyInfo", () => {
+  const NOW = Date.parse("2026-06-11T00:00:00Z")
+
+  it("reports a healthy read-only key without warnings", () => {
+    const report = mapKeyInfo(
+      {
+        readOnly: 1,
+        permissions: { Wallet: ["AccountTransfer"], ContractTrade: [] },
+        ips: ["*"],
+        expiredAt: "2026-12-01T00:00:00Z",
+        isMaster: true,
+      },
+      { unifiedMarginStatus: 5, marginMode: "REGULAR_MARGIN" },
+      NOW,
+    )
+    expect(report.readOnly).toBe(true)
+    expect(report.permissions?.["Wallet"]).toEqual(["AccountTransfer"])
+    expect(report.marginMode).toBe("REGULAR_MARGIN")
+    expect(report.unifiedMarginStatus).toBe(5)
+    expect(report.daysToExpiry).toBe(173)
+    expect(report.warnings).toEqual([])
+  })
+
+  it("warns when the key is NOT read-only", () => {
+    const report = mapKeyInfo({ readOnly: 0 }, null, NOW)
+    expect(report.readOnly).toBe(false)
+    expect(report.warnings.some((w) => w.includes("read-only"))).toBe(true)
+  })
+
+  it("warns when the key expires within 14 days", () => {
+    const report = mapKeyInfo({ readOnly: 1, expiredAt: "2026-06-20T00:00:00Z" }, null, NOW)
+    expect(report.daysToExpiry).toBe(9)
+    expect(report.warnings.some((w) => w.includes("expires"))).toBe(true)
   })
 })
 

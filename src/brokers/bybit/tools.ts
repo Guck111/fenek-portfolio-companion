@@ -65,5 +65,19 @@ export function createBybitTools(broker: BybitBroker): readonly ToolBinding[] {
         return safeRun(() => broker.getOpenOrders())
       },
     },
+    {
+      tool: {
+        name: "bybit_get_key_info",
+        annotations: { title: "Bybit: API Key Diagnostics" },
+        description:
+          "Reports what the configured Bybit API key can do: read-only flag, permission groups (diagnoses missing Wallet/Assets or Earn access for other tools), IP allowlist, expiry date with days remaining, and account margin mode/UTA status. Works with any permission set. Includes warnings when the key is not read-only or expires within 14 days.",
+        inputSchema: { type: "object", properties: {}, additionalProperties: false },
+      },
+      handler: async (args) => {
+        const r = parseArgs(EmptyArgs, args)
+        if (!r.ok) return r.result
+        return safeRun(() => broker.getKeyInfo())
+      },
+    },
   ]
 }

@@ -9,6 +9,7 @@ describe("bybit tools", () => {
     expect(tools.map((t) => t.tool.name).sort()).toEqual([
       "bybit_get_account",
       "bybit_get_derivative_positions",
+      "bybit_get_key_info",
       "bybit_get_open_orders",
       "bybit_get_positions",
     ])

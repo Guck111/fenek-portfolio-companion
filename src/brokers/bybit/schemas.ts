@@ -71,6 +71,27 @@ export const BybitPositionListResult = z.object({
 export type BybitPosition = z.infer<typeof BybitPosition>
 export type BybitPositionListResult = z.infer<typeof BybitPositionListResult>
 
+// GET /v5/user/query-api → result. Works with any permission set — used for
+// key self-diagnostics. Lenient: Bybit adds fields here often.
+export const BybitApiKeyInfo = z.object({
+  readOnly: z.number().optional(),
+  permissions: z.record(z.string(), z.array(z.string())).optional(),
+  ips: z.array(z.string()).optional(),
+  expiredAt: z.string().optional(),
+  deadlineDay: z.number().optional(),
+  isMaster: z.boolean().optional(),
+  note: z.string().optional(),
+})
+export type BybitApiKeyInfo = z.infer<typeof BybitApiKeyInfo>
+
+// GET /v5/account/info → result. unifiedMarginStatus: 1 classic, 3/4 UTA 1.0,
+// 5/6 UTA 2.0.
+export const BybitAccountInfo = z.object({
+  unifiedMarginStatus: z.number().optional(),
+  marginMode: z.string().optional(),
+})
+export type BybitAccountInfo = z.infer<typeof BybitAccountInfo>
+
 // GET /v5/order/realtime → result. All numeric fields arrive as strings.
 // Only the fields we map are declared; unknown fields are stripped (non-strict).
 export const BybitOrder = z.object({

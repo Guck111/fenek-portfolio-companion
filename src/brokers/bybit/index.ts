@@ -10,6 +10,8 @@ import type { BrokerCapabilities, BrokerConfig, IBroker } from "../base.js"
 
 import { BybitClient } from "./client.js"
 import {
+  BybitAccountInfo,
+  BybitApiKeyInfo,
   BybitOrderListResult,
   BybitPositionListResult,
   BybitWalletBalanceResult,
@@ -145,6 +147,64 @@ export function assembleAccount(
     ...(detail?.totalPerpUPL !== undefined
       ? { unrealizedPnL: { amount: detail.totalPerpUPL, currency: USD } }
       : {}),
+  }
+}
+
+const MS_PER_DAY = 24 * 60 * 60 * 1000
+const EXPIRY_WARNING_DAYS = 14
+
+export interface BybitKeyInfoReport {
+  readonly readOnly?: boolean
+  readonly permissions?: Readonly<Record<string, readonly string[]>>
+  readonly ips?: readonly string[]
+  readonly expiresAt?: string
+  readonly daysToExpiry?: number
+  readonly isMaster?: boolean
+  readonly note?: string
+  readonly marginMode?: string
+  readonly unifiedMarginStatus?: number
+  readonly warnings: readonly string[]
+}
+
+// Key self-diagnostics: what the configured key may read, whether it is
+// actually read-only, and when it expires. `nowMs` is injected for testability.
+export function mapKeyInfo(
+  key: BybitApiKeyInfo,
+  accountInfo: BybitAccountInfo | null,
+  nowMs: number,
+): BybitKeyInfoReport {
+  const warnings: string[] = []
+  const readOnly = key.readOnly === undefined ? undefined : key.readOnly === 1
+  if (readOnly === false) {
+    warnings.push(
+      "This API key is NOT read-only — re-create it in Bybit with read-only permissions (no Trade, no Withdraw).",
+    )
+  }
+  let daysToExpiry: number | undefined
+  if (key.expiredAt !== undefined) {
+    const expiresMs = Date.parse(key.expiredAt)
+    if (Number.isFinite(expiresMs)) {
+      daysToExpiry = Math.ceil((expiresMs - nowMs) / MS_PER_DAY)
+      if (daysToExpiry <= EXPIRY_WARNING_DAYS) {
+        warnings.push(
+          `This API key expires in ${String(daysToExpiry)} day(s) — re-create or extend it in Bybit to avoid losing access.`,
+        )
+      }
+    }
+  }
+  return {
+    ...(readOnly !== undefined ? { readOnly } : {}),
+    ...(key.permissions !== undefined ? { permissions: key.permissions } : {}),
+    ...(key.ips !== undefined ? { ips: key.ips } : {}),
+    ...(key.expiredAt !== undefined ? { expiresAt: key.expiredAt } : {}),
+    ...(daysToExpiry !== undefined ? { daysToExpiry } : {}),
+    ...(key.isMaster !== undefined ? { isMaster: key.isMaster } : {}),
+    ...(key.note !== undefined ? { note: key.note } : {}),
+    ...(accountInfo?.marginMode !== undefined ? { marginMode: accountInfo.marginMode } : {}),
+    ...(accountInfo?.unifiedMarginStatus !== undefined
+      ? { unifiedMarginStatus: accountInfo.unifiedMarginStatus }
+      : {}),
+    warnings,
   }
 }
 
@@ -321,6 +381,20 @@ export class BybitBroker implements IBroker {
       })
     })
     return { positions, failures }
+  }
+
+  // Key diagnostics. /v5/user/query-api answers for any permission set;
+  // /v5/account/info may fail on restricted keys and is therefore optional.
+  async getKeyInfo(): Promise<BybitKeyInfoReport> {
+    const client = this.requireClient()
+    const key = await client.getJson("/v5/user/query-api", {}, BybitApiKeyInfo)
+    let accountInfo: BybitAccountInfo | null = null
+    try {
+      accountInfo = await client.getJson("/v5/account/info", {}, BybitAccountInfo)
+    } catch {
+      // tolerated: the key report is still useful without margin status
+    }
+    return mapKeyInfo(key, accountInfo, Date.now())
   }
 
   getTransactions(): Promise<Page<Transaction>> {
