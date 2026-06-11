@@ -12,15 +12,30 @@ export const BybitEnvelope = z.object({
 export type BybitEnvelope = z.infer<typeof BybitEnvelope>
 
 // GET /v5/account/wallet-balance?accountType=UNIFIED → result.
-// All numeric fields arrive as strings; usdValue may be "" for coins with no USD market.
+// All numeric fields arrive as strings; any of them may be "" when Bybit has
+// no value (e.g. usdValue for coins with no USD market, or margin fields
+// under portfolio margin mode).
 export const BybitWalletCoin = z.object({
   coin: z.string(),
   walletBalance: z.string(),
   usdValue: z.string().optional(),
+  equity: z.string().optional(),
+  unrealisedPnl: z.string().optional(),
+  cumRealisedPnl: z.string().optional(),
+  borrowAmount: z.string().optional(),
+  accruedInterest: z.string().optional(),
+  locked: z.string().optional(),
 })
 export const BybitWalletAccount = z.object({
   accountType: z.string(),
   coin: z.array(BybitWalletCoin),
+  totalEquity: z.string().optional(),
+  totalWalletBalance: z.string().optional(),
+  totalMarginBalance: z.string().optional(),
+  totalAvailableBalance: z.string().optional(),
+  totalPerpUPL: z.string().optional(),
+  accountIMRate: z.string().optional(),
+  accountMMRate: z.string().optional(),
 })
 export const BybitWalletBalanceResult = z.object({
   list: z.array(BybitWalletAccount),

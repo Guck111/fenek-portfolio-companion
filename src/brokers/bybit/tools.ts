@@ -25,6 +25,20 @@ export function createBybitTools(broker: BybitBroker): readonly ToolBinding[] {
     },
     {
       tool: {
+        name: "bybit_get_account",
+        annotations: { title: "Bybit: Account Summary & Margin Health" },
+        description:
+          "Returns the Bybit UNIFIED account summary in USD: total equity (includes derivatives UPL and option value), wallet/margin/available balances, perp unrealized P&L, and margin health rates (accountIMRate/accountMMRate — an accountMMRate near 1 means liquidation risk), plus per-coin detail (equity, unrealized/cumulative realized P&L, borrow amount, accrued interest, locked). Requires a read-only key with Account/Wallet read permission.",
+        inputSchema: { type: "object", properties: {}, additionalProperties: false },
+      },
+      handler: async (args) => {
+        const r = parseArgs(EmptyArgs, args)
+        if (!r.ok) return r.result
+        return safeRun(() => broker.getAccountReport())
+      },
+    },
+    {
+      tool: {
         name: "bybit_get_open_orders",
         annotations: { title: "Bybit: Open Orders" },
         description:

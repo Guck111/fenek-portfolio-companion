@@ -5,6 +5,7 @@ import fs from "node:fs"
 
 import {
   mapWalletBalance,
+  mapAccountDetail,
   assembleAccount,
   mapOpenOrders,
 } from "../../../src/brokers/bybit/index.js"
@@ -54,6 +55,38 @@ describe("bybit mapWalletBalance", () => {
     expect(account.cash).toEqual({ amount: 0, currency: "USD" })
     expect(account.invested).toBeUndefined()
     expect(account.unrealizedPnL).toBeUndefined()
+  })
+})
+
+describe("bybit mapAccountDetail", () => {
+  it("maps account-level totals, margin rates, and per-coin detail", () => {
+    const d = mapAccountDetail(loadResult())
+    expect(d).not.toBeNull()
+    expect(d?.totalEquity).toBe(31100)
+    expect(d?.totalWalletBalance).toBe(31000)
+    expect(d?.totalMarginBalance).toBe(30950)
+    expect(d?.totalAvailableBalance).toBe(28000)
+    expect(d?.totalPerpUPL).toBe(-12.5)
+    expect(d?.accountIMRate).toBe(0.012)
+    expect(d?.accountMMRate).toBe(0.002)
+
+    const btc = d?.coins.find((c) => c.coin === "BTC")
+    expect(btc?.quantity).toBe(0.5)
+    expect(btc?.usdValue).toBe(30000)
+    expect(btc?.unrealisedPnl).toBe(5)
+    expect(btc?.cumRealisedPnl).toBe(-1)
+    expect(btc?.borrowAmount).toBe(0)
+    expect(btc?.locked).toBe(0.1)
+    // Bybit sends "" for fields without a value — must come through as undefined.
+    expect(btc?.accruedInterest).toBeUndefined()
+  })
+
+  it("assembleAccount prefers totalEquity and totalPerpUPL when detail is present", () => {
+    const { positions } = mapWalletBalance(loadResult())
+    const detail = mapAccountDetail(loadResult())
+    const acc = assembleAccount(positions, detail ?? undefined)
+    expect(acc.totalValue).toEqual({ amount: 31100, currency: "USD" })
+    expect(acc.unrealizedPnL).toEqual({ amount: -12.5, currency: "USD" })
   })
 })
 
