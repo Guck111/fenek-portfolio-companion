@@ -309,6 +309,15 @@ export function mapPieListEntry(entry: T212PieListEntry, currency: string): Pie 
     currentValue: money(entry.result.priceAvgValue, currency),
     unrealizedPnL: money(entry.result.priceAvgResult, currency),
     cashBalance: money(entry.cash, currency),
+    dividends: {
+      gained: money(entry.dividendDetails.gained, currency),
+      reinvested: money(entry.dividendDetails.reinvested, currency),
+      inCash: money(entry.dividendDetails.inCash, currency),
+    },
+    ...(entry.progress !== null && entry.progress !== undefined
+      ? { progress: entry.progress }
+      : {}),
+    ...(entry.status !== null && entry.status !== undefined ? { status: entry.status } : {}),
   }
 }
 
@@ -328,6 +337,7 @@ export function mapPieDetails(
     currentValue: money(totalCurrent, currency),
     unrealizedPnL: money(totalCurrent - totalInvested, currency),
     slices,
+    dividendCashAction: details.settings.dividendCashAction,
   }
 }
 

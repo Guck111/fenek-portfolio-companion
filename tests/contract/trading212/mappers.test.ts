@@ -126,6 +126,59 @@ describe("trading212 mappers", () => {
   })
 })
 
+describe("pie enrichment", () => {
+  it("carries pie dividend totals, progress and status into the domain", () => {
+    const pie = mapPieListEntry(
+      {
+        id: 7,
+        cash: 1.5,
+        dividendDetails: { gained: 10, reinvested: 8, inCash: 2 },
+        result: {
+          priceAvgInvestedValue: 100,
+          priceAvgValue: 110,
+          priceAvgResult: 10,
+          priceAvgResultCoef: 0.1,
+        },
+        progress: 0.55,
+        status: "AHEAD",
+      },
+      "EUR",
+    )
+    expect(pie.dividends?.gained).toEqual({ amount: 10, currency: "EUR" })
+    expect(pie.dividends?.reinvested).toEqual({ amount: 8, currency: "EUR" })
+    expect(pie.dividends?.inCash).toEqual({ amount: 2, currency: "EUR" })
+    expect(pie.progress).toBe(0.55)
+    expect(pie.status).toBe("AHEAD")
+  })
+
+  it("omits progress and status when T212 sends null", () => {
+    const pie = mapPieListEntry(
+      {
+        id: 8,
+        cash: 0,
+        dividendDetails: { gained: 0, reinvested: 0, inCash: 0 },
+        result: {
+          priceAvgInvestedValue: 1,
+          priceAvgValue: 1,
+          priceAvgResult: 0,
+          priceAvgResultCoef: 0,
+        },
+        progress: null,
+        status: null,
+      },
+      "EUR",
+    )
+    expect(pie.progress).toBeUndefined()
+    expect(pie.status).toBeUndefined()
+  })
+
+  it("exposes the pie dividend cash action on details", () => {
+    const details = T212PieDetails.parse(readFixture("pie_details.json"))
+    const mapped = mapPieDetails(details, "EUR", () => undefined)
+    expect(mapped.dividendCashAction).toBeDefined()
+  })
+})
+
 describe("order history full parse", () => {
   it("keeps limit/stop prices, quantities, timeInForce and per-fill realized P&L", () => {
     const item = T212HistoricalOrderItem.parse({
