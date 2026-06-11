@@ -8,6 +8,7 @@ describe("bybit tools", () => {
     const tools = createBybitTools(new BybitBroker())
     expect(tools.map((t) => t.tool.name).sort()).toEqual([
       "bybit_get_account",
+      "bybit_get_balances_overview",
       "bybit_get_derivative_positions",
       "bybit_get_earn_positions",
       "bybit_get_key_info",

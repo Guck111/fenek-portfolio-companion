@@ -13,6 +13,8 @@ import { BybitClient } from "./client.js"
 import {
   BybitAccountInfo,
   BybitApiKeyInfo,
+  BybitAssetOverviewResult,
+  BybitCoinsBalanceResult,
   BybitDualAssetPositionResult,
   BybitEarnPositionResult,
   BybitFixedTermPositionResult,
@@ -250,6 +252,121 @@ export function mapDualAssetPositions(result: BybitDualAssetPositionResult): Ear
     })
   }
   return positions
+}
+
+export interface BybitOverviewCoin {
+  readonly coin: string
+  readonly equity?: number
+}
+
+export interface BybitOverviewCategoryReport {
+  readonly category: string
+  readonly equity?: number
+  readonly coins?: readonly BybitOverviewCoin[]
+}
+
+export interface BybitOverviewAccountReport {
+  readonly type: string
+  readonly equity?: number
+  readonly valuationCurrency?: string
+  readonly coins?: readonly BybitOverviewCoin[]
+  readonly categories?: readonly BybitOverviewCategoryReport[]
+}
+
+export interface BybitAssetOverview {
+  readonly totalEquity?: number
+  readonly accounts: readonly BybitOverviewAccountReport[]
+}
+
+export interface BybitFundingCoin {
+  readonly coin: string
+  readonly quantity: number
+  readonly transferable?: number
+  readonly bonus?: number
+}
+
+function mapOverviewCoins(
+  detail: readonly { coin: string; equity?: string | undefined }[] | null | undefined,
+): { coins?: readonly BybitOverviewCoin[] } {
+  if (detail === null || detail === undefined) return {}
+  return {
+    coins: detail.map((c) => ({ coin: c.coin, ...maybe("equity", num(c.equity)) })),
+  }
+}
+
+export function mapAssetOverview(result: BybitAssetOverviewResult): BybitAssetOverview {
+  return {
+    ...maybe("totalEquity", num(result.totalEquity)),
+    accounts: (result.list ?? []).map((a) => ({
+      type: a.accountType,
+      ...maybe("equity", num(a.totalEquity)),
+      ...(a.valuationCurrency !== undefined ? { valuationCurrency: a.valuationCurrency } : {}),
+      ...mapOverviewCoins(a.coinDetail),
+      ...(a.categories !== null && a.categories !== undefined
+        ? {
+            categories: a.categories.map((cat) => ({
+              category: cat.category,
+              ...maybe("equity", num(cat.equity)),
+              ...mapOverviewCoins(cat.coinDetail),
+            })),
+          }
+        : {}),
+    })),
+  }
+}
+
+export function mapFundingBalance(result: BybitCoinsBalanceResult): BybitFundingCoin[] {
+  const coins: BybitFundingCoin[] = []
+  for (const entry of result.balance) {
+    const quantity = num(entry.walletBalance) ?? 0
+    if (quantity <= 0) continue
+    coins.push({
+      coin: entry.coin,
+      quantity,
+      ...maybe("transferable", num(entry.transferBalance)),
+      ...maybe("bonus", num(entry.bonus)),
+    })
+  }
+  return coins
+}
+
+export interface BalancesSourceFailure {
+  readonly source: "asset-overview" | "funding-balance"
+  readonly message: string
+  readonly error?: unknown
+}
+
+export interface BybitBalancesOverview {
+  readonly totalEquity?: number
+  readonly accounts: readonly BybitOverviewAccountReport[]
+  readonly funding?: readonly BybitFundingCoin[]
+  readonly failures: readonly { readonly source: string; readonly message: string }[]
+}
+
+// Folds the two balance sources into one report. When BOTH fail with auth the
+// key has no Assets/Wallet access at all — raise one actionable error.
+export function buildBalancesOverview(
+  overview: BybitAssetOverview | undefined,
+  funding: readonly BybitFundingCoin[] | undefined,
+  failures: readonly BalancesSourceFailure[],
+): BybitBalancesOverview {
+  if (
+    failures.length >= 2 &&
+    overview === undefined &&
+    funding === undefined &&
+    failures.some((f) => f.error instanceof AuthError)
+  ) {
+    throw new AuthError(
+      "Bybit API key lacks the Assets (Wallet) read permission — enable it in the key settings to read Funding-wallet and cross-account balances.",
+      BROKER_ID,
+    )
+  }
+  return {
+    ...maybe("totalEquity", overview?.totalEquity),
+    accounts: overview?.accounts ?? [],
+    ...(funding !== undefined ? { funding } : {}),
+    failures: failures.map((f) => ({ source: f.source, message: f.message })),
+  }
 }
 
 export interface EarnFamilyOutcome {
@@ -518,6 +635,47 @@ export class BybitBroker implements IBroker {
       })
     })
     return { positions, failures }
+  }
+
+  // Cross-account balances: asset-overview totals every account type (Funding,
+  // Unified Trading, Earn, bots, ...) while the FUND coins-balance call adds
+  // funding-wallet quantities. Both run concurrently and fail independently.
+  async getBalancesOverview(): Promise<BybitBalancesOverview> {
+    const client = this.requireClient()
+    const failures: BalancesSourceFailure[] = []
+    const [overviewSettled, fundingSettled] = await Promise.allSettled([
+      client
+        .getJson("/v5/asset/asset-overview", {}, BybitAssetOverviewResult)
+        .then(mapAssetOverview),
+      client
+        .getJson(
+          "/v5/asset/transfer/query-account-coins-balance",
+          { accountType: "FUND" },
+          BybitCoinsBalanceResult,
+        )
+        .then(mapFundingBalance),
+    ])
+    let overview: BybitAssetOverview | undefined
+    if (overviewSettled.status === "fulfilled") overview = overviewSettled.value
+    else {
+      const reason: unknown = overviewSettled.reason
+      failures.push({
+        source: "asset-overview",
+        message: reason instanceof Error ? reason.message : String(reason),
+        error: reason,
+      })
+    }
+    let funding: readonly BybitFundingCoin[] | undefined
+    if (fundingSettled.status === "fulfilled") funding = fundingSettled.value
+    else {
+      const reason: unknown = fundingSettled.reason
+      failures.push({
+        source: "funding-balance",
+        message: reason instanceof Error ? reason.message : String(reason),
+        error: reason,
+      })
+    }
+    return buildBalancesOverview(overview, funding, failures)
   }
 
   // Staked/saving balances across Earn families. These funds never appear in

@@ -67,6 +67,20 @@ export function createBybitTools(broker: BybitBroker): readonly ToolBinding[] {
     },
     {
       tool: {
+        name: "bybit_get_balances_overview",
+        annotations: { title: "Bybit: All-Account Balances Overview" },
+        description:
+          "Returns total equity (USD) across ALL Bybit account types — Funding wallet, Unified Trading, Earn, Trading Bots, Copy Trading, Launchpool — with per-account coin holdings, plus Funding-wallet coin quantities. Catches money invisible to bybit_get_positions (which covers the Unified account only). Requires the Assets (Wallet) read permission on the API key; per-source failures are listed in a `failures` field.",
+        inputSchema: { type: "object", properties: {}, additionalProperties: false },
+      },
+      handler: async (args) => {
+        const r = parseArgs(EmptyArgs, args)
+        if (!r.ok) return r.result
+        return safeRun(() => broker.getBalancesOverview())
+      },
+    },
+    {
+      tool: {
         name: "bybit_get_earn_positions",
         annotations: { title: "Bybit: Earn / Staked Positions" },
         description:

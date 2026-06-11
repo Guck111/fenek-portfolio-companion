@@ -142,6 +142,46 @@ export const BybitDualAssetPositionResult = z.object({
 })
 export type BybitDualAssetPositionResult = z.infer<typeof BybitDualAssetPositionResult>
 
+// GET /v5/asset/asset-overview → result. Total assets across ALL account
+// types (Funding, Unified Trading, Earn, TradingBot, CopyTrading, ...) in the
+// valuation currency (default USD). Accounts with product sub-categories
+// (e.g. Earn) report `categories`; flat accounts report `coinDetail`.
+export const BybitOverviewCoinDetail = z.object({
+  coin: z.string(),
+  equity: z.string().optional(),
+})
+export const BybitOverviewCategory = z.object({
+  category: z.string(),
+  equity: z.string().optional(),
+  coinDetail: z.array(BybitOverviewCoinDetail).nullable().optional(),
+})
+export const BybitOverviewAccount = z.object({
+  accountType: z.string(),
+  totalEquity: z.string().optional(),
+  valuationCurrency: z.string().optional(),
+  coinDetail: z.array(BybitOverviewCoinDetail).nullable().optional(),
+  categories: z.array(BybitOverviewCategory).nullable().optional(),
+})
+export const BybitAssetOverviewResult = z.object({
+  totalEquity: z.string().optional(),
+  list: z.array(BybitOverviewAccount).optional(),
+})
+export type BybitAssetOverviewResult = z.infer<typeof BybitAssetOverviewResult>
+
+// GET /v5/asset/transfer/query-account-coins-balance?accountType=FUND →
+// result. For FUND the coin param may be omitted (all coins returned).
+export const BybitCoinsBalanceEntry = z.object({
+  coin: z.string(),
+  walletBalance: z.string().optional(),
+  transferBalance: z.string().optional(),
+  bonus: z.string().optional(),
+})
+export const BybitCoinsBalanceResult = z.object({
+  accountType: z.string().optional(),
+  balance: z.array(BybitCoinsBalanceEntry),
+})
+export type BybitCoinsBalanceResult = z.infer<typeof BybitCoinsBalanceResult>
+
 // GET /v5/user/query-api → result. Works with any permission set — used for
 // key self-diagnostics. Lenient: Bybit adds fields here often.
 export const BybitApiKeyInfo = z.object({
