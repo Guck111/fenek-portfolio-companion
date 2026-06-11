@@ -3,6 +3,7 @@ import type { z } from "zod"
 
 import { AuthError, BrokerApiError, RateLimitError, ValidationError } from "../../utils/errors.js"
 import { withBackoff, type RetryDecision } from "../../utils/ratelimit.js"
+import { sanitizeForLog } from "../../utils/redact.js"
 import { BybitEnvelope } from "./schemas.js"
 
 const BROKER_ID = "bybit"
@@ -84,11 +85,12 @@ export class BybitClient {
       }
       const parsed = schema.safeParse(envelope.result)
       if (!parsed.success) {
-        // Log raw result (balances, not secrets) so the real shape lands in the
-        // Claude Desktop mcp-server log when our schema drifts. Never log headers/sign.
+        // Dump the redacted, size-capped result so the real shape lands in the
+        // Claude Desktop mcp-server log when our schema drifts. The dump must stay
+        // credential-free: /v5/user/query-api echoes the API key itself.
         console.error(
-          `[bybit] schema mismatch for ${path}; raw result was:`,
-          JSON.stringify(envelope.result),
+          `[bybit] schema mismatch for ${path}; result (redacted):`,
+          sanitizeForLog(envelope.result),
         )
         throw new ValidationError(
           `Bybit response shape mismatch for ${path}: ${parsed.error.message}`,

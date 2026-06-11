@@ -1,6 +1,7 @@
 import type { z } from "zod"
 
 import { AuthError, BrokerApiError, RateLimitError, ValidationError } from "../../utils/errors.js"
+import { sanitizeForLog } from "../../utils/redact.js"
 
 const BROKER_ID = "t212"
 
@@ -67,11 +68,13 @@ export class Trading212Client {
 
     const parsed = schema.safeParse(data)
     if (!parsed.success) {
-      // Log raw response so the actual T212 shape ends up in Claude Desktop's
-      // mcp-server-*.log when our schema drifts. Helps update schemas without
-      // re-running discovery scripts. Sanitize: T212 doesn't return secrets in
-      // these endpoints, only public-ish portfolio data.
-      console.error(`[t212] schema mismatch for ${path}; raw response was:`, JSON.stringify(data))
+      // Log the redacted, size-capped response so the actual T212 shape ends up
+      // in Claude Desktop's mcp-server-*.log when our schema drifts. Helps update
+      // schemas without re-running discovery scripts.
+      console.error(
+        `[t212] schema mismatch for ${path}; response (redacted):`,
+        sanitizeForLog(data),
+      )
       throw new ValidationError(
         `Trading 212 response shape mismatch for ${path}: ${parsed.error.message}`,
         { cause: parsed.error },

@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest"
 import { z } from "zod"
 
 import { Trading212Client } from "../../../src/brokers/trading212/client.js"
-import { AuthError, RateLimitError } from "../../../src/utils/errors.js"
+import { AuthError, RateLimitError, ValidationError } from "../../../src/utils/errors.js"
 
 const Schema = z.object({ ok: z.boolean() })
 const OK_BODY = JSON.stringify({ ok: true })
@@ -90,5 +90,46 @@ describe("Trading212Client host auto-detection", () => {
     // (live 401 → demo 200). If 429 had locked live, this would throw AuthError.
     phase = 1
     expect(await client.getJson("/y", Schema)).toEqual({ ok: true })
+  })
+})
+
+// Schema-mismatch dumps go to stderr, which Claude Desktop persists to a
+// plaintext mcp-server-*.log on disk — keep them credential-free and bounded.
+describe("Trading212Client schema-mismatch logging", () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  function stubOkBody(body: unknown) {
+    const errSpy = vi.spyOn(console, "error").mockImplementation(() => undefined)
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(() => Promise.resolve(res(200, JSON.stringify(body)))),
+    )
+    return errSpy
+  }
+
+  function loggedText(errSpy: ReturnType<typeof stubOkBody>): string {
+    return errSpy.mock.calls.flat().map(String).join(" ")
+  }
+
+  it("redacts credential-shaped fields from the mismatch dump", async () => {
+    const errSpy = stubOkBody({ apiKey: "t212-LEAK-CANARY", ok: "nope" })
+
+    await expect(newClient().getJson("/x", Schema)).rejects.toBeInstanceOf(ValidationError)
+
+    const logged = loggedText(errSpy)
+    expect(logged).toContain("/x")
+    expect(logged).not.toContain("t212-LEAK-CANARY")
+  })
+
+  it("caps the mismatch dump so full payloads never flood the log", async () => {
+    const errSpy = stubOkBody({ ok: "nope", blob: "B".repeat(10_000) })
+
+    await expect(newClient().getJson("/x", Schema)).rejects.toBeInstanceOf(ValidationError)
+
+    const logged = loggedText(errSpy)
+    expect(logged).toContain("truncated")
+    expect(logged.length).toBeLessThan(2300)
   })
 })
