@@ -39,6 +39,20 @@ export function createBybitTools(broker: BybitBroker): readonly ToolBinding[] {
     },
     {
       tool: {
+        name: "bybit_get_derivative_positions",
+        annotations: { title: "Bybit: Derivative Positions" },
+        description:
+          "Returns open Bybit derivatives positions — USDT/USDC perpetuals and futures (linear), inverse contracts, and options: side (long/short), size, entry and mark price, position value, unrealized P&L, realized P&L, leverage, liquidation price, take-profit/stop-loss. Values are in the contract's settle coin. Spot coin balances are NOT included — use bybit_get_positions for those. Per-category failures are reported in a `failures` field without hiding other categories.",
+        inputSchema: { type: "object", properties: {}, additionalProperties: false },
+      },
+      handler: async (args) => {
+        const r = parseArgs(EmptyArgs, args)
+        if (!r.ok) return r.result
+        return safeRun(() => broker.getDerivativePositions())
+      },
+    },
+    {
+      tool: {
         name: "bybit_get_open_orders",
         annotations: { title: "Bybit: Open Orders" },
         description:

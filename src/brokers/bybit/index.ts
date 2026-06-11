@@ -1,4 +1,5 @@
 import type { Account } from "../../domain/account.js"
+import type { DerivativePosition } from "../../domain/derivative.js"
 import type { Dividend } from "../../domain/dividend.js"
 import type { OpenOrder } from "../../domain/order.js"
 import type { Page } from "../../domain/pagination.js"
@@ -8,7 +9,11 @@ import { AuthError } from "../../utils/errors.js"
 import type { BrokerCapabilities, BrokerConfig, IBroker } from "../base.js"
 
 import { BybitClient } from "./client.js"
-import { BybitOrderListResult, BybitWalletBalanceResult } from "./schemas.js"
+import {
+  BybitOrderListResult,
+  BybitPositionListResult,
+  BybitWalletBalanceResult,
+} from "./schemas.js"
 
 const BROKER_ID = "bybit"
 const BROKER_NAME = "Bybit"
@@ -20,6 +25,15 @@ const ORDER_QUERIES: readonly { category: string; query: Record<string, string> 
   { category: "spot", query: { category: "spot", limit: "50" } },
   { category: "linear", query: { category: "linear", settleCoin: "USDT", limit: "50" } },
   { category: "linear", query: { category: "linear", settleCoin: "USDC", limit: "50" } },
+]
+const POSITION_PATH = "/v5/position/list"
+// linear requires symbol or settleCoin, so it is queried once per settle coin;
+// inverse and option accept a bare category query.
+const POSITION_QUERIES: readonly { category: string; query: Record<string, string> }[] = [
+  { category: "linear", query: { category: "linear", settleCoin: "USDT", limit: "200" } },
+  { category: "linear", query: { category: "linear", settleCoin: "USDC", limit: "200" } },
+  { category: "inverse", query: { category: "inverse", limit: "200" } },
+  { category: "option", query: { category: "option", limit: "200" } },
 ]
 
 // Bybit reports numbers as strings and uses "" for "no value". Parse to a
@@ -134,6 +148,44 @@ export function assembleAccount(
   }
 }
 
+// Raw Bybit positions → normalized DerivativePosition. Zero-size rows (the
+// exchange reports them for one-way-mode symbols with no position) are dropped.
+export function mapDerivativePositions(
+  result: BybitPositionListResult,
+  category: string,
+): DerivativePosition[] {
+  if (result.nextPageCursor !== undefined && result.nextPageCursor !== "") {
+    console.error(
+      `[bybit] derivative positions for category=${category} exceeded one page; showing first 200 only`,
+    )
+  }
+  const positions: DerivativePosition[] = []
+  for (const p of result.list) {
+    const size = num(p.size) ?? 0
+    if (size === 0) continue
+    const side = p.side.toLowerCase()
+    positions.push({
+      brokerId: BROKER_ID,
+      symbol: p.symbol,
+      category,
+      side: side === "buy" ? "long" : side === "sell" ? "short" : "none",
+      size,
+      ...maybe("entryPrice", num(p.avgPrice)),
+      ...maybe("markPrice", num(p.markPrice)),
+      ...maybe("positionValue", num(p.positionValue)),
+      ...maybe("unrealizedPnL", num(p.unrealisedPnl)),
+      ...maybe("realizedPnLCurrent", num(p.curRealisedPnl)),
+      ...maybe("realizedPnLCumulative", num(p.cumRealisedPnl)),
+      ...maybe("leverage", num(p.leverage)),
+      ...maybe("liquidationPrice", num(p.liqPrice)),
+      ...maybe("takeProfit", num(p.takeProfit)),
+      ...maybe("stopLoss", num(p.stopLoss)),
+      ...(p.updatedTime !== undefined ? { updatedAt: p.updatedTime } : {}),
+    })
+  }
+  return positions
+}
+
 // Raw Bybit orders → normalized OpenOrder. Numbers arrive as strings; side is
 // "Buy"/"Sell". No filtering — all open orders are shown.
 export function mapOpenOrders(result: BybitOrderListResult, category: string): OpenOrder[] {
@@ -231,6 +283,44 @@ export class BybitBroker implements IBroker {
       ),
     )
     return perCategory.flat()
+  }
+
+  // Open derivatives positions across all categories. Each category query is
+  // independent — one failing (e.g. a key without option access) must not hide
+  // the others, so failures are collected and surfaced alongside the data.
+  async getDerivativePositions(): Promise<{
+    readonly positions: readonly DerivativePosition[]
+    readonly failures: readonly { readonly category: string; readonly message: string }[]
+  }> {
+    const client = this.requireClient()
+    const settled = await Promise.allSettled(
+      POSITION_QUERIES.map((q) =>
+        client
+          .getJson(POSITION_PATH, q.query, BybitPositionListResult)
+          .then((r) => mapDerivativePositions(r, q.category)),
+      ),
+    )
+    const positions: DerivativePosition[] = []
+    const failures: { category: string; message: string }[] = []
+    settled.forEach((s, i) => {
+      const query = POSITION_QUERIES[i]
+      if (s.status === "fulfilled") {
+        positions.push(...s.value)
+        return
+      }
+      const settleCoin = query?.query["settleCoin"]
+      const label =
+        query === undefined
+          ? "unknown"
+          : settleCoin !== undefined
+            ? `${query.category}:${settleCoin}`
+            : query.category
+      failures.push({
+        category: label,
+        message: s.reason instanceof Error ? s.reason.message : String(s.reason),
+      })
+    })
+    return { positions, failures }
   }
 
   getTransactions(): Promise<Page<Transaction>> {

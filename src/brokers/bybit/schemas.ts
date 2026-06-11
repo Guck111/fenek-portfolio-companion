@@ -44,6 +44,33 @@ export type BybitWalletCoin = z.infer<typeof BybitWalletCoin>
 export type BybitWalletAccount = z.infer<typeof BybitWalletAccount>
 export type BybitWalletBalanceResult = z.infer<typeof BybitWalletBalanceResult>
 
+// GET /v5/position/list → result. All numeric fields arrive as strings; ""
+// means "not set" (e.g. stopLoss) or "not applicable" (leverage/liqPrice under
+// portfolio margin). Only the fields we map are declared; unknown are stripped.
+export const BybitPosition = z.object({
+  symbol: z.string(),
+  side: z.string(), // "Buy" / "Sell" / "None"
+  size: z.string(),
+  avgPrice: z.string().optional(),
+  markPrice: z.string().optional(),
+  positionValue: z.string().optional(),
+  unrealisedPnl: z.string().optional(),
+  curRealisedPnl: z.string().optional(),
+  cumRealisedPnl: z.string().optional(),
+  leverage: z.string().optional(),
+  liqPrice: z.string().optional(),
+  takeProfit: z.string().optional(),
+  stopLoss: z.string().optional(),
+  positionIdx: z.number().optional(),
+  updatedTime: z.string().optional(),
+})
+export const BybitPositionListResult = z.object({
+  list: z.array(BybitPosition),
+  nextPageCursor: z.string().optional(),
+})
+export type BybitPosition = z.infer<typeof BybitPosition>
+export type BybitPositionListResult = z.infer<typeof BybitPositionListResult>
+
 // GET /v5/order/realtime → result. All numeric fields arrive as strings.
 // Only the fields we map are declared; unknown fields are stripped (non-strict).
 export const BybitOrder = z.object({

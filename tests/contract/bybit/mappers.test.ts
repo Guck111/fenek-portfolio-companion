@@ -6,6 +6,7 @@ import fs from "node:fs"
 import {
   mapWalletBalance,
   mapAccountDetail,
+  mapDerivativePositions,
   assembleAccount,
   mapOpenOrders,
 } from "../../../src/brokers/bybit/index.js"
@@ -13,6 +14,7 @@ import {
   BybitEnvelope,
   BybitWalletBalanceResult,
   BybitOrderListResult,
+  BybitPositionListResult,
 } from "../../../src/brokers/bybit/schemas.js"
 
 const fixtureDir = path.resolve(
@@ -87,6 +89,70 @@ describe("bybit mapAccountDetail", () => {
     const acc = assembleAccount(positions, detail ?? undefined)
     expect(acc.totalValue).toEqual({ amount: 31100, currency: "USD" })
     expect(acc.unrealizedPnL).toEqual({ amount: -12.5, currency: "USD" })
+  })
+})
+
+describe("bybit mapDerivativePositions", () => {
+  const result = {
+    list: [
+      {
+        symbol: "BTCUSDT",
+        side: "Buy",
+        size: "0.4",
+        avgPrice: "58000",
+        markPrice: "60000",
+        positionValue: "24000",
+        unrealisedPnl: "800",
+        curRealisedPnl: "-10.5",
+        cumRealisedPnl: "120",
+        leverage: "5",
+        liqPrice: "41000",
+        takeProfit: "70000",
+        stopLoss: "",
+        positionIdx: 0,
+        updatedTime: "1700000000000",
+      },
+      { symbol: "ETHUSDT", side: "None", size: "0", positionIdx: 0 },
+    ],
+    nextPageCursor: "",
+  }
+
+  it("maps open positions, normalizing side and string numbers", () => {
+    const positions = mapDerivativePositions(BybitPositionListResult.parse(result), "linear")
+    expect(positions).toHaveLength(1)
+    const btc = positions[0]
+    expect(btc?.brokerId).toBe("bybit")
+    expect(btc?.category).toBe("linear")
+    expect(btc?.symbol).toBe("BTCUSDT")
+    expect(btc?.side).toBe("long")
+    expect(btc?.size).toBe(0.4)
+    expect(btc?.entryPrice).toBe(58000)
+    expect(btc?.markPrice).toBe(60000)
+    expect(btc?.positionValue).toBe(24000)
+    expect(btc?.unrealizedPnL).toBe(800)
+    expect(btc?.realizedPnLCurrent).toBe(-10.5)
+    expect(btc?.realizedPnLCumulative).toBe(120)
+    expect(btc?.leverage).toBe(5)
+    expect(btc?.liquidationPrice).toBe(41000)
+    expect(btc?.takeProfit).toBe(70000)
+    // "" means "not set" and must come through as undefined, not 0.
+    expect(btc?.stopLoss).toBeUndefined()
+    expect(btc?.updatedAt).toBe("1700000000000")
+  })
+
+  it("drops zero-size rows and maps Sell to short", () => {
+    const sells = mapDerivativePositions(
+      BybitPositionListResult.parse({
+        list: [{ symbol: "SOLUSDT", side: "Sell", size: "10" }],
+      }),
+      "linear",
+    )
+    expect(sells[0]?.side).toBe("short")
+    const empty = mapDerivativePositions(
+      BybitPositionListResult.parse({ list: [{ symbol: "X", side: "None", size: "0" }] }),
+      "inverse",
+    )
+    expect(empty).toHaveLength(0)
   })
 })
 
