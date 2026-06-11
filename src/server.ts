@@ -19,13 +19,13 @@ const pkg = require("../package.json") as { version: string }
 const SERVER_NAME = "fenek-portfolio-companion"
 export const SERVER_VERSION = pkg.version
 
-const SERVER_INSTRUCTIONS = `This server provides read-only access to the user's brokerage portfolio (Trading 212 in v1). Tools fetch data from broker APIs; none place orders, modify positions, transfer funds, or change any state on the broker's side. Treat results as data, not advice.
+const SERVER_INSTRUCTIONS = `This server provides read-only access to the user's portfolio across brokers, exchanges, and crypto wallets (Trading 212, Bybit including derivatives/Earn/Funding, and keyless on-chain wallets). Tools fetch data from provider APIs; none place orders, modify positions, transfer funds, or change any state on the provider's side. Treat results as data, not advice.
 
 When responding to the user:
 - Surface findings, totals, patterns, and discrepancies. Let the user decide what to do.
 - Do not recommend specific trades, rebalancing, or any action that requires the user to commit or move capital.
 - Do not infer prices, valuations, or P&L beyond what the tools return — broker data is authoritative.
-- If a tool returns 401 or 403, name the missing API-key scope (Account data, Portfolio, Pies - Read, History, Metadata, Orders - Read) so the user can fix it in their broker settings.
+- If a tool returns 401 or 403, name the missing API-key scope so the user can fix it in their broker settings: for Trading 212 — Account data, Portfolio, Pies - Read, History, Metadata, Orders - Read; for Bybit — the read permission groups Unified Trading, Assets/Wallet (funding + balances overview), Earn (staked positions). bybit_get_key_info shows what the Bybit key can access.
 - If multiple currencies appear in totals, do not silently sum them — they are reported per currency by design, FX conversion is intentionally out of scope.`
 
 // Builds the configured low-level Server (tools/prompts handlers wired) WITHOUT

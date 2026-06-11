@@ -4,6 +4,46 @@ All notable changes to this project are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2026-06-11
+
+Full exchange data coverage: every read-only money bucket Bybit and Trading 212
+expose is now reachable, and previously stripped response fields are kept.
+
+### Added
+- **Bybit derivatives** — `bybit_get_derivative_positions`: open USDT/USDC perpetual,
+  futures, inverse, and options positions with side, size, entry/mark price, unrealized
+  and realized P&L, leverage, liquidation price, and TP/SL. Previously invisible.
+- **Bybit Earn** — `bybit_get_earn_positions`: staked and saving balances across flexible
+  savings, on-chain staking, fixed-term deposits, the BYUSDT yield token, and dual-asset
+  products, with APY (normalized to percent) and claimable yield. Earn funds never appear
+  in wallet balances, so they were invisible. Requires the Earn read permission.
+- **Bybit all-account overview** — `bybit_get_balances_overview`: total equity in USD
+  across every account type (Funding wallet, Unified Trading, Earn, Trading Bots, Copy
+  Trading, Launchpool) with per-account coin holdings, plus Funding-wallet quantities.
+  Requires the Assets/Wallet read permission.
+- **Bybit account & margin health** — `bybit_get_account`: total equity, wallet/margin/
+  available balances, perp UPL, margin rates (IM/MM — liquidation-risk indicators), and
+  per-coin equity, unrealized/realized P&L, borrow amount, accrued interest, locked.
+- **Bybit key diagnostics** — `bybit_get_key_info`: read-only flag, permission groups,
+  IP allowlist, expiry (warns within 14 days), margin mode, and UTA status.
+- **Trading 212 exchange hours** — `t212_get_exchanges`: venue working schedules including
+  pre-market, after-hours, and overnight sessions; joins instruments via workingScheduleId.
+- **Trading 212 richer history** — executed orders now include limit/stop price, quantities,
+  time-in-force, and **realized P&L per fill**; dividends include the instrument name,
+  quantity, gross amount per share, and the event kind (ordinary/bonus/interest/...).
+- **Trading 212 honest pies** — pie lists now actually return dividend totals
+  (gained/reinvested/in-cash), goal progress, and status; pie details report the
+  dividend cash action (reinvest vs to cash).
+
+### Changed
+- Trading 212 account data is read from `/equity/account/summary` alone (one HTTP call
+  instead of two) and now includes **all-time realized P&L**; the legacy
+  `/equity/account/cash` endpoint remains as a fallback for older API revisions.
+- Bybit `getAccount` reports the exchange's `totalEquity` (includes derivatives UPL and
+  option value) instead of summing spot coins, and carries perp unrealized P&L.
+- The Bybit key-setup guidance now lists the exact read permission groups (Unified
+  Trading, Assets/Wallet, Earn); tools missing a group fail with an error naming it.
+
 ## [0.3.0] - 2026-06-06
 
 ### Added
@@ -84,6 +124,8 @@ First public release, submitted to the Anthropic MCP Directory.
 - Strictly read-only. API keys stored in the OS keychain. No telemetry; the only
   outbound host is the broker API the user configures.
 
+[0.4.0]: https://github.com/Guck111/fenek-portfolio-companion/releases/tag/v0.4.0
+[0.3.0]: https://github.com/Guck111/fenek-portfolio-companion/releases/tag/v0.3.0
 [0.2.2]: https://github.com/Guck111/fenek-portfolio-companion/releases/tag/v0.2.2
 [0.2.1]: https://github.com/Guck111/fenek-portfolio-companion/releases/tag/v0.2.1
 [0.1.1]: https://github.com/Guck111/fenek-portfolio-companion/releases/tag/v0.1.1

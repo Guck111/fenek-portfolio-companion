@@ -1,5 +1,11 @@
 import type { Money } from "./money.js"
 
+export interface PieDividendTotals {
+  readonly gained: Money
+  readonly reinvested: Money
+  readonly inCash: Money
+}
+
 export interface Pie {
   readonly brokerId: string
   readonly id: string
@@ -8,6 +14,11 @@ export interface Pie {
   readonly currentValue: Money
   readonly unrealizedPnL: Money
   readonly cashBalance?: Money
+  readonly dividends?: PieDividendTotals
+  /** Progress toward the pie's goal, 0..1, when the broker reports one. */
+  readonly progress?: number
+  /** Broker-reported goal status (e.g. AHEAD, ON_TRACK, BEHIND). */
+  readonly status?: string
 }
 
 export interface PieSlice {
@@ -33,4 +44,6 @@ export interface AutoInvestRule {
 export interface PieDetails extends Pie {
   readonly slices: readonly PieSlice[]
   readonly autoInvest?: AutoInvestRule
+  /** What the broker does with dividends paid into the pie (e.g. REINVEST). */
+  readonly dividendCashAction?: string
 }

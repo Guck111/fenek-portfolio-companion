@@ -14,6 +14,7 @@ import {
   T212AccountCash,
   T212AccountSummary,
   T212DividendPage,
+  T212ExchangeList,
   T212HistoricalOrderPage,
   T212InstrumentList,
   T212PieDetails,
@@ -21,6 +22,7 @@ import {
   T212Positions,
   T212TransactionPage,
   type T212DividendItem,
+  type T212Exchange,
   type T212HistoricalOrderItem,
   type T212InstrumentMetadata,
   type T212PieDetails as T212PieDetailsType,
@@ -33,6 +35,8 @@ import {
 const BROKER_ID = "t212"
 const BROKER_NAME = "Trading 212"
 const INSTRUMENT_CACHE_TTL_MS = 6 * 60 * 60 * 1000
+// Upstream refreshes schedules every 10 minutes; the endpoint allows 1 req/30s.
+const EXCHANGE_CACHE_TTL_MS = 10 * 60 * 1000
 
 const TX_KIND_MAP: Record<string, TransactionKind> = {
   DEPOSIT: "deposit",
@@ -57,6 +61,8 @@ export class Trading212Broker implements IBroker {
   private baseCurrency: string | null = null
   private readonly instrumentCatalog = new Map<string, T212InstrumentMetadata>()
   private instrumentCatalogLoadedAt: number | null = null
+  private exchangeCache: readonly T212Exchange[] | null = null
+  private exchangeCacheLoadedAt: number | null = null
 
   authenticate(config: BrokerConfig): Promise<void> {
     const apiKey = config.credentials["T212_API_KEY"]
@@ -73,6 +79,12 @@ export class Trading212Broker implements IBroker {
   async getAccount(): Promise<Account> {
     const client = this.requireClient()
     const summary = await client.getJson("/equity/account/summary", T212AccountSummary)
+    const fromSummary = mapAccountFromSummary(summary)
+    if (fromSummary !== null) {
+      this.baseCurrency = fromSummary.currency
+      return fromSummary
+    }
+    // Legacy fallback: older API revisions kept cash outside the summary.
     const cash = await client.getJson("/equity/account/cash", T212AccountCash)
     const ccy = summary.currencyCode ?? summary.currency ?? (await this.resolveBaseCurrency())
     this.baseCurrency = ccy
@@ -160,6 +172,22 @@ export class Trading212Broker implements IBroker {
     return client.getJson("/equity/orders", T212OpenOrders)
   }
 
+  async getExchanges(): Promise<readonly T212Exchange[]> {
+    const loadedAt = this.exchangeCacheLoadedAt
+    if (
+      this.exchangeCache !== null &&
+      loadedAt !== null &&
+      Date.now() - loadedAt < EXCHANGE_CACHE_TTL_MS
+    ) {
+      return this.exchangeCache
+    }
+    const client = this.requireClient()
+    const list = await client.getJson("/equity/metadata/exchanges", T212ExchangeList)
+    this.exchangeCache = list
+    this.exchangeCacheLoadedAt = Date.now()
+    return list
+  }
+
   async getOrderHistory(opts: PageOpts): Promise<Page<T212HistoricalOrderItem>> {
     const client = this.requireClient()
     const page = await client.getJson(
@@ -218,6 +246,32 @@ export function money(amount: number, currency: string): Money {
   return { amount, currency }
 }
 
+// Maps the documented summary shape (nested cash/investments) to a domain
+// Account. Returns null when the response carries no nested data (legacy
+// revision) or no resolvable currency — the caller then falls back to the
+// undocumented-but-still-served /equity/account/cash endpoint.
+export function mapAccountFromSummary(summary: T212AccountSummary): Account | null {
+  if (summary.cash === undefined && summary.investments === undefined) return null
+  const ccy = summary.currency ?? summary.currencyCode
+  if (ccy === undefined) return null
+  return {
+    brokerId: BROKER_ID,
+    accountId: summary.id !== undefined ? String(summary.id) : "unknown",
+    currency: ccy,
+    cash: money(summary.cash?.availableToTrade ?? 0, ccy),
+    totalValue: money(summary.totalValue ?? 0, ccy),
+    ...(summary.investments?.totalCost !== undefined
+      ? { invested: money(summary.investments.totalCost, ccy) }
+      : {}),
+    ...(summary.investments?.unrealizedProfitLoss !== undefined
+      ? { unrealizedPnL: money(summary.investments.unrealizedProfitLoss, ccy) }
+      : {}),
+    ...(summary.investments?.realizedProfitLoss !== undefined
+      ? { realizedPnL: money(summary.investments.realizedProfitLoss, ccy) }
+      : {}),
+  }
+}
+
 export function mapPosition(t212: T212Position): Position {
   const native = t212.instrument.currency
   const account = t212.walletImpact.currency
@@ -250,14 +304,21 @@ export function mapTransaction(item: T212TransactionItem): Transaction {
 export function mapDividend(item: T212DividendItem, fallbackCurrency: string): Dividend {
   const ccy = item.currency ?? fallbackCurrency
   const amount = item.amount ?? 0
+  const perShareCcy = item.tickerCurrency ?? item.instrument?.currency ?? ccy
   return {
     brokerId: BROKER_ID,
     id: item.reference,
     ticker: item.ticker,
     instrumentId: item.ticker,
+    ...(item.instrument?.name !== undefined ? { name: item.instrument.name } : {}),
     grossAmount: money(amount, ccy),
     netAmount: money(amount, ccy),
+    ...(item.grossAmountPerShare !== undefined
+      ? { amountPerShare: money(item.grossAmountPerShare, perShareCcy) }
+      : {}),
+    ...(item.quantity !== undefined ? { quantity: item.quantity } : {}),
     paidDate: item.paidOn ?? item.dateTime ?? "",
+    ...(item.type !== undefined ? { kind: item.type } : {}),
   }
 }
 
@@ -270,6 +331,15 @@ export function mapPieListEntry(entry: T212PieListEntry, currency: string): Pie 
     currentValue: money(entry.result.priceAvgValue, currency),
     unrealizedPnL: money(entry.result.priceAvgResult, currency),
     cashBalance: money(entry.cash, currency),
+    dividends: {
+      gained: money(entry.dividendDetails.gained, currency),
+      reinvested: money(entry.dividendDetails.reinvested, currency),
+      inCash: money(entry.dividendDetails.inCash, currency),
+    },
+    ...(entry.progress !== null && entry.progress !== undefined
+      ? { progress: entry.progress }
+      : {}),
+    ...(entry.status !== null && entry.status !== undefined ? { status: entry.status } : {}),
   }
 }
 
@@ -289,6 +359,7 @@ export function mapPieDetails(
     currentValue: money(totalCurrent, currency),
     unrealizedPnL: money(totalCurrent - totalInvested, currency),
     slices,
+    dividendCashAction: details.settings.dividendCashAction,
   }
 }
 

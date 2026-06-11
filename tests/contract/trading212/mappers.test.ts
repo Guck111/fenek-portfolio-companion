@@ -6,6 +6,7 @@ import fs from "node:fs"
 import {
   buildHistoryPath,
   extractCursor,
+  mapAccountFromSummary,
   mapDividend,
   mapPieDetails,
   mapPieListEntry,
@@ -13,7 +14,9 @@ import {
   mapTransaction,
 } from "../../../src/brokers/trading212/index.js"
 import {
+  T212DividendItem,
   T212DividendPage,
+  T212HistoricalOrderItem,
   T212PieDetails,
   T212PieList,
   T212Positions,
@@ -120,5 +123,178 @@ describe("trading212 mappers", () => {
   it("extractCursor returns undefined for null and malformed paths", () => {
     expect(extractCursor(null)).toBeUndefined()
     expect(extractCursor("/no/cursor/here")).toBeUndefined()
+  })
+})
+
+describe("pie enrichment", () => {
+  it("carries pie dividend totals, progress and status into the domain", () => {
+    const pie = mapPieListEntry(
+      {
+        id: 7,
+        cash: 1.5,
+        dividendDetails: { gained: 10, reinvested: 8, inCash: 2 },
+        result: {
+          priceAvgInvestedValue: 100,
+          priceAvgValue: 110,
+          priceAvgResult: 10,
+          priceAvgResultCoef: 0.1,
+        },
+        progress: 0.55,
+        status: "AHEAD",
+      },
+      "EUR",
+    )
+    expect(pie.dividends?.gained).toEqual({ amount: 10, currency: "EUR" })
+    expect(pie.dividends?.reinvested).toEqual({ amount: 8, currency: "EUR" })
+    expect(pie.dividends?.inCash).toEqual({ amount: 2, currency: "EUR" })
+    expect(pie.progress).toBe(0.55)
+    expect(pie.status).toBe("AHEAD")
+  })
+
+  it("omits progress and status when T212 sends null", () => {
+    const pie = mapPieListEntry(
+      {
+        id: 8,
+        cash: 0,
+        dividendDetails: { gained: 0, reinvested: 0, inCash: 0 },
+        result: {
+          priceAvgInvestedValue: 1,
+          priceAvgValue: 1,
+          priceAvgResult: 0,
+          priceAvgResultCoef: 0,
+        },
+        progress: null,
+        status: null,
+      },
+      "EUR",
+    )
+    expect(pie.progress).toBeUndefined()
+    expect(pie.status).toBeUndefined()
+  })
+
+  it("exposes the pie dividend cash action on details", () => {
+    const details = T212PieDetails.parse(readFixture("pie_details.json"))
+    const mapped = mapPieDetails(details, "EUR", () => undefined)
+    expect(mapped.dividendCashAction).toBeDefined()
+  })
+})
+
+describe("order history full parse", () => {
+  it("keeps limit/stop prices, quantities, timeInForce and per-fill realized P&L", () => {
+    const item = T212HistoricalOrderItem.parse({
+      order: {
+        id: 1,
+        strategy: "QUANTITY",
+        type: "LIMIT",
+        ticker: "AAPL_US_EQ",
+        status: "FILLED",
+        value: 100,
+        filledValue: 100,
+        currency: "USD",
+        extendedHours: false,
+        initiatedFrom: "WEB",
+        side: "BUY",
+        createdAt: "2026-01-01T00:00:00Z",
+        instrument: { ticker: "AAPL_US_EQ", name: "Apple", isin: "US0378331005", currency: "USD" },
+        limitPrice: 99.5,
+        stopPrice: null,
+        quantity: 1,
+        filledQuantity: 1,
+        timeInForce: "DAY",
+      },
+      fill: {
+        id: 2,
+        quantity: 1,
+        price: 99.5,
+        type: "TRADE",
+        tradingMethod: "TOTV",
+        filledAt: "2026-01-02T00:00:00Z",
+        walletImpact: {
+          currency: "USD",
+          netValue: -99.5,
+          fxRate: 1,
+          realisedProfitLoss: 12.34,
+          taxes: [],
+        },
+      },
+    })
+    expect(item.order.limitPrice).toBe(99.5)
+    expect(item.order.quantity).toBe(1)
+    expect(item.order.timeInForce).toBe("DAY")
+    expect(item.fill?.walletImpact.realisedProfitLoss).toBe(12.34)
+  })
+})
+
+describe("dividend full parse", () => {
+  it("maps dividend instrument name, quantity, per-share amount and kind", () => {
+    const d = mapDividend(
+      T212DividendItem.parse({
+        ticker: "AAPL_US_EQ",
+        reference: "r1",
+        amount: 5,
+        currency: "EUR",
+        grossAmountPerShare: 0.25,
+        quantity: 20,
+        paidOn: "2026-02-01T00:00:00Z",
+        type: "ORDINARY",
+        instrument: { ticker: "AAPL_US_EQ", name: "Apple", isin: "US0378331005", currency: "USD" },
+        tickerCurrency: "USD",
+      }),
+      "EUR",
+    )
+    expect(d.name).toBe("Apple")
+    expect(d.quantity).toBe(20)
+    expect(d.amountPerShare).toEqual({ amount: 0.25, currency: "USD" })
+    expect(d.kind).toBe("ORDINARY")
+  })
+
+  it("omits enrichment fields when the API does not send them", () => {
+    const d = mapDividend({ ticker: "T", reference: "r2", amount: 1, currency: "EUR" }, "EUR")
+    expect(d.name).toBeUndefined()
+    expect(d.quantity).toBeUndefined()
+    expect(d.amountPerShare).toBeUndefined()
+    expect(d.kind).toBeUndefined()
+  })
+})
+
+describe("mapAccountFromSummary", () => {
+  it("builds a full Account from the new summary shape (no /cash call needed)", () => {
+    const acc = mapAccountFromSummary({
+      id: 123,
+      currency: "EUR",
+      totalValue: 1500.5,
+      cash: { availableToTrade: 100.25, inPies: 20, reservedForOrders: 5 },
+      investments: {
+        currentValue: 1375.25,
+        realizedProfitLoss: 42.42,
+        totalCost: 1300,
+        unrealizedProfitLoss: 75.25,
+      },
+    })
+    expect(acc).not.toBeNull()
+    expect(acc?.accountId).toBe("123")
+    expect(acc?.currency).toBe("EUR")
+    expect(acc?.cash).toEqual({ amount: 100.25, currency: "EUR" })
+    expect(acc?.invested).toEqual({ amount: 1300, currency: "EUR" })
+    expect(acc?.totalValue).toEqual({ amount: 1500.5, currency: "EUR" })
+    expect(acc?.unrealizedPnL).toEqual({ amount: 75.25, currency: "EUR" })
+    expect(acc?.realizedPnL).toEqual({ amount: 42.42, currency: "EUR" })
+  })
+
+  it("returns null for the legacy summary shape so getAccount falls back to /cash", () => {
+    expect(mapAccountFromSummary({ id: 1, currencyCode: "USD" })).toBeNull()
+  })
+
+  it("returns null when nested data is present but the currency is unknown", () => {
+    expect(mapAccountFromSummary({ id: 1, cash: { availableToTrade: 5 } })).toBeNull()
+  })
+
+  it("omits Money fields whose source numbers are absent", () => {
+    const acc = mapAccountFromSummary({ id: 9, currency: "USD", cash: { availableToTrade: 7 } })
+    expect(acc?.cash).toEqual({ amount: 7, currency: "USD" })
+    expect(acc?.totalValue).toEqual({ amount: 0, currency: "USD" })
+    expect(acc?.invested).toBeUndefined()
+    expect(acc?.unrealizedPnL).toBeUndefined()
+    expect(acc?.realizedPnL).toBeUndefined()
   })
 })

@@ -5,15 +5,25 @@
     "list": [
       {
         "accountType": "UNIFIED",
-        "totalEquity": "31000.00",
+        "totalEquity": "31100.00",
         "totalWalletBalance": "31000.00",
+        "totalMarginBalance": "30950.00",
+        "totalAvailableBalance": "28000.00",
+        "totalPerpUPL": "-12.5",
+        "accountIMRate": "0.012",
+        "accountMMRate": "0.002",
         "coin": [
           {
             "coin": "BTC",
             "walletBalance": "0.5",
             "usdValue": "30000.00",
-            "free": "0.5",
-            "locked": "0"
+            "equity": "0.5",
+            "unrealisedPnl": "5",
+            "cumRealisedPnl": "-1",
+            "borrowAmount": "0",
+            "accruedInterest": "",
+            "locked": "0.1",
+            "free": "0.5"
           },
           {
             "coin": "USDT",

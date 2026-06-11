@@ -126,6 +126,8 @@ export const T212DividendItem = z.object({
   grossAmountPerShare: z.number().optional(),
   quantity: z.number().optional(),
   paidOn: z.string().optional(),
+  instrument: T212Instrument.optional(),
+  tickerCurrency: z.string().optional(),
 })
 export type T212DividendItem = z.infer<typeof T212DividendItem>
 
@@ -143,6 +145,7 @@ export const T212OrderFillWalletImpact = z.object({
   currency: z.string(),
   netValue: z.number(),
   fxRate: z.number(),
+  realisedProfitLoss: z.number().nullable().optional(),
   taxes: z.array(T212OrderTax),
 })
 
@@ -171,6 +174,11 @@ export const T212HistoricalOrderHeader = z.object({
   side: z.string(),
   createdAt: z.string(),
   instrument: T212Instrument,
+  limitPrice: z.number().nullable().optional(),
+  stopPrice: z.number().nullable().optional(),
+  quantity: z.number().nullable().optional(),
+  filledQuantity: z.number().nullable().optional(),
+  timeInForce: z.string().nullable().optional(),
 })
 
 export const T212HistoricalOrderItem = z.object({
@@ -198,13 +206,48 @@ export type T212InstrumentMetadata = z.infer<typeof T212InstrumentMetadata>
 
 export const T212InstrumentList = z.array(T212InstrumentMetadata)
 
+// GET /equity/metadata/exchanges — exchange list with working schedules.
+// timeEvents cover the full session calendar: OPEN, CLOSE, BREAK_START,
+// BREAK_END, PRE_MARKET_OPEN, AFTER_HOURS_OPEN, AFTER_HOURS_CLOSE, OVERNIGHT_OPEN.
+export const T212TimeEvent = z.object({
+  date: z.string(),
+  type: z.string(),
+})
+export const T212WorkingSchedule = z.object({
+  id: z.number(),
+  timeEvents: z.array(T212TimeEvent),
+})
+export const T212Exchange = z.object({
+  id: z.number(),
+  name: z.string(),
+  workingSchedules: z.array(T212WorkingSchedule).nullable().optional(),
+})
+export const T212ExchangeList = z.array(T212Exchange)
+export type T212Exchange = z.infer<typeof T212Exchange>
+
 // Account summary — granted only when API key has Account scope.
 // All fields optional: T212 has changed this shape across beta revisions
 // and tolerating absence is safer than hard-failing on every drift.
+// The documented shape (docs.trading212.com/api) nests cash and investments;
+// `currencyCode` is a legacy alias kept for tolerance.
+export const T212AccountSummaryCash = z.object({
+  availableToTrade: z.number().optional(),
+  inPies: z.number().optional(),
+  reservedForOrders: z.number().optional(),
+})
+export const T212AccountSummaryInvestments = z.object({
+  currentValue: z.number().optional(),
+  realizedProfitLoss: z.number().optional(),
+  totalCost: z.number().optional(),
+  unrealizedProfitLoss: z.number().optional(),
+})
 export const T212AccountSummary = z.object({
   id: z.number().optional(),
   currencyCode: z.string().optional(),
   currency: z.string().optional(),
+  totalValue: z.number().optional(),
+  cash: T212AccountSummaryCash.optional(),
+  investments: T212AccountSummaryInvestments.optional(),
 })
 export type T212AccountSummary = z.infer<typeof T212AccountSummary>
 

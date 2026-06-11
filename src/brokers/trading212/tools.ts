@@ -39,7 +39,7 @@ export function createTrading212Tools(broker: Trading212Broker): readonly ToolBi
         name: "t212_get_account",
         annotations: { title: "Trading 212: Account Summary" },
         description:
-          "Returns Trading 212 account summary: account id, base currency, free cash, invested capital, total portfolio value, unrealized P&L. Requires the API key to have the 'Account' scope enabled.",
+          "Returns Trading 212 account summary: account id, base currency, free cash, invested capital, total portfolio value, unrealized P&L, and all-time realized P&L when the API provides it. Requires the API key to have the 'Account' scope enabled.",
         inputSchema: { type: "object", properties: {}, additionalProperties: false },
       },
       handler: async (args) => {
@@ -102,7 +102,7 @@ export function createTrading212Tools(broker: Trading212Broker): readonly ToolBi
         name: "t212_get_dividends",
         annotations: { title: "Trading 212: Dividends" },
         description:
-          "Returns paginated Trading 212 dividend payments. Default limit 20, max 50. Pass `cursor` from a previous response's nextCursor to fetch the next page.",
+          "Returns paginated Trading 212 dividend payments with instrument name, quantity held, gross amount per share, and event kind (ORDINARY, BONUS, INTEREST, ...). Default limit 20, max 50. Pass `cursor` from a previous response's nextCursor to fetch the next page.",
         inputSchema: {
           type: "object",
           properties: {
@@ -144,7 +144,7 @@ export function createTrading212Tools(broker: Trading212Broker): readonly ToolBi
         name: "t212_get_order_history",
         annotations: { title: "Trading 212: Order History" },
         description:
-          "Returns paginated executed-order history for Trading 212: order details, fill price/quantity, FX rate, taxes/fees per fill. Use for trade history analysis.",
+          "Returns paginated executed-order history for Trading 212: order details (limit/stop price, quantities, time in force), fill price/quantity, FX rate, taxes/fees, and realized P&L per fill. Use for trade history analysis.",
         inputSchema: {
           type: "object",
           properties: {
@@ -172,6 +172,20 @@ export function createTrading212Tools(broker: Trading212Broker): readonly ToolBi
         const r = parseArgs(EmptyArgs, args)
         if (!r.ok) return r.result
         return safeRun(() => broker.getOpenOrders())
+      },
+    },
+    {
+      tool: {
+        name: "t212_get_exchanges",
+        annotations: { title: "Trading 212: Exchange Working Hours" },
+        description:
+          "Lists Trading 212 exchanges with their working schedules — time events for OPEN, CLOSE, BREAK_START/END, PRE_MARKET_OPEN, AFTER_HOURS_OPEN/CLOSE, OVERNIGHT_OPEN. Join instruments to schedules via workingScheduleId from t212_search_instrument. Cached for 10 minutes. Requires the 'Metadata' scope.",
+        inputSchema: { type: "object", properties: {}, additionalProperties: false },
+      },
+      handler: async (args) => {
+        const r = parseArgs(EmptyArgs, args)
+        if (!r.ok) return r.result
+        return safeRun(() => broker.getExchanges())
       },
     },
     {
