@@ -71,6 +71,77 @@ export const BybitPositionListResult = z.object({
 export type BybitPosition = z.infer<typeof BybitPosition>
 export type BybitPositionListResult = z.infer<typeof BybitPositionListResult>
 
+// Earn position endpoints (docs/v5/finance/earn/*). All require the "Earn"
+// key permission. Numbers arrive as strings; "" means "no value".
+// GET /v5/earn/position?category=FlexibleSaving|OnChain → result.list[].
+export const BybitEarnPositionItem = z.object({
+  coin: z.string(),
+  productId: z.string().optional(),
+  amount: z.string().optional(),
+  totalPnl: z.string().optional(),
+  claimableYield: z.string().optional(),
+  status: z.string().optional(),
+  autoReinvest: z.string().optional(),
+  availableAmount: z.string().optional(),
+  settlementTime: z.string().optional(),
+})
+export const BybitEarnPositionResult = z.object({
+  list: z.array(BybitEarnPositionItem),
+})
+export type BybitEarnPositionResult = z.infer<typeof BybitEarnPositionResult>
+
+// GET /v5/earn/fixed-term/position → result.list[]. APY arrives as "5.50%".
+export const BybitFixedTermApyEntry = z.object({
+  coin: z.string().optional(),
+  apy: z.string().optional(),
+  expectReturnEarning: z.string().optional(),
+})
+export const BybitFixedTermPositionItem = z.object({
+  positionId: z.string().optional(),
+  productId: z.string().optional(),
+  category: z.string().optional(),
+  coin: z.string(),
+  amount: z.string().optional(),
+  status: z.string().optional(),
+  settlementTime: z.string().optional(),
+  interestCoinApyList: z.array(BybitFixedTermApyEntry).nullable().optional(),
+})
+export const BybitFixedTermPositionResult = z.object({
+  list: z.array(BybitFixedTermPositionItem),
+})
+export type BybitFixedTermPositionResult = z.infer<typeof BybitFixedTermPositionResult>
+
+// GET /v5/earn/token/position?coin=BYUSDT → flat result (no list).
+// aprE8/bonusAprE8 are integers scaled by 1e8.
+export const BybitTokenPositionResult = z.object({
+  totalAmount: z.string().optional(),
+  totalYield: z.string().optional(),
+  yesterdayYield: z.string().optional(),
+  aprE8: z.number().optional(),
+  bonusAprE8: z.number().optional(),
+})
+export type BybitTokenPositionResult = z.infer<typeof BybitTokenPositionResult>
+
+// GET /v5/earn/advance/position?category=DualAssets → result.list[].
+export const BybitDualAssetPositionItem = z.object({
+  positionId: z.string().optional(),
+  productId: z.string().optional(),
+  investCoin: z.string(),
+  amount: z.string().optional(),
+  apyE8: z.union([z.string(), z.number()]).optional(),
+  direction: z.string().optional(),
+  targetPrice: z.string().optional(),
+  settlementTime: z.union([z.string(), z.number()]).optional(),
+  status: z.string().optional(),
+  expectReturnCoin: z.string().optional(),
+  expectReturnAmount: z.string().optional(),
+})
+export const BybitDualAssetPositionResult = z.object({
+  list: z.array(BybitDualAssetPositionItem),
+  nextPageCursor: z.string().optional(),
+})
+export type BybitDualAssetPositionResult = z.infer<typeof BybitDualAssetPositionResult>
+
 // GET /v5/user/query-api → result. Works with any permission set — used for
 // key self-diagnostics. Lenient: Bybit adds fields here often.
 export const BybitApiKeyInfo = z.object({

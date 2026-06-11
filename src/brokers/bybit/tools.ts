@@ -67,6 +67,20 @@ export function createBybitTools(broker: BybitBroker): readonly ToolBinding[] {
     },
     {
       tool: {
+        name: "bybit_get_earn_positions",
+        annotations: { title: "Bybit: Earn / Staked Positions" },
+        description:
+          "Returns staked and saving balances across Bybit Earn families — flexible savings, on-chain staking, fixed-term deposits, the BYUSDT yield token, and dual-asset products — with amount, APY (percent), claimable/accrued yield, status, and settlement time where reported. These funds do NOT appear in bybit_get_positions or bybit_get_account. Requires the Earn read permission on the API key; per-family failures are listed in a `failures` field.",
+        inputSchema: { type: "object", properties: {}, additionalProperties: false },
+      },
+      handler: async (args) => {
+        const r = parseArgs(EmptyArgs, args)
+        if (!r.ok) return r.result
+        return safeRun(() => broker.getEarnPositions())
+      },
+    },
+    {
+      tool: {
         name: "bybit_get_key_info",
         annotations: { title: "Bybit: API Key Diagnostics" },
         description:

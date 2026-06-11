@@ -1,6 +1,7 @@
 import type { Account } from "../../domain/account.js"
 import type { DerivativePosition } from "../../domain/derivative.js"
 import type { Dividend } from "../../domain/dividend.js"
+import type { EarnPosition } from "../../domain/earn.js"
 import type { OpenOrder } from "../../domain/order.js"
 import type { Page } from "../../domain/pagination.js"
 import type { Position } from "../../domain/position.js"
@@ -12,8 +13,12 @@ import { BybitClient } from "./client.js"
 import {
   BybitAccountInfo,
   BybitApiKeyInfo,
+  BybitDualAssetPositionResult,
+  BybitEarnPositionResult,
+  BybitFixedTermPositionResult,
   BybitOrderListResult,
   BybitPositionListResult,
+  BybitTokenPositionResult,
   BybitWalletBalanceResult,
 } from "./schemas.js"
 
@@ -152,6 +157,138 @@ export function assembleAccount(
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000
 const EXPIRY_WARNING_DAYS = 14
+
+// "5.50%" → 5.5 (percent).
+function apyFromPercent(value: string | undefined): number | undefined {
+  if (value === undefined) return undefined
+  return num(value.endsWith("%") ? value.slice(0, -1) : value)
+}
+
+// Bybit *E8 rate fields are fractions scaled by 1e8: 5_000_000 → 0.05 → 5%.
+function apyFromE8(value: string | number | undefined): number | undefined {
+  const raw = typeof value === "number" ? value : num(value)
+  if (raw === undefined) return undefined
+  return (raw / 1e8) * 100
+}
+
+export function mapEarnPositions(
+  result: BybitEarnPositionResult,
+  family: "flexible" | "onchain",
+): EarnPosition[] {
+  const positions: EarnPosition[] = []
+  for (const p of result.list) {
+    const amount = num(p.amount) ?? 0
+    // FlexibleSaving also returns fully-redeemed positions — skip empty ones.
+    if (amount <= 0) continue
+    positions.push({
+      brokerId: BROKER_ID,
+      family,
+      coin: p.coin,
+      amount,
+      ...(p.productId !== undefined ? { productId: p.productId } : {}),
+      ...maybe("claimableYield", num(p.claimableYield)),
+      ...maybe("totalPnl", num(p.totalPnl)),
+      ...(p.status !== undefined ? { status: p.status } : {}),
+      ...(p.settlementTime !== undefined ? { settlementTime: p.settlementTime } : {}),
+    })
+  }
+  return positions
+}
+
+export function mapFixedTermPositions(result: BybitFixedTermPositionResult): EarnPosition[] {
+  const positions: EarnPosition[] = []
+  for (const p of result.list) {
+    const amount = num(p.amount) ?? 0
+    if (amount <= 0) continue
+    const apyEntry = p.interestCoinApyList?.[0]
+    positions.push({
+      brokerId: BROKER_ID,
+      family: "fixed-term",
+      coin: p.coin,
+      amount,
+      ...(p.productId !== undefined ? { productId: p.productId } : {}),
+      ...maybe("apy", apyFromPercent(apyEntry?.apy)),
+      ...maybe("expectedReturn", num(apyEntry?.expectReturnEarning)),
+      ...(p.status !== undefined ? { status: p.status } : {}),
+      ...(p.settlementTime !== undefined ? { settlementTime: p.settlementTime } : {}),
+    })
+  }
+  return positions
+}
+
+// The BYUSDT yield token reports one flat aggregate, not a list.
+export function mapTokenPosition(result: BybitTokenPositionResult): EarnPosition[] {
+  const amount = num(result.totalAmount) ?? 0
+  if (amount <= 0) return []
+  return [
+    {
+      brokerId: BROKER_ID,
+      family: "token",
+      coin: "BYUSDT",
+      amount,
+      ...maybe("totalPnl", num(result.totalYield)),
+      ...maybe("apy", apyFromE8(result.aprE8)),
+    },
+  ]
+}
+
+export function mapDualAssetPositions(result: BybitDualAssetPositionResult): EarnPosition[] {
+  const positions: EarnPosition[] = []
+  for (const p of result.list) {
+    const amount = num(p.amount) ?? 0
+    if (amount <= 0) continue
+    positions.push({
+      brokerId: BROKER_ID,
+      family: "dual-asset",
+      coin: p.investCoin,
+      amount,
+      ...(p.productId !== undefined ? { productId: p.productId } : {}),
+      ...maybe("apy", apyFromE8(p.apyE8)),
+      ...maybe("expectedReturn", num(p.expectReturnAmount)),
+      ...(p.status !== undefined ? { status: p.status } : {}),
+      ...(p.settlementTime !== undefined ? { settlementTime: String(p.settlementTime) } : {}),
+    })
+  }
+  return positions
+}
+
+export interface EarnFamilyOutcome {
+  readonly family: string
+  readonly positions?: readonly EarnPosition[]
+  readonly error?: unknown
+}
+
+export interface BybitEarnReport {
+  readonly positions: readonly EarnPosition[]
+  readonly failures: readonly { readonly family: string; readonly message: string }[]
+}
+
+// Folds per-family outcomes into one report. When every family failed and at
+// least one failure is an auth rejection, the whole key lacks the Earn
+// permission — surface that as a single actionable error instead of noise.
+export function buildEarnReport(outcomes: readonly EarnFamilyOutcome[]): BybitEarnReport {
+  const positions: EarnPosition[] = []
+  const failures: { family: string; message: string }[] = []
+  let sawAuthError = false
+  for (const o of outcomes) {
+    if (o.error !== undefined) {
+      if (o.error instanceof AuthError) sawAuthError = true
+      failures.push({
+        family: o.family,
+        message: o.error instanceof Error ? o.error.message : String(o.error),
+      })
+      continue
+    }
+    positions.push(...(o.positions ?? []))
+  }
+  if (failures.length === outcomes.length && outcomes.length > 0 && sawAuthError) {
+    throw new AuthError(
+      "Bybit API key lacks the Earn read permission — enable Earn in the key settings to read staked positions.",
+      BROKER_ID,
+    )
+  }
+  return { positions, failures }
+}
 
 export interface BybitKeyInfoReport {
   readonly readOnly?: boolean
@@ -381,6 +518,64 @@ export class BybitBroker implements IBroker {
       })
     })
     return { positions, failures }
+  }
+
+  // Staked/saving balances across Earn families. These funds never appear in
+  // wallet-balance, so without this call they are invisible. Families fail
+  // independently; buildEarnReport folds outcomes and raises a single
+  // permission error when the key has no Earn access at all.
+  async getEarnPositions(): Promise<BybitEarnReport> {
+    const client = this.requireClient()
+    const families: readonly { family: string; run: () => Promise<EarnPosition[]> }[] = [
+      {
+        family: "flexible",
+        run: () =>
+          client
+            .getJson("/v5/earn/position", { category: "FlexibleSaving" }, BybitEarnPositionResult)
+            .then((r) => mapEarnPositions(r, "flexible")),
+      },
+      {
+        family: "onchain",
+        run: () =>
+          client
+            .getJson("/v5/earn/position", { category: "OnChain" }, BybitEarnPositionResult)
+            .then((r) => mapEarnPositions(r, "onchain")),
+      },
+      {
+        family: "fixed-term",
+        run: () =>
+          client
+            .getJson("/v5/earn/fixed-term/position", {}, BybitFixedTermPositionResult)
+            .then(mapFixedTermPositions),
+      },
+      {
+        family: "token",
+        run: () =>
+          client
+            .getJson("/v5/earn/token/position", { coin: "BYUSDT" }, BybitTokenPositionResult)
+            .then(mapTokenPosition),
+      },
+      {
+        family: "dual-asset",
+        run: () =>
+          client
+            .getJson(
+              "/v5/earn/advance/position",
+              { category: "DualAssets", limit: "20" },
+              BybitDualAssetPositionResult,
+            )
+            .then(mapDualAssetPositions),
+      },
+    ]
+    const settled = await Promise.allSettled(families.map((f) => f.run()))
+    return buildEarnReport(
+      settled.map((s, i) => {
+        const family = families[i]?.family ?? "unknown"
+        return s.status === "fulfilled"
+          ? { family, positions: s.value }
+          : { family, error: s.reason as unknown }
+      }),
+    )
   }
 
   // Key diagnostics. /v5/user/query-api answers for any permission set;
