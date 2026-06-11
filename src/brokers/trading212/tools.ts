@@ -176,6 +176,20 @@ export function createTrading212Tools(broker: Trading212Broker): readonly ToolBi
     },
     {
       tool: {
+        name: "t212_get_exchanges",
+        annotations: { title: "Trading 212: Exchange Working Hours" },
+        description:
+          "Lists Trading 212 exchanges with their working schedules — time events for OPEN, CLOSE, BREAK_START/END, PRE_MARKET_OPEN, AFTER_HOURS_OPEN/CLOSE, OVERNIGHT_OPEN. Join instruments to schedules via workingScheduleId from t212_search_instrument. Cached for 10 minutes. Requires the 'Metadata' scope.",
+        inputSchema: { type: "object", properties: {}, additionalProperties: false },
+      },
+      handler: async (args) => {
+        const r = parseArgs(EmptyArgs, args)
+        if (!r.ok) return r.result
+        return safeRun(() => broker.getExchanges())
+      },
+    },
+    {
+      tool: {
         name: "t212_search_instrument",
         annotations: { title: "Trading 212: Search Instruments" },
         description:

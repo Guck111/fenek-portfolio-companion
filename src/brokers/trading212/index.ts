@@ -14,6 +14,7 @@ import {
   T212AccountCash,
   T212AccountSummary,
   T212DividendPage,
+  T212ExchangeList,
   T212HistoricalOrderPage,
   T212InstrumentList,
   T212PieDetails,
@@ -21,6 +22,7 @@ import {
   T212Positions,
   T212TransactionPage,
   type T212DividendItem,
+  type T212Exchange,
   type T212HistoricalOrderItem,
   type T212InstrumentMetadata,
   type T212PieDetails as T212PieDetailsType,
@@ -33,6 +35,8 @@ import {
 const BROKER_ID = "t212"
 const BROKER_NAME = "Trading 212"
 const INSTRUMENT_CACHE_TTL_MS = 6 * 60 * 60 * 1000
+// Upstream refreshes schedules every 10 minutes; the endpoint allows 1 req/30s.
+const EXCHANGE_CACHE_TTL_MS = 10 * 60 * 1000
 
 const TX_KIND_MAP: Record<string, TransactionKind> = {
   DEPOSIT: "deposit",
@@ -57,6 +61,8 @@ export class Trading212Broker implements IBroker {
   private baseCurrency: string | null = null
   private readonly instrumentCatalog = new Map<string, T212InstrumentMetadata>()
   private instrumentCatalogLoadedAt: number | null = null
+  private exchangeCache: readonly T212Exchange[] | null = null
+  private exchangeCacheLoadedAt: number | null = null
 
   authenticate(config: BrokerConfig): Promise<void> {
     const apiKey = config.credentials["T212_API_KEY"]
@@ -164,6 +170,22 @@ export class Trading212Broker implements IBroker {
   async getOpenOrders(): Promise<readonly unknown[]> {
     const client = this.requireClient()
     return client.getJson("/equity/orders", T212OpenOrders)
+  }
+
+  async getExchanges(): Promise<readonly T212Exchange[]> {
+    const loadedAt = this.exchangeCacheLoadedAt
+    if (
+      this.exchangeCache !== null &&
+      loadedAt !== null &&
+      Date.now() - loadedAt < EXCHANGE_CACHE_TTL_MS
+    ) {
+      return this.exchangeCache
+    }
+    const client = this.requireClient()
+    const list = await client.getJson("/equity/metadata/exchanges", T212ExchangeList)
+    this.exchangeCache = list
+    this.exchangeCacheLoadedAt = Date.now()
+    return list
   }
 
   async getOrderHistory(opts: PageOpts): Promise<Page<T212HistoricalOrderItem>> {

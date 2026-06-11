@@ -5,6 +5,7 @@ import fs from "node:fs"
 
 import {
   T212DividendPage,
+  T212ExchangeList,
   T212HistoricalOrderPage,
   T212InstrumentList,
   T212PieDetails,
@@ -54,5 +55,13 @@ describe("trading212 schemas", () => {
   it("parses /equity/metadata/instruments", () => {
     const result = T212InstrumentList.safeParse(readFixture("instruments.json"))
     expect(result.success).toBe(true)
+  })
+
+  it("parses /equity/metadata/exchanges (schedules optional)", () => {
+    const result = T212ExchangeList.safeParse(readFixture("exchanges.json"))
+    expect(result.success).toBe(true)
+    if (!result.success) return
+    expect(result.data[0]?.workingSchedules?.[0]?.timeEvents[0]?.type).toBe("PRE_MARKET_OPEN")
+    expect(result.data[1]?.workingSchedules).toBeUndefined()
   })
 })

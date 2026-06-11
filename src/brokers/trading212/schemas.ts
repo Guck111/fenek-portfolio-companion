@@ -206,6 +206,25 @@ export type T212InstrumentMetadata = z.infer<typeof T212InstrumentMetadata>
 
 export const T212InstrumentList = z.array(T212InstrumentMetadata)
 
+// GET /equity/metadata/exchanges — exchange list with working schedules.
+// timeEvents cover the full session calendar: OPEN, CLOSE, BREAK_START,
+// BREAK_END, PRE_MARKET_OPEN, AFTER_HOURS_OPEN, AFTER_HOURS_CLOSE, OVERNIGHT_OPEN.
+export const T212TimeEvent = z.object({
+  date: z.string(),
+  type: z.string(),
+})
+export const T212WorkingSchedule = z.object({
+  id: z.number(),
+  timeEvents: z.array(T212TimeEvent),
+})
+export const T212Exchange = z.object({
+  id: z.number(),
+  name: z.string(),
+  workingSchedules: z.array(T212WorkingSchedule).nullable().optional(),
+})
+export const T212ExchangeList = z.array(T212Exchange)
+export type T212Exchange = z.infer<typeof T212Exchange>
+
 // Account summary — granted only when API key has Account scope.
 // All fields optional: T212 has changed this shape across beta revisions
 // and tolerating absence is safer than hard-failing on every drift.
