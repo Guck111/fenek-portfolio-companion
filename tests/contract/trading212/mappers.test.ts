@@ -14,7 +14,9 @@ import {
   mapTransaction,
 } from "../../../src/brokers/trading212/index.js"
 import {
+  T212DividendItem,
   T212DividendPage,
+  T212HistoricalOrderItem,
   T212PieDetails,
   T212PieList,
   T212Positions,
@@ -121,6 +123,84 @@ describe("trading212 mappers", () => {
   it("extractCursor returns undefined for null and malformed paths", () => {
     expect(extractCursor(null)).toBeUndefined()
     expect(extractCursor("/no/cursor/here")).toBeUndefined()
+  })
+})
+
+describe("order history full parse", () => {
+  it("keeps limit/stop prices, quantities, timeInForce and per-fill realized P&L", () => {
+    const item = T212HistoricalOrderItem.parse({
+      order: {
+        id: 1,
+        strategy: "QUANTITY",
+        type: "LIMIT",
+        ticker: "AAPL_US_EQ",
+        status: "FILLED",
+        value: 100,
+        filledValue: 100,
+        currency: "USD",
+        extendedHours: false,
+        initiatedFrom: "WEB",
+        side: "BUY",
+        createdAt: "2026-01-01T00:00:00Z",
+        instrument: { ticker: "AAPL_US_EQ", name: "Apple", isin: "US0378331005", currency: "USD" },
+        limitPrice: 99.5,
+        stopPrice: null,
+        quantity: 1,
+        filledQuantity: 1,
+        timeInForce: "DAY",
+      },
+      fill: {
+        id: 2,
+        quantity: 1,
+        price: 99.5,
+        type: "TRADE",
+        tradingMethod: "TOTV",
+        filledAt: "2026-01-02T00:00:00Z",
+        walletImpact: {
+          currency: "USD",
+          netValue: -99.5,
+          fxRate: 1,
+          realisedProfitLoss: 12.34,
+          taxes: [],
+        },
+      },
+    })
+    expect(item.order.limitPrice).toBe(99.5)
+    expect(item.order.quantity).toBe(1)
+    expect(item.order.timeInForce).toBe("DAY")
+    expect(item.fill?.walletImpact.realisedProfitLoss).toBe(12.34)
+  })
+})
+
+describe("dividend full parse", () => {
+  it("maps dividend instrument name, quantity, per-share amount and kind", () => {
+    const d = mapDividend(
+      T212DividendItem.parse({
+        ticker: "AAPL_US_EQ",
+        reference: "r1",
+        amount: 5,
+        currency: "EUR",
+        grossAmountPerShare: 0.25,
+        quantity: 20,
+        paidOn: "2026-02-01T00:00:00Z",
+        type: "ORDINARY",
+        instrument: { ticker: "AAPL_US_EQ", name: "Apple", isin: "US0378331005", currency: "USD" },
+        tickerCurrency: "USD",
+      }),
+      "EUR",
+    )
+    expect(d.name).toBe("Apple")
+    expect(d.quantity).toBe(20)
+    expect(d.amountPerShare).toEqual({ amount: 0.25, currency: "USD" })
+    expect(d.kind).toBe("ORDINARY")
+  })
+
+  it("omits enrichment fields when the API does not send them", () => {
+    const d = mapDividend({ ticker: "T", reference: "r2", amount: 1, currency: "EUR" }, "EUR")
+    expect(d.name).toBeUndefined()
+    expect(d.quantity).toBeUndefined()
+    expect(d.amountPerShare).toBeUndefined()
+    expect(d.kind).toBeUndefined()
   })
 })
 

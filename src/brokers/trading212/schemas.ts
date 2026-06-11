@@ -126,6 +126,8 @@ export const T212DividendItem = z.object({
   grossAmountPerShare: z.number().optional(),
   quantity: z.number().optional(),
   paidOn: z.string().optional(),
+  instrument: T212Instrument.optional(),
+  tickerCurrency: z.string().optional(),
 })
 export type T212DividendItem = z.infer<typeof T212DividendItem>
 
@@ -143,6 +145,7 @@ export const T212OrderFillWalletImpact = z.object({
   currency: z.string(),
   netValue: z.number(),
   fxRate: z.number(),
+  realisedProfitLoss: z.number().nullable().optional(),
   taxes: z.array(T212OrderTax),
 })
 
@@ -171,6 +174,11 @@ export const T212HistoricalOrderHeader = z.object({
   side: z.string(),
   createdAt: z.string(),
   instrument: T212Instrument,
+  limitPrice: z.number().nullable().optional(),
+  stopPrice: z.number().nullable().optional(),
+  quantity: z.number().nullable().optional(),
+  filledQuantity: z.number().nullable().optional(),
+  timeInForce: z.string().nullable().optional(),
 })
 
 export const T212HistoricalOrderItem = z.object({

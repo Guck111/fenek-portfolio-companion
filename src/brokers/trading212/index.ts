@@ -282,14 +282,21 @@ export function mapTransaction(item: T212TransactionItem): Transaction {
 export function mapDividend(item: T212DividendItem, fallbackCurrency: string): Dividend {
   const ccy = item.currency ?? fallbackCurrency
   const amount = item.amount ?? 0
+  const perShareCcy = item.tickerCurrency ?? item.instrument?.currency ?? ccy
   return {
     brokerId: BROKER_ID,
     id: item.reference,
     ticker: item.ticker,
     instrumentId: item.ticker,
+    ...(item.instrument?.name !== undefined ? { name: item.instrument.name } : {}),
     grossAmount: money(amount, ccy),
     netAmount: money(amount, ccy),
+    ...(item.grossAmountPerShare !== undefined
+      ? { amountPerShare: money(item.grossAmountPerShare, perShareCcy) }
+      : {}),
+    ...(item.quantity !== undefined ? { quantity: item.quantity } : {}),
     paidDate: item.paidOn ?? item.dateTime ?? "",
+    ...(item.type !== undefined ? { kind: item.type } : {}),
   }
 }
 
