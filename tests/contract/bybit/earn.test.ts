@@ -135,6 +135,6 @@ describe("bybit buildEarnReport", () => {
         { family: "flexible", error: auth },
         { family: "onchain", error: auth },
       ]),
-    ).toThrowError(/Earn/)
+    ).toThrow(/Earn/)
   })
 })

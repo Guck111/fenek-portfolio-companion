@@ -160,6 +160,19 @@ export function assembleAccount(
 const MS_PER_DAY = 24 * 60 * 60 * 1000
 const EXPIRY_WARNING_DAYS = 14
 
+function errorMessage(error: unknown): string {
+  if (error instanceof Error) return error.message
+  if (typeof error === "string") return error
+  try {
+    // JSON.stringify's lib signature claims `string`, but symbols/functions
+    // and bare undefined really do yield undefined at runtime.
+    const text = JSON.stringify(error) as string | undefined
+    return text ?? "Unknown error"
+  } catch {
+    return "Unknown error"
+  }
+}
+
 // "5.50%" → 5.5 (percent).
 function apyFromPercent(value: string | undefined): number | undefined {
   if (value === undefined) return undefined
@@ -390,10 +403,7 @@ export function buildEarnReport(outcomes: readonly EarnFamilyOutcome[]): BybitEa
   for (const o of outcomes) {
     if (o.error !== undefined) {
       if (o.error instanceof AuthError) sawAuthError = true
-      failures.push({
-        family: o.family,
-        message: o.error instanceof Error ? o.error.message : String(o.error),
-      })
+      failures.push({ family: o.family, message: errorMessage(o.error) })
       continue
     }
     positions.push(...(o.positions ?? []))

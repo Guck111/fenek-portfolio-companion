@@ -10,7 +10,7 @@ export function createGettingStartedTool(): ToolBinding {
       name: "fenek_getting_started",
       annotations: { title: "Fenek: Getting Started" },
       description:
-        "Explains what Fenek Portfolio Companion does, which sources it supports (Trading 212, Solana, TON, Bybit), and how to configure them. Needs no API keys — invoke it before anything is set up. Tool form of the fenek_getting_started prompt, for clients that don't surface MCP prompts.",
+        "Explains what Fenek Portfolio Companion does, which sources it supports (Trading 212, crypto wallets — Solana/TON/Bitcoin/Litecoin/Dogecoin, Bybit incl. derivatives and Earn), and how to configure them. Needs no API keys — invoke it before anything is set up. Tool form of the fenek_getting_started prompt, for clients that don't surface MCP prompts.",
       inputSchema: { type: "object", properties: {}, additionalProperties: false },
     },
     handler: () => Promise.resolve({ content: [{ type: "text", text: GETTING_STARTED_TEXT }] }),

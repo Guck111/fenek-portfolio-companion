@@ -67,11 +67,9 @@ describe("bybit mapFundingBalance", () => {
 
 describe("bybit buildBalancesOverview", () => {
   it("tolerates one source failing and reports it", () => {
-    const report = buildBalancesOverview(
-      { totalEquity: 10, accounts: [] },
-      undefined,
-      [{ source: "funding-balance", message: "boom" }],
-    )
+    const report = buildBalancesOverview({ totalEquity: 10, accounts: [] }, undefined, [
+      { source: "funding-balance", message: "boom" },
+    ])
     expect(report.totalEquity).toBe(10)
     expect(report.failures).toEqual([{ source: "funding-balance", message: "boom" }])
   })
@@ -82,6 +80,6 @@ describe("bybit buildBalancesOverview", () => {
         { source: "asset-overview", message: "denied", error: new AuthError("denied", "bybit") },
         { source: "funding-balance", message: "denied", error: new AuthError("denied", "bybit") },
       ]),
-    ).toThrowError(/Assets|Wallet/)
+    ).toThrow(/Assets|Wallet/)
   })
 })

@@ -42,27 +42,38 @@ Notes and limitations:
 - **Jupiter limit orders (limited).** `crypto_get_limit_orders` reads open orders from Jupiter's public Trigger v1 API (no extra key — `lite-api.jup.ag`). **Heads-up:** Jupiter's current **Limit Order V2 keeps order details private** (hidden until execution), so those orders are not exposed by any public API and won't appear here — an empty result does **not** mean you have none; check jup.ag. Funds locked by open V2 orders are still visible indirectly as reduced wallet balances.
 - Read-only and not financial advice, exactly like the rest of this server.
 
-### Bybit (coin balances) — optional
+### Bybit — optional
 
-You can also surface your **Bybit** coin balances. This reads the **UNIFIED** account, valued in USD by the exchange. Opt-in and additive — leave the fields blank to skip it. Derivatives (perpetual/futures) positions are **not** included. Mainnet only.
+You can also surface your **Bybit** holdings: Unified-account coin balances, **derivatives positions** (USDT/USDC perpetuals, inverse contracts, options), **Earn / staked balances**, the **Funding wallet**, and a cross-account totals overview. Opt-in and additive — leave the fields blank to skip it. Mainnet only.
 
-- **Bybit API key + secret** — create in Bybit: *API → API Management → Create New Key*. Choose a **System-generated** key with **Read-Only** permission, enabling read access to **Account / Wallet** (sometimes labelled *Assets*). **Do not** enable Trade, Withdraw, or Transfer. This server does not need them and will never call them. The secret is shown only once; both are stored in your OS keychain.
+- **Bybit API key + secret** — create in Bybit: *API → API Management → Create New Key*. Choose a **System-generated** key with **Read-Only** permission. **Do not** enable Trade, Withdraw, or Transfer — this server does not need them and will never call them. The secret is shown only once; both are stored in your OS keychain.
+- **Permission groups to tick** (all read-only): **Unified Trading** (balances, derivatives positions, open orders), **Assets / Wallet** (Funding wallet + the all-account overview), and **Earn** (staked/saving positions). Tools whose permission group is missing fail with a message naming exactly what to enable — `bybit_get_key_info` shows what your key can do.
+
+What each tool reads:
+
+- `bybit_get_positions` — UNIFIED-account coin balances valued in USD by the exchange.
+- `bybit_get_account` — account totals (total equity incl. derivatives UPL), margin health rates, per-coin equity / unrealized P&L / borrow / accrued interest.
+- `bybit_get_derivative_positions` — open perpetual/futures/options positions: side, size, entry/mark price, unrealized & realized P&L, leverage, liquidation price.
+- `bybit_get_earn_positions` — Earn balances (flexible savings, on-chain staking, fixed-term, BYUSDT token, dual asset) with APY and accrued yield. These funds are invisible to the balance tools.
+- `bybit_get_balances_overview` — total equity (USD) across **all** account types (Funding, Unified, Earn, bots, Copy Trading) plus Funding-wallet coins.
+- `bybit_get_open_orders` — open (unfilled) spot + USDT/USDC linear orders.
+- `bybit_get_key_info` — key diagnostics: read-only flag, permission groups, expiry warnings.
 
 Notes and limitations:
 
-- **USD valuation only.** Coins are valued in USD by Bybit. The exchange does not return cost basis, so **no average price and no profit/loss** are reported. In `portfolio_overview` the Bybit USD total appears as its own currency bucket alongside your other accounts — currencies are never summed (no FX conversion).
-- **Unpriced coins are omitted.** Only coins with a non-zero balance and a USD value are shown.
+- **USD valuation only.** Coins are valued in USD by Bybit. The exchange does not return spot cost basis, so spot balances carry **no average price / profit-loss**; derivatives positions do report unrealized and realized P&L in their settle coin. In `portfolio_overview` the Bybit USD total appears as its own currency bucket alongside your other accounts — currencies are never summed (no FX conversion).
+- **Unpriced coins are omitted** from `bybit_get_positions`. Only coins with a non-zero balance and a USD value are shown.
 - Read-only and not financial advice, exactly like the rest of this server.
-
-The `bybit_get_open_orders` tool lists your open (unfilled) orders (spot + USDT/USDC linear); the same Unified Trading Account read scope covers it.
 
 ## What it can do
 
-- Show positions, pies, transactions, dividends
+- Show positions, pies (incl. dividend totals and goal progress), transactions, dividends (incl. per-share amounts and interest-type events), executed-order history with realized P&L per fill, and all-time realized P&L of the account
+- Show exchange working hours (pre-market / after-hours / overnight sessions) for Trading 212 venues
 - Read on-chain crypto holdings (Solana, TON, Bitcoin, Litecoin, Dogecoin) by public address — keyless, valued in USD — plus look up USD prices for any watchlist coin
 - See open Jupiter (Solana) limit orders — legacy Trigger v1 only; current Limit Order V2 is private (see Crypto notes)
-- Read Bybit coin balances (UNIFIED account) valued in USD by the exchange
-- See open (unfilled) orders on Bybit (spot + USDT/USDC perpetuals)
+- Read Bybit balances across **all** account types: Unified coins, Funding wallet, Earn / staked positions with APY, and total equity in USD
+- Read Bybit derivatives positions (perpetuals, futures, options) with leverage, liquidation price, and P&L, plus margin health of the account
+- See open (unfilled) orders on Bybit (spot + USDT/USDC perpetuals) and diagnose what the API key can access
 - Compute concentration, sector overlap, currency exposure across pies
 - Surface discrepancies and patterns in your holdings
 

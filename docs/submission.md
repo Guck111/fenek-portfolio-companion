@@ -11,7 +11,7 @@ reviewers; it is not bundled into the `.mcpb` (see `.mcpbignore`).
 |---|---|
 | **Name** | Fenek Portfolio Companion |
 | **Tagline** | Read-only AI analysis of your brokerage and crypto portfolio. |
-| **Version** | 0.1.1 |
+| **Version** | 0.4.0 |
 | **License** | MIT |
 | **Repository** | https://github.com/Guck111/fenek-portfolio-companion |
 | **Homepage / Docs** | https://github.com/Guck111/fenek-portfolio-companion/blob/master/README.md |
@@ -40,6 +40,8 @@ it never recommends trades. No telemetry. API keys are held in the OS keychain.
 - "Summarize the dividends I received last year by month."
 - "What crypto am I holding on-chain right now, valued in USD?"
 - "Do I have any open orders on Bybit or open Jupiter limit orders?"
+- "What derivatives am I exposed to on Bybit, and how close am I to liquidation?"
+- "How much is sitting in Bybit Earn and my Funding wallet, and at what APY?"
 
 ---
 
@@ -83,6 +85,7 @@ human-readable `annotations.title`. 23 tools total.
 | `t212_get_transactions` | Trading 212: Cash Transactions | ✅ |
 | `t212_get_order_history` | Trading 212: Order History | ✅ |
 | `t212_get_open_orders` | Trading 212: Open Orders | ✅ |
+| `t212_get_exchanges` | Trading 212: Exchange Working Hours | ✅ |
 | `t212_search_instrument` | Trading 212: Search Instruments | ✅ |
 
 ### Crypto wallets — Solana, TON, Bitcoin, Litecoin, Dogecoin (registered when `WALLET_ADDRESSES` is set)
@@ -98,7 +101,12 @@ human-readable `annotations.title`. 23 tools total.
 | Tool name | Title | Read-only |
 |---|---|---|
 | `bybit_get_positions` | Bybit: Coin Balances | ✅ |
+| `bybit_get_account` | Bybit: Account Summary & Margin Health | ✅ |
+| `bybit_get_derivative_positions` | Bybit: Derivative Positions | ✅ |
+| `bybit_get_earn_positions` | Bybit: Earn / Staked Positions | ✅ |
+| `bybit_get_balances_overview` | Bybit: All-Account Balances Overview | ✅ |
 | `bybit_get_open_orders` | Bybit: Open Orders | ✅ |
+| `bybit_get_key_info` | Bybit: API Key Diagnostics | ✅ |
 
 ### Cross-broker analytics (always registered)
 
@@ -208,8 +216,12 @@ own currency bucket — currencies are never summed).
 ### 3. Bybit (optional)
 
 Bybit tools register only if `BYBIT_API_KEY` / `BYBIT_API_SECRET` are provided. If the
-reviewer wants to exercise them, use a **read-only** key (Account/Wallet read only; no
-Trade, no Withdraw, no Transfer). Otherwise the Bybit tools simply do not appear.
+reviewer wants to exercise them, use a **read-only** key (no Trade, no Withdraw, no
+Transfer) with read access to Unified Trading; the Assets/Wallet and Earn read groups
+additionally enable `bybit_get_balances_overview` and `bybit_get_earn_positions` — without
+them those two tools return an error naming the missing permission (by design), and
+`bybit_get_key_info` reports what the key can do. Otherwise the Bybit tools simply do not
+appear.
 
 ---
 
