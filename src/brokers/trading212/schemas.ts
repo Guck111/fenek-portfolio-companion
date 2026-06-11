@@ -201,10 +201,26 @@ export const T212InstrumentList = z.array(T212InstrumentMetadata)
 // Account summary — granted only when API key has Account scope.
 // All fields optional: T212 has changed this shape across beta revisions
 // and tolerating absence is safer than hard-failing on every drift.
+// The documented shape (docs.trading212.com/api) nests cash and investments;
+// `currencyCode` is a legacy alias kept for tolerance.
+export const T212AccountSummaryCash = z.object({
+  availableToTrade: z.number().optional(),
+  inPies: z.number().optional(),
+  reservedForOrders: z.number().optional(),
+})
+export const T212AccountSummaryInvestments = z.object({
+  currentValue: z.number().optional(),
+  realizedProfitLoss: z.number().optional(),
+  totalCost: z.number().optional(),
+  unrealizedProfitLoss: z.number().optional(),
+})
 export const T212AccountSummary = z.object({
   id: z.number().optional(),
   currencyCode: z.string().optional(),
   currency: z.string().optional(),
+  totalValue: z.number().optional(),
+  cash: T212AccountSummaryCash.optional(),
+  investments: T212AccountSummaryInvestments.optional(),
 })
 export type T212AccountSummary = z.infer<typeof T212AccountSummary>
 

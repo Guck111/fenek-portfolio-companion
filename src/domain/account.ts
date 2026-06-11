@@ -8,4 +8,5 @@ export interface Account {
   readonly invested?: Money
   readonly totalValue: Money
   readonly unrealizedPnL?: Money
+  readonly realizedPnL?: Money
 }

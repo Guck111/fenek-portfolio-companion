@@ -73,6 +73,12 @@ export class Trading212Broker implements IBroker {
   async getAccount(): Promise<Account> {
     const client = this.requireClient()
     const summary = await client.getJson("/equity/account/summary", T212AccountSummary)
+    const fromSummary = mapAccountFromSummary(summary)
+    if (fromSummary !== null) {
+      this.baseCurrency = fromSummary.currency
+      return fromSummary
+    }
+    // Legacy fallback: older API revisions kept cash outside the summary.
     const cash = await client.getJson("/equity/account/cash", T212AccountCash)
     const ccy = summary.currencyCode ?? summary.currency ?? (await this.resolveBaseCurrency())
     this.baseCurrency = ccy
@@ -216,6 +222,32 @@ export class Trading212Broker implements IBroker {
 
 export function money(amount: number, currency: string): Money {
   return { amount, currency }
+}
+
+// Maps the documented summary shape (nested cash/investments) to a domain
+// Account. Returns null when the response carries no nested data (legacy
+// revision) or no resolvable currency — the caller then falls back to the
+// undocumented-but-still-served /equity/account/cash endpoint.
+export function mapAccountFromSummary(summary: T212AccountSummary): Account | null {
+  if (summary.cash === undefined && summary.investments === undefined) return null
+  const ccy = summary.currency ?? summary.currencyCode
+  if (ccy === undefined) return null
+  return {
+    brokerId: BROKER_ID,
+    accountId: summary.id !== undefined ? String(summary.id) : "unknown",
+    currency: ccy,
+    cash: money(summary.cash?.availableToTrade ?? 0, ccy),
+    totalValue: money(summary.totalValue ?? 0, ccy),
+    ...(summary.investments?.totalCost !== undefined
+      ? { invested: money(summary.investments.totalCost, ccy) }
+      : {}),
+    ...(summary.investments?.unrealizedProfitLoss !== undefined
+      ? { unrealizedPnL: money(summary.investments.unrealizedProfitLoss, ccy) }
+      : {}),
+    ...(summary.investments?.realizedProfitLoss !== undefined
+      ? { realizedPnL: money(summary.investments.realizedProfitLoss, ccy) }
+      : {}),
+  }
 }
 
 export function mapPosition(t212: T212Position): Position {

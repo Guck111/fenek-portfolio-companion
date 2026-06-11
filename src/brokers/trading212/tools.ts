@@ -39,7 +39,7 @@ export function createTrading212Tools(broker: Trading212Broker): readonly ToolBi
         name: "t212_get_account",
         annotations: { title: "Trading 212: Account Summary" },
         description:
-          "Returns Trading 212 account summary: account id, base currency, free cash, invested capital, total portfolio value, unrealized P&L. Requires the API key to have the 'Account' scope enabled.",
+          "Returns Trading 212 account summary: account id, base currency, free cash, invested capital, total portfolio value, unrealized P&L, and all-time realized P&L when the API provides it. Requires the API key to have the 'Account' scope enabled.",
         inputSchema: { type: "object", properties: {}, additionalProperties: false },
       },
       handler: async (args) => {

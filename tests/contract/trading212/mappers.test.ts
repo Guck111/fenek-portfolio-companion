@@ -6,6 +6,7 @@ import fs from "node:fs"
 import {
   buildHistoryPath,
   extractCursor,
+  mapAccountFromSummary,
   mapDividend,
   mapPieDetails,
   mapPieListEntry,
@@ -120,5 +121,47 @@ describe("trading212 mappers", () => {
   it("extractCursor returns undefined for null and malformed paths", () => {
     expect(extractCursor(null)).toBeUndefined()
     expect(extractCursor("/no/cursor/here")).toBeUndefined()
+  })
+})
+
+describe("mapAccountFromSummary", () => {
+  it("builds a full Account from the new summary shape (no /cash call needed)", () => {
+    const acc = mapAccountFromSummary({
+      id: 123,
+      currency: "EUR",
+      totalValue: 1500.5,
+      cash: { availableToTrade: 100.25, inPies: 20, reservedForOrders: 5 },
+      investments: {
+        currentValue: 1375.25,
+        realizedProfitLoss: 42.42,
+        totalCost: 1300,
+        unrealizedProfitLoss: 75.25,
+      },
+    })
+    expect(acc).not.toBeNull()
+    expect(acc?.accountId).toBe("123")
+    expect(acc?.currency).toBe("EUR")
+    expect(acc?.cash).toEqual({ amount: 100.25, currency: "EUR" })
+    expect(acc?.invested).toEqual({ amount: 1300, currency: "EUR" })
+    expect(acc?.totalValue).toEqual({ amount: 1500.5, currency: "EUR" })
+    expect(acc?.unrealizedPnL).toEqual({ amount: 75.25, currency: "EUR" })
+    expect(acc?.realizedPnL).toEqual({ amount: 42.42, currency: "EUR" })
+  })
+
+  it("returns null for the legacy summary shape so getAccount falls back to /cash", () => {
+    expect(mapAccountFromSummary({ id: 1, currencyCode: "USD" })).toBeNull()
+  })
+
+  it("returns null when nested data is present but the currency is unknown", () => {
+    expect(mapAccountFromSummary({ id: 1, cash: { availableToTrade: 5 } })).toBeNull()
+  })
+
+  it("omits Money fields whose source numbers are absent", () => {
+    const acc = mapAccountFromSummary({ id: 9, currency: "USD", cash: { availableToTrade: 7 } })
+    expect(acc?.cash).toEqual({ amount: 7, currency: "USD" })
+    expect(acc?.totalValue).toEqual({ amount: 0, currency: "USD" })
+    expect(acc?.invested).toBeUndefined()
+    expect(acc?.unrealizedPnL).toBeUndefined()
+    expect(acc?.realizedPnL).toBeUndefined()
   })
 })
