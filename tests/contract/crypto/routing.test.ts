@@ -8,7 +8,7 @@ import {
 import type { RawHolding } from "../../../src/brokers/crypto/types.js"
 
 const SOL = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
-const TON = "UQDvuEbnbSAL2cgDsSBKklmonE2J13waCvzHRCLRb9V5kKiM"
+const TON = "UQA5jmXrFi47-xvbqld9L2ah8udriH_kSYgozqhX69VeolFc"
 const BTC = "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"
 
 describe("groupAddressesByChain", () => {

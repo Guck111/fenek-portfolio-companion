@@ -1,4 +1,5 @@
 import { fetchJson } from "../http.js"
+import { sanitizeSymbol } from "../sanitize.js"
 import { TonAccount, TonJettonsResponse } from "../schemas.js"
 import type { RawHolding } from "../types.js"
 
@@ -17,7 +18,7 @@ export function mapTonHoldings(account: TonAccount, jettons: TonJettonsResponse)
     if (!Number.isFinite(amount) || amount <= 0) continue
     out.push({
       chain: "ton",
-      symbol: b.jetton.symbol ?? b.jetton.address.slice(0, 6),
+      symbol: sanitizeSymbol(b.jetton.symbol) ?? b.jetton.address.slice(0, 6),
       amount,
       coinId: `ton:${b.jetton.address}`,
     })

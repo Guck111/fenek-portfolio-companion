@@ -9,6 +9,7 @@ import { BybitEnvelope } from "./schemas.js"
 const BROKER_ID = "bybit"
 const BASE_URL = "https://api.bybit.com" // mainnet only — see design decision 3
 const RECV_WINDOW = "5000"
+const REQUEST_TIMEOUT_MS = 15_000
 
 export interface BybitClientConfig {
   readonly apiKey: string
@@ -111,6 +112,8 @@ export class BybitClient {
       queryString,
     })
     const url = queryString ? `${BASE_URL}${path}?${queryString}` : `${BASE_URL}${path}`
+    // X-BAPI-* are custom headers, so fetch would NOT strip them on a cross-origin
+    // redirect — refuse redirects outright. No Bybit read endpoint redirects.
     const res = await fetch(url, {
       headers: {
         "X-BAPI-API-KEY": this.apiKey,
@@ -118,6 +121,8 @@ export class BybitClient {
         "X-BAPI-RECV-WINDOW": RECV_WINDOW,
         "X-BAPI-SIGN": sign,
       },
+      redirect: "error",
+      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
     })
     if (res.status === 401 || res.status === 403) {
       throw new AuthError("Invalid Bybit credentials", BROKER_ID)

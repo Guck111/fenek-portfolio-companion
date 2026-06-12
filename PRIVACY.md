@@ -10,7 +10,7 @@ When you use this software:
 
 1. Claude Desktop launches the server as a local subprocess on your machine.
 2. The server reads your API credentials from environment variables provided by Claude Desktop's user-config mechanism, which uses your operating system's keychain (macOS Keychain / Windows Credential Manager).
-3. The server makes HTTPS requests to the API endpoints for the sources you configured — for example `live.trading212.com` / `demo.trading212.com` for Trading 212, the Bybit API, and, for crypto wallets, public blockchain and price endpoints (a public Solana RPC node, `mempool.space`, `blockcypher`, `tonapi`, DefiLlama). Crypto reads are **keyless**: only your public wallet address is sent — no key or secret is involved.
+3. The server makes HTTPS requests to the API endpoints for the sources you configured — for example `live.trading212.com` / `demo.trading212.com` for Trading 212, the Bybit API (`api.bybit.com`), and, for crypto wallets, public blockchain and price endpoints: a public Solana RPC node (`api.mainnet-beta.solana.com`), `mempool.space` (Bitcoin), `litecoinspace.org` (Litecoin), `api.blockcypher.com` (Dogecoin), `tonapi.io` (TON), Jupiter (`lite-api.jup.ag`, Solana limit orders and token symbols), and DefiLlama (`coins.llama.fi`, USD prices — receives token identifiers only, never your address). Crypto reads are **keyless**: only your public wallet address is sent — no key or secret is involved.
 4. The server returns parsed responses to Claude Desktop on your local machine.
 5. **No data leaves your machine to any destination other than the broker.** The author and contributors have no servers, no analytics endpoints, no error-reporting services involved in this data flow.
 
@@ -40,10 +40,12 @@ Because the author and contributors are neither controller nor processor for you
 ## API Key Handling
 
 - Keys are passed to the server process via environment variables set by Claude Desktop from its keychain-backed user-config store.
-- Keys are **never** logged to standard output, standard error, or any file by this server.
+- Keys are **never** logged to standard output, standard error, or any file by this server. Diagnostic dumps written when a provider changes its response format are redacted (credential-shaped fields removed) and size-capped before they reach the log.
 - Keys are **never** included in error messages returned to the LLM.
 - Keys are transmitted **only** to the broker API endpoints over HTTPS.
 - When you uninstall the extension, Claude Desktop removes the keys from your keychain.
+
+Note on local logs: Claude Desktop persists this server's standard error to a local `mcp-server-*.log` file on your machine. If a provider changes its response format, a redacted, size-capped excerpt of that response (portfolio data shapes, never credentials) may appear there to make the breakage diagnosable. That file never leaves your machine.
 
 ## Source Verification
 

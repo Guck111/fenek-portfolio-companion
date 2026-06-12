@@ -4,6 +4,55 @@ All notable changes to this project are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.1] - 2026-06-12
+
+Security hardening release: closes every finding from a full audit of the
+codebase, CI pipeline, and MCP surface. No new tools, no new data.
+
+### Security
+- On-chain token symbols (TON jettons, Solana SPL tokens via Jupiter) are sanitized
+  before they reach tool results: control, bidi-override, and zero-width characters
+  are stripped, whitespace is collapsed, and length is capped at 32. Anyone can mint
+  a token with an arbitrary name and airdrop it to a watched wallet, which made this
+  the one provider field a third party could weaponize for prompt injection. The
+  server instructions now also direct the model to treat instrument and token names
+  as data, never as instructions.
+- Schema-mismatch diagnostic dumps are redacted (credential-shaped fields removed)
+  and size-capped before reaching stderr, which Claude Desktop persists to a local
+  log file. Bybit's key-info endpoint echoes the API key in its response, so schema
+  drift there would previously have written the key to that log.
+- Authenticated broker requests refuse HTTP redirects (`redirect: "error"`): fetch
+  does not strip Bybit's custom `X-BAPI-*` auth headers on cross-origin redirects,
+  and no broker read endpoint redirects legitimately.
+- The release workflow is split into a read-only test job and a minimal write job,
+  so the dev toolchain never executes next to tokens that can rewrite releases or
+  mint attestations. Dependency lifecycle scripts are disabled in CI
+  (`--ignore-scripts`), actions are pinned to commit SHAs, checkout credentials are
+  not persisted, and the `.mcpb` is packed with the lockfile-verified mcpb CLI
+  instead of an unverified registry re-fetch.
+- GitHub vulnerability intake is enabled: Dependabot alerts and private
+  vulnerability reporting (the channel SECURITY.md documents).
+
+### Fixed
+- Every outbound request now carries a 15-second timeout, so a hung provider cannot
+  wedge a tool call (crypto wallets are read sequentially, which multiplied any hang).
+- A provider-supplied `Retry-After` header is honored up to 60 seconds instead of
+  verbatim (a malicious `86400` would have put the call to sleep for a day).
+- Jupiter limit-order pagination is capped at 20 pages instead of trusting the
+  provider-reported page count unbounded.
+- Free-form tool inputs (pagination cursor, search query, pie id, coin ids) are
+  length-capped at the schema boundary.
+- In-memory TTL caches are bounded (1000 entries, FIFO eviction); they previously
+  grew without limit because entries expired only when re-read.
+
+### Changed
+- Every tool now declares `openWorldHint`: true for network-backed broker and
+  analytics tools, false for local-only playbooks and onboarding.
+- PRIVACY.md names every outbound host (adds `litecoinspace.org` and Jupiter) and
+  documents the local-log behavior on schema drift; README gains a "Verify your
+  download" section with the `gh attestation verify` command.
+- Checksummed synthetic addresses replace live-chain vectors in tests.
+
 ## [0.4.0] - 2026-06-11
 
 Full exchange data coverage: every read-only money bucket Bybit and Trading 212

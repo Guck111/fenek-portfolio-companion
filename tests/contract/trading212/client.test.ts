@@ -93,6 +93,49 @@ describe("Trading212Client host auto-detection", () => {
   })
 })
 
+// A provider-controlled Retry-After must not be honored unbounded — a header like
+// "86400" would otherwise put the tool call to sleep for a day.
+describe("Trading212Client Retry-After capping", () => {
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it("caps a huge Retry-After sleep at 60 seconds and then retries", async () => {
+    vi.useFakeTimers()
+    let calls = 0
+    const fetchMock = vi.fn(() => {
+      calls++
+      return Promise.resolve(
+        calls === 1 ? res(429, "", { "retry-after": "86400" }) : res(200, OK_BODY),
+      )
+    })
+    vi.stubGlobal("fetch", fetchMock)
+
+    const promise = newClient().getJson("/x", Schema)
+    await vi.advanceTimersByTimeAsync(60_000)
+    expect(await promise).toEqual({ ok: true })
+    expect(calls).toBe(2)
+  })
+})
+
+// Auth rides in headers; a cross-origin redirect must fail hard instead of being
+// followed, and a hung provider must not wedge the tool call forever.
+describe("Trading212Client request hardening", () => {
+  it("sends every request with redirects disabled and a timeout signal", async () => {
+    const fetchMock = vi.fn(() => Promise.resolve(res(200, OK_BODY)))
+    vi.stubGlobal("fetch", fetchMock)
+
+    await newClient().getJson("/x", Schema)
+
+    expect(fetchMock.mock.calls.length).toBeGreaterThan(0)
+    for (const call of fetchMock.mock.calls) {
+      const init = (call as unknown[])[1] as RequestInit
+      expect(init.redirect).toBe("error")
+      expect(init.signal).toBeInstanceOf(AbortSignal)
+    }
+  })
+})
+
 // Schema-mismatch dumps go to stderr, which Claude Desktop persists to a
 // plaintext mcp-server-*.log on disk — keep them credential-free and bounded.
 describe("Trading212Client schema-mismatch logging", () => {

@@ -2,6 +2,7 @@ import { BrokerApiError } from "../../utils/errors.js"
 import { withBackoff, type RetryDecision } from "../../utils/ratelimit.js"
 
 const BROKER_ID = "crypto"
+const REQUEST_TIMEOUT_MS = 15_000
 
 /**
  * Retry transient upstream failures: 5xx and 429 (rate limit). The keyless public
@@ -21,7 +22,9 @@ export function retryTransient(error: unknown): RetryDecision {
  */
 export async function fetchJson(url: string, label: string, init?: RequestInit): Promise<unknown> {
   return withBackoff(async () => {
-    const res = await fetch(url, init)
+    // Per-attempt timeout: addresses are read sequentially, so one hung public
+    // endpoint would otherwise stall the whole tool call.
+    const res = await fetch(url, { ...init, signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS) })
     if (!res.ok) {
       throw new BrokerApiError(`${label} HTTP ${String(res.status)}`, BROKER_ID, res.status)
     }

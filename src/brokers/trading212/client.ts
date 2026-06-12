@@ -19,6 +19,10 @@ const CANDIDATE_BASE_URLS = [LIVE_BASE_URL, DEMO_BASE_URL] as const
 
 const MAX_RETRIES = 2
 const NETWORK_BACKOFF_BASE_MS = 500
+const REQUEST_TIMEOUT_MS = 15_000
+// Retry-After is provider-controlled; honor it only up to a sane bound so a
+// header like "86400" can't put the tool call to sleep for a day.
+const MAX_RETRY_AFTER_MS = 60_000
 
 export class Trading212Client {
   private readonly authHeader: string
@@ -115,7 +119,13 @@ export class Trading212Client {
 
     for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
       try {
-        const res = await fetch(url, { headers: { Authorization: this.authHeader } })
+        // Refuse redirects: auth rides in a header and no T212 endpoint redirects;
+        // time out hung requests so a stalled provider can't wedge the tool call.
+        const res = await fetch(url, {
+          headers: { Authorization: this.authHeader },
+          redirect: "error",
+          signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+        })
         if (res.status === 429 && attempt < MAX_RETRIES) {
           const waitMs = parseRetryAfter(res) ?? NETWORK_BACKOFF_BASE_MS * Math.pow(2, attempt)
           await sleep(waitMs)
@@ -139,7 +149,7 @@ function parseRetryAfter(res: Response): number | undefined {
   if (header === null) return undefined
   const seconds = Number.parseInt(header, 10)
   if (Number.isNaN(seconds) || seconds < 0) return undefined
-  return seconds * 1000
+  return Math.min(seconds * 1000, MAX_RETRY_AFTER_MS)
 }
 
 function sleep(ms: number): Promise<void> {

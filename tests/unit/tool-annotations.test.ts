@@ -52,6 +52,30 @@ describe("MCP Directory tool annotations", () => {
     }
   })
 
+  it("declares openWorldHint explicitly: false for local-only tools, true for network-backed", () => {
+    registerEveryRealTool()
+
+    // Playbooks and onboarding return static text — closed world. Everything
+    // else (broker tools, analytics over brokers) reaches provider APIs.
+    const LOCAL_ONLY = new Set([
+      "analyze_overview",
+      "analyze_concentration",
+      "review_pie",
+      "review_dividends",
+      "fenek_getting_started",
+    ])
+
+    const tools = listTools()
+    expect(tools.length).toBeGreaterThanOrEqual(20)
+
+    for (const tool of tools) {
+      expect(
+        tool.annotations?.openWorldHint,
+        `${tool.name} must declare openWorldHint=${String(!LOCAL_ONLY.has(tool.name))}`,
+      ).toBe(!LOCAL_ONLY.has(tool.name))
+    }
+  })
+
   it("stamps readOnlyHint:true on a tool that declares no annotations at all", () => {
     registerTools([
       bindingWithTool({

@@ -1,10 +1,13 @@
-import { describe, it, expect } from "vitest"
+import { describe, it, expect, vi } from "vitest"
 import { fileURLToPath } from "node:url"
 import path from "node:path"
 import fs from "node:fs"
 
 import { JupiterTriggerOrdersResponse } from "../../../src/brokers/crypto/schemas.js"
-import { mapJupiterOrders } from "../../../src/brokers/crypto/jupiter.js"
+import { fetchJupiterOrders, mapJupiterOrders } from "../../../src/brokers/crypto/jupiter.js"
+
+const { fetchJsonMock } = vi.hoisted(() => ({ fetchJsonMock: vi.fn() }))
+vi.mock("../../../src/brokers/crypto/http.js", () => ({ fetchJson: fetchJsonMock }))
 
 const fixtureDir = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -53,5 +56,17 @@ describe("mapJupiterOrders", () => {
     const parsed = JupiterTriggerOrdersResponse.parse(readFixture("jupiter/trigger_orders.json"))
     const orders = mapJupiterOrders(parsed.orders, new Map([[SOL, "SOL"]]))
     expect(orders[0]?.symbol).toBe(`SOL/${USDC}`)
+  })
+})
+
+describe("fetchJupiterOrders pagination", () => {
+  it("caps page fetches even when the provider claims absurdly many pages", async () => {
+    fetchJsonMock.mockReset()
+    fetchJsonMock.mockResolvedValue({ orders: [], totalPages: 10_000, page: 1 })
+
+    await fetchJupiterOrders("DemoWa11etAddr1111111111111111111111111111111")
+
+    expect(fetchJsonMock.mock.calls.length).toBeLessThanOrEqual(20)
+    expect(fetchJsonMock.mock.calls.length).toBeGreaterThan(0)
   })
 })

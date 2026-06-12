@@ -16,6 +16,16 @@ Install via Claude Desktop: *Settings → Extensions → Browse → Fenek Portfo
 
 For local development install, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
+### Verify your download
+
+If you install a `.mcpb` bundle manually from [GitHub Releases](https://github.com/Guck111/fenek-portfolio-companion/releases) instead of the directory, verify that the file was built by this repository's CI before installing it:
+
+```sh
+gh attestation verify fenek-portfolio-companion.mcpb --repo Guck111/fenek-portfolio-companion
+```
+
+This checks the bundle's cryptographic build provenance (GitHub artifact attestation). If verification fails, do not install the file.
+
 ## Configuration
 
 When installing, Claude Desktop will prompt for:

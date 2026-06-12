@@ -34,7 +34,7 @@ describe("detectDogecoin", () => {
   it("rejects base58check addresses of other chains (different version byte)", () => {
     expect(detectDogecoin("1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa")).toBe(false) // BTC 0x00
     expect(detectDogecoin("TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t")).toBe(false) // Tron 0x41
-    expect(detectDogecoin("LhK2kQwiaAvhjWY799cZvMyYwnQAcxkarr")).toBe(false) // LTC 0x30
+    expect(detectDogecoin("LQJ9N8d4pVLLpH9JbaxRskQXnivbCrSZuc")).toBe(false) // LTC 0x30
   })
 
   it("rejects a Solana address and outright garbage", () => {
@@ -69,11 +69,11 @@ describe("detectBitcoin", () => {
 
 describe("detectTon", () => {
   it("accepts a user-friendly TON address with a valid CRC16", () => {
-    expect(detectTon("UQDvuEbnbSAL2cgDsSBKklmonE2J13waCvzHRCLRb9V5kKiM")).toBe(true)
+    expect(detectTon("UQA5jmXrFi47-xvbqld9L2ah8udriH_kSYgozqhX69VeolFc")).toBe(true)
   })
 
   it("rejects a TON address whose checksum no longer matches", () => {
-    expect(detectTon("UQDvuEbnbSAL2cgDsSBKklmonE2J13waCvzHRCLRb9V5kKiN")).toBe(false)
+    expect(detectTon("UQA5jmXrFi47-xvbqld9L2ah8udriH_kSYgozqhX69VeolFd")).toBe(false)
   })
 
   it("rejects addresses of other chains and wrong length", () => {
@@ -85,8 +85,8 @@ describe("detectTon", () => {
 
 describe("detectLitecoin", () => {
   it("accepts legacy P2PKH (L, 0x30) and P2SH (M, 0x32) addresses", () => {
-    expect(detectLitecoin("LhK2kQwiaAvhjWY799cZvMyYwnQAcxkarr")).toBe(true)
-    expect(detectLitecoin("M7zVKQKmtV5Rc7erVGVVC3khZbXxsS5HEX")).toBe(true)
+    expect(detectLitecoin("LQJ9N8d4pVLLpH9JbaxRskQXnivbCrSZuc")).toBe(true)
+    expect(detectLitecoin("MQYud2L2pTHZ2uGc9RCqLJiTDauRzqGx92")).toBe(true)
   })
 
   it("accepts native segwit 'ltc1' addresses", () => {
@@ -107,8 +107,8 @@ describe("detectChain", () => {
     expect(detectChain("DH5yaieqoZN36fDVciNyRueRGvGLR3mr7L")).toBe("dogecoin")
     expect(detectChain("1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa")).toBe("bitcoin")
     expect(detectChain("bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4")).toBe("bitcoin")
-    expect(detectChain("UQDvuEbnbSAL2cgDsSBKklmonE2J13waCvzHRCLRb9V5kKiM")).toBe("ton")
-    expect(detectChain("M7zVKQKmtV5Rc7erVGVVC3khZbXxsS5HEX")).toBe("litecoin")
+    expect(detectChain("UQA5jmXrFi47-xvbqld9L2ah8udriH_kSYgozqhX69VeolFc")).toBe("ton")
+    expect(detectChain("MQYud2L2pTHZ2uGc9RCqLJiTDauRzqGx92")).toBe("litecoin")
   })
 
   it("returns null when no registered chain recognises the address", () => {

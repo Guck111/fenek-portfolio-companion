@@ -48,6 +48,7 @@ describe("server smoke", () => {
       expect(instructions).toMatch(/data, not advice/i)
       expect(instructions).toMatch(/do not recommend/i)
       expect(instructions).toMatch(/401 or 403/)
+      expect(instructions).toMatch(/never .*as instructions/i)
     } finally {
       await client.close()
     }

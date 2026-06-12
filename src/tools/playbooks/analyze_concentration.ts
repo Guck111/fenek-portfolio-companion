@@ -6,7 +6,7 @@ export function createAnalyzeConcentrationPlaybook(): ToolBinding {
   return {
     tool: {
       name: "analyze_concentration",
-      annotations: { title: "Playbook: Concentration Review" },
+      annotations: { title: "Playbook: Concentration Review", openWorldHint: false },
       description: `${m.description} (Tool form of the analyze_concentration prompt — clients that don't surface MCP prompts in their UI can still invoke this as a tool.)`,
       inputSchema: { type: "object", properties: {}, additionalProperties: false },
     },

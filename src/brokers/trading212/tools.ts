@@ -16,18 +16,20 @@ function toPageOpts(input: {
   }
 }
 
+// Free-form strings are length-capped: an oversized value is rejected at the
+// schema boundary instead of being forwarded to the provider API.
 const PageOptsArgs = z.object({
   limit: z.number().int().min(1).max(50).optional(),
-  cursor: z.string().optional(),
+  cursor: z.string().max(256).optional(),
 })
 
 const SearchArgs = z.object({
-  query: z.string().min(1),
+  query: z.string().min(1).max(200),
   limit: z.number().int().min(1).max(50).optional(),
 })
 
 const PieIdArgs = z.object({
-  id: z.string().min(1),
+  id: z.string().min(1).max(64),
 })
 
 const EmptyArgs = z.object({}).strict()
@@ -37,7 +39,7 @@ export function createTrading212Tools(broker: Trading212Broker): readonly ToolBi
     {
       tool: {
         name: "t212_get_account",
-        annotations: { title: "Trading 212: Account Summary" },
+        annotations: { title: "Trading 212: Account Summary", openWorldHint: true },
         description:
           "Returns Trading 212 account summary: account id, base currency, free cash, invested capital, total portfolio value, unrealized P&L, and all-time realized P&L when the API provides it. Requires the API key to have the 'Account' scope enabled.",
         inputSchema: { type: "object", properties: {}, additionalProperties: false },
@@ -51,7 +53,7 @@ export function createTrading212Tools(broker: Trading212Broker): readonly ToolBi
     {
       tool: {
         name: "t212_get_positions",
-        annotations: { title: "Trading 212: Open Positions" },
+        annotations: { title: "Trading 212: Open Positions", openWorldHint: true },
         description:
           "Returns all currently open Trading 212 positions with quantity, average price paid, current price, market value (in account currency), and unrealized P&L per holding.",
         inputSchema: { type: "object", properties: {}, additionalProperties: false },
@@ -65,7 +67,7 @@ export function createTrading212Tools(broker: Trading212Broker): readonly ToolBi
     {
       tool: {
         name: "t212_get_pies",
-        annotations: { title: "Trading 212: Pies (Portfolios)" },
+        annotations: { title: "Trading 212: Pies (Portfolios)", openWorldHint: true },
         description:
           "Lists all Trading 212 pies (custom portfolios) with id, total invested, current value, unrealized P&L, dividend totals, and progress toward target. Use t212_get_pie for slice-level detail.",
         inputSchema: { type: "object", properties: {}, additionalProperties: false },
@@ -79,7 +81,7 @@ export function createTrading212Tools(broker: Trading212Broker): readonly ToolBi
     {
       tool: {
         name: "t212_get_pie",
-        annotations: { title: "Trading 212: Pie Details" },
+        annotations: { title: "Trading 212: Pie Details", openWorldHint: true },
         description:
           "Returns full details of one Trading 212 pie: name, slices (each instrument with target weight, current weight, quantity, invested, current value, unrealized P&L), totals.",
         inputSchema: {
@@ -100,7 +102,7 @@ export function createTrading212Tools(broker: Trading212Broker): readonly ToolBi
     {
       tool: {
         name: "t212_get_dividends",
-        annotations: { title: "Trading 212: Dividends" },
+        annotations: { title: "Trading 212: Dividends", openWorldHint: true },
         description:
           "Returns paginated Trading 212 dividend payments with instrument name, quantity held, gross amount per share, and event kind (ORDINARY, BONUS, INTEREST, ...). Default limit 20, max 50. Pass `cursor` from a previous response's nextCursor to fetch the next page.",
         inputSchema: {
@@ -121,7 +123,7 @@ export function createTrading212Tools(broker: Trading212Broker): readonly ToolBi
     {
       tool: {
         name: "t212_get_transactions",
-        annotations: { title: "Trading 212: Cash Transactions" },
+        annotations: { title: "Trading 212: Cash Transactions", openWorldHint: true },
         description:
           "Returns paginated cash transactions (deposits, withdrawals, fees, interest) for the Trading 212 account. Default limit 20, max 50.",
         inputSchema: {
@@ -142,7 +144,7 @@ export function createTrading212Tools(broker: Trading212Broker): readonly ToolBi
     {
       tool: {
         name: "t212_get_order_history",
-        annotations: { title: "Trading 212: Order History" },
+        annotations: { title: "Trading 212: Order History", openWorldHint: true },
         description:
           "Returns paginated executed-order history for Trading 212: order details (limit/stop price, quantities, time in force), fill price/quantity, FX rate, taxes/fees, and realized P&L per fill. Use for trade history analysis.",
         inputSchema: {
@@ -163,7 +165,7 @@ export function createTrading212Tools(broker: Trading212Broker): readonly ToolBi
     {
       tool: {
         name: "t212_get_open_orders",
-        annotations: { title: "Trading 212: Open Orders" },
+        annotations: { title: "Trading 212: Open Orders", openWorldHint: true },
         description:
           "Returns currently pending (unfilled) orders on the Trading 212 account. Returns an empty array if there are none.",
         inputSchema: { type: "object", properties: {}, additionalProperties: false },
@@ -177,7 +179,7 @@ export function createTrading212Tools(broker: Trading212Broker): readonly ToolBi
     {
       tool: {
         name: "t212_get_exchanges",
-        annotations: { title: "Trading 212: Exchange Working Hours" },
+        annotations: { title: "Trading 212: Exchange Working Hours", openWorldHint: true },
         description:
           "Lists Trading 212 exchanges with their working schedules — time events for OPEN, CLOSE, BREAK_START/END, PRE_MARKET_OPEN, AFTER_HOURS_OPEN/CLOSE, OVERNIGHT_OPEN. Join instruments to schedules via workingScheduleId from t212_search_instrument. Cached for 10 minutes. Requires the 'Metadata' scope.",
         inputSchema: { type: "object", properties: {}, additionalProperties: false },
@@ -191,7 +193,7 @@ export function createTrading212Tools(broker: Trading212Broker): readonly ToolBi
     {
       tool: {
         name: "t212_search_instrument",
-        annotations: { title: "Trading 212: Search Instruments" },
+        annotations: { title: "Trading 212: Search Instruments", openWorldHint: true },
         description:
           "Searches the Trading 212 instrument catalog by ticker, short name, or full name (case-insensitive substring). Returns up to `limit` matches with ticker, ISIN, currency, and exchange schedule id. The catalog is cached locally for 6 hours after first call.",
         inputSchema: {

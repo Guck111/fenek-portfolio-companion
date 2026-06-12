@@ -1,6 +1,7 @@
 import { TTLCache } from "../../utils/cache.js"
 
 import { fetchJson } from "./http.js"
+import { sanitizeSymbol } from "./sanitize.js"
 import { JupiterTokenSearchResponse } from "./schemas.js"
 
 const BASE = "https://lite-api.jup.ag/tokens/v2/search"
@@ -31,9 +32,10 @@ export async function resolveSymbols(mints: readonly string[]): Promise<Map<stri
       )
       if (parsed.success) {
         for (const t of parsed.data) {
-          if (t.symbol !== undefined) {
-            cache.set(t.id, t.symbol)
-            out.set(t.id, t.symbol)
+          const symbol = sanitizeSymbol(t.symbol)
+          if (symbol !== undefined) {
+            cache.set(t.id, symbol)
+            out.set(t.id, symbol)
           }
         }
       }

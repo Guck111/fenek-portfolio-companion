@@ -55,6 +55,36 @@ describe("bybit mapRetCode", () => {
   })
 })
 
+// The API key and signature ride in custom X-BAPI-* headers, which fetch does NOT
+// strip on cross-origin redirects — redirects must fail hard. A hung provider must
+// not wedge the tool call forever either.
+describe("BybitClient request hardening", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals()
+  })
+
+  it("sends every request with redirects disabled and a timeout signal", async () => {
+    const fetchMock = vi.fn(() =>
+      Promise.resolve(
+        new Response(JSON.stringify({ retCode: 0, retMsg: "OK", result: { ok: true } }), {
+          status: 200,
+        }),
+      ),
+    )
+    vi.stubGlobal("fetch", fetchMock)
+
+    const Schema = z.object({ ok: z.boolean() })
+    await new BybitClient({ apiKey: "k", apiSecret: "s" }).getJson("/v5/x", {}, Schema)
+
+    expect(fetchMock.mock.calls.length).toBeGreaterThan(0)
+    for (const call of fetchMock.mock.calls) {
+      const init = (call as unknown[])[1] as RequestInit
+      expect(init.redirect).toBe("error")
+      expect(init.signal).toBeInstanceOf(AbortSignal)
+    }
+  })
+})
+
 // Schema-mismatch dumps go to stderr, which Claude Desktop persists to a
 // plaintext mcp-server-*.log on disk — credential values must never appear there.
 describe("BybitClient schema-mismatch logging", () => {

@@ -5,6 +5,9 @@ import { JupiterTriggerOrdersResponse, type JupiterTriggerOrder } from "./schema
 
 const BROKER_ID = "crypto"
 const BASE = "https://lite-api.jup.ag/trigger/v1/getTriggerOrders"
+// totalPages is provider-controlled; never trust it unbounded. 20 pages of
+// active limit orders is far beyond any real retail account.
+const MAX_PAGES = 20
 
 async function fetchPage(address: string, page: number): Promise<JupiterTriggerOrdersResponse> {
   const url = `${BASE}?user=${encodeURIComponent(address)}&orderStatus=active&page=${String(page)}`
@@ -15,7 +18,7 @@ async function fetchPage(address: string, page: number): Promise<JupiterTriggerO
 export async function fetchJupiterOrders(address: string): Promise<JupiterTriggerOrder[]> {
   const first = await fetchPage(address, 1)
   const orders = [...first.orders]
-  for (let page = 2; page <= first.totalPages; page++) {
+  for (let page = 2; page <= Math.min(first.totalPages, MAX_PAGES); page++) {
     const next = await fetchPage(address, page)
     orders.push(...next.orders)
   }

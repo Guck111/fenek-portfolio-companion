@@ -13,7 +13,7 @@ export function createPortfolioPieOverlapTool(): ToolBinding {
   return {
     tool: {
       name: "portfolio_pie_overlap",
-      annotations: { title: "Portfolio: Pie Overlap (Shared Tickers)" },
+      annotations: { title: "Portfolio: Pie Overlap (Shared Tickers)", openWorldHint: true },
       description:
         "For brokers that support pies, finds tickers that appear in more than one pie. Lists each duplicated ticker with the pies that hold it, the target weight inside each pie, and the broker. Useful for spotting unintended overlap when you build several themed pies that share core ETFs.",
       inputSchema: {

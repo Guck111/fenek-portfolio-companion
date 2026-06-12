@@ -4,32 +4,59 @@ on:
   push:
     tags: ['v*']
 
+# Split privileges: the test job runs the full dev toolchain (eslint, vitest,
+# their plugins) with a read-only token; only the minimal build+attest+release
+# job below holds write permissions, so dependency code never executes next to
+# a token that could rewrite releases or mint attestations.
 permissions:
-  contents: write       # create the GitHub Release
-  id-token: write       # build provenance attestation
-  attestations: write   # build provenance attestation
+  contents: read
 
 jobs:
-  release:
+  test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
           node-version: '20'
           cache: 'npm'
-      - run: npm ci
+      # --ignore-scripts: dependency lifecycle scripts never run in CI.
+      - run: npm ci --ignore-scripts
       - run: npm run typecheck
       - run: npm run lint
       - run: npm run test
       - run: npm run audit
+
+  release:
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write       # create the GitHub Release
+      id-token: write       # build provenance attestation
+      attestations: write   # build provenance attestation
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci --ignore-scripts
       - run: npm run build
+      - name: Stash the lockfile-verified mcpb CLI before pruning dev deps
+        run: |
+          BIN_REL=$(node -p "const b = require('@anthropic-ai/mcpb/package.json').bin; typeof b === 'string' ? b : b.mcpb")
+          cp -R node_modules /tmp/mcpb-tooling
+          echo "MCPB_CLI=/tmp/mcpb-tooling/@anthropic-ai/mcpb/$BIN_REL" >> "$GITHUB_ENV"
       - name: Prune to production dependencies (slim bundle)
         run: npm prune --omit=dev
-      - name: Pack .mcpb (mcpb from npx cache, not the pruned tree)
-        run: npx -y @anthropic-ai/mcpb@2.1.2 pack
+      - name: Pack .mcpb (lockfile-verified mcpb copy, not a registry re-fetch)
+        run: node "$MCPB_CLI" pack
       - name: Attest build provenance for the bundle
-        uses: actions/attest-build-provenance@v4
+        uses: actions/attest-build-provenance@a2bbfa25375fe432b6a289bc6b6cd05ecd0c4c32 # v4
         with:
           subject-path: '*.mcpb'
       - name: Create GitHub Release with the bundle

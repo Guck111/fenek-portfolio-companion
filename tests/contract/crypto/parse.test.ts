@@ -44,8 +44,8 @@ describe("parseAddresses", () => {
   })
 
   it("returns a single address unchanged", () => {
-    expect(parseAddresses("E36G1Yh68D8q8cfmsnuuorkdDyhnnqNDVK59c8xHUo25")).toEqual([
-      "E36G1Yh68D8q8cfmsnuuorkdDyhnnqNDVK59c8xHUo25",
+    expect(parseAddresses("Av6FrBHoGL9Eau6WCydCZFKQV2SZAbDGkvg7gobmCJcV")).toEqual([
+      "Av6FrBHoGL9Eau6WCydCZFKQV2SZAbDGkvg7gobmCJcV",
     ])
   })
 
