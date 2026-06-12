@@ -246,7 +246,7 @@ h3 {
 	text-decoration: none;
 	border: 1px solid var(--line);
 	border-radius: 8px;
-	padding: 8px 12px;
+	padding: 4px 8px;
 }
 .gh-link:hover {
 	border-color: var(--dim);
@@ -303,9 +303,6 @@ h3 {
 	}
 	.gh-link span {
 		display: none;
-	}
-	.gh-link {
-		padding: 8px;
 	}
 }
 
