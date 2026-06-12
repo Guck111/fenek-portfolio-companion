@@ -1757,3 +1757,9 @@ section[id] {
 	font-size: 18px;
 	margin-top: 26px;
 }
+.rel-desc {
+	color: var(--soft);
+	font-size: 15px;
+	line-height: 1.6;
+	margin: 12px 0 0;
+}
