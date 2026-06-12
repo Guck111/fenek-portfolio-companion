@@ -6,7 +6,7 @@
 set -euo pipefail
 
 TOOLING_DIR=$(mktemp -d)
-trap 'echo "[pack-local] restoring devDependencies..."; npm install --silent; rm -rf "$TOOLING_DIR"' EXIT
+trap 'FENEK_BUILD_FLAVOR=standard node scripts/gen-build-flavor.mjs; echo "[pack-local] restoring devDependencies..."; npm install --silent; rm -rf "$TOOLING_DIR"' EXIT
 
 echo "[pack-local] building TypeScript..."
 npm run build
