@@ -5,6 +5,8 @@ import type { Money } from "../../domain/money.js"
 import type { Position } from "../../domain/position.js"
 import type { ToolBinding } from "../../brokers/base.js"
 import { list as listBrokers } from "../../brokers/registry.js"
+import { partitionBrokersByTier } from "../../license/gate.js"
+import { AGGREGATE_EXCLUDED_NOTE } from "../../license/texts.js"
 import { parseArgs, safeRun } from "../result.js"
 
 import {
@@ -61,13 +63,16 @@ interface BrokerSnapshot {
 }
 
 async function buildOverview(topN: number): Promise<unknown> {
-  const brokers = listBrokers()
+  const { visible: brokers, excludedSources } = partitionBrokersByTier(listBrokers())
+  const excludedExtras =
+    excludedSources.length > 0 ? { excludedSources, note: AGGREGATE_EXCLUDED_NOTE } : {}
   if (brokers.length === 0) {
     return {
       brokers: [],
       totals: emptyTotals(),
       topPositions: [],
       errors: [],
+      ...excludedExtras,
     }
   }
 
@@ -151,6 +156,7 @@ async function buildOverview(topN: number): Promise<unknown> {
         : {}),
     })),
     errors,
+    ...excludedExtras,
   }
 }
 

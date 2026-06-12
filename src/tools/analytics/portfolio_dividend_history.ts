@@ -4,6 +4,8 @@ import type { Dividend } from "../../domain/dividend.js"
 import type { IBroker } from "../../brokers/base.js"
 import type { ToolBinding } from "../../brokers/base.js"
 import { list as listBrokers } from "../../brokers/registry.js"
+import { partitionBrokersByTier } from "../../license/gate.js"
+import { AGGREGATE_EXCLUDED_NOTE } from "../../license/texts.js"
 import { parseArgs, safeRun } from "../result.js"
 
 import { addToBucket, bucketToMoneyList, roundBucket } from "./aggregation.js"
@@ -75,9 +77,12 @@ async function buildHistory(
   toDate: string | undefined,
   maxPages: number,
 ): Promise<unknown> {
-  const eligible = listBrokers().filter((b): b is IBroker => b.capabilities.dividends)
+  const { visible, excludedSources } = partitionBrokersByTier(listBrokers())
+  const excludedExtras =
+    excludedSources.length > 0 ? { excludedSources, note: AGGREGATE_EXCLUDED_NOTE } : {}
+  const eligible = visible.filter((b): b is IBroker => b.capabilities.dividends)
   if (eligible.length === 0) {
-    return { eligibleBrokers: 0, groups: [], errors: [] }
+    return { eligibleBrokers: 0, groups: [], errors: [], ...excludedExtras }
   }
 
   const fromMs = fromDate !== undefined ? Date.parse(fromDate) : Number.NEGATIVE_INFINITY
@@ -160,6 +165,7 @@ async function buildHistory(
     groupBy,
     groups: sortedGroups,
     errors,
+    ...excludedExtras,
   }
 }
 

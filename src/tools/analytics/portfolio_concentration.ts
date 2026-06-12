@@ -2,6 +2,8 @@ import { z } from "zod"
 
 import type { ToolBinding } from "../../brokers/base.js"
 import { list as listBrokers } from "../../brokers/registry.js"
+import { partitionBrokersByTier } from "../../license/gate.js"
+import { AGGREGATE_EXCLUDED_NOTE } from "../../license/texts.js"
 import { parseArgs, safeRun } from "../result.js"
 
 import { addToBucket, bucketToMoneyList, roundBucket } from "./aggregation.js"
@@ -64,7 +66,9 @@ interface TickerAggregate {
 }
 
 async function buildConcentration(topN: number, minShare: number): Promise<unknown> {
-  const brokers = listBrokers()
+  const { visible: brokers, excludedSources } = partitionBrokersByTier(listBrokers())
+  const excludedExtras =
+    excludedSources.length > 0 ? { excludedSources, note: AGGREGATE_EXCLUDED_NOTE } : {}
   const map = new Map<string, TickerAggregate>()
   let portfolioValueByCurrency: Record<string, number> = {}
   const errors: BrokerFailure[] = []
@@ -138,6 +142,7 @@ async function buildConcentration(topN: number, minShare: number): Promise<unkno
         : {}),
     })),
     errors,
+    ...excludedExtras,
   }
 }
 

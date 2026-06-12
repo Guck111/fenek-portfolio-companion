@@ -3,6 +3,8 @@ import { z } from "zod"
 import type { IBroker } from "../../brokers/base.js"
 import type { ToolBinding } from "../../brokers/base.js"
 import { list as listBrokers } from "../../brokers/registry.js"
+import { partitionBrokersByTier } from "../../license/gate.js"
+import { AGGREGATE_EXCLUDED_NOTE } from "../../license/texts.js"
 import { parseArgs, safeRun } from "../result.js"
 
 import { toBrokerFailure, type BrokerFailure } from "./resilience.js"
@@ -41,13 +43,16 @@ interface PieMembership {
 }
 
 async function buildOverlap(): Promise<unknown> {
-  const eligibleBrokers = listBrokers().filter(
+  const { visible, excludedSources } = partitionBrokersByTier(listBrokers())
+  const excludedExtras =
+    excludedSources.length > 0 ? { excludedSources, note: AGGREGATE_EXCLUDED_NOTE } : {}
+  const eligibleBrokers = visible.filter(
     (b): b is IBroker & Required<Pick<IBroker, "getPies" | "getPie">> =>
       b.capabilities.pies && b.getPies !== undefined && b.getPie !== undefined,
   )
 
   if (eligibleBrokers.length === 0) {
-    return { eligibleBrokers: 0, overlappingTickers: [], errors: [] }
+    return { eligibleBrokers: 0, overlappingTickers: [], errors: [], ...excludedExtras }
   }
 
   const memberships = new Map<string, PieMembership[]>()
@@ -91,5 +96,6 @@ async function buildOverlap(): Promise<unknown> {
     eligibleBrokers: eligibleBrokers.length,
     overlappingTickers: overlapping,
     errors,
+    ...excludedExtras,
   }
 }
