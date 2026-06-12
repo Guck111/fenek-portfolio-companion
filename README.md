@@ -2,13 +2,15 @@
 
 Read-only MCP server that aggregates your portfolio data across wallets, exchanges and brokers available in Europe — currently Trading 212, Bybit, and Solana, TON, Bitcoin, Litecoin and Dogecoin wallets — and gives Claude access to it for analysis. It is a data aggregator: it collects your data and computes neutral metrics on it, and never makes recommendations. Architected to add more sources without changing the core or existing adapters.
 
+**Website & downloads: [fenek.tech](https://fenek.tech)** — install guide, security details, and changelog.
+
 > **NOT FINANCIAL ADVICE.** This is an informational tool. You are solely responsible for any decisions you make based on its output. The author is not a registered investment advisor in any jurisdiction. Read [DISCLAIMER.md](DISCLAIMER.md) before using.
 >
 > **READ-ONLY.** No tool in this server can place orders, transfer funds, or modify your account. API keys must be created with read-only permissions.
 >
 > **UNOFFICIAL.** Not affiliated with, endorsed by, or sponsored by Trading 212, Bybit, or any other broker, exchange, or wallet provider.
 >
-> **OPEN SOURCE, FREE TODAY.** MIT License, no telemetry, no affiliate relationships. No paid tier is active today: classic brokers and portfolio analytics stay free forever; crypto features will later join a paid Pro tier (see the Privacy Policy section), and building Pro from source stays officially free.
+> **OPEN SOURCE, FREE TODAY.** MIT License, no telemetry, no affiliate relationships. No paid tier is active today: classic brokers (Trading 212 today, more to come) and portfolio analytics stay free forever; crypto features will later join a paid Pro tier (see [the website](https://fenek.tech)), and building Pro from source stays officially free.
 
 ## Install
 
