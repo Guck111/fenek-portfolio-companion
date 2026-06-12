@@ -538,6 +538,7 @@ export function mapOpenOrders(result: BybitOrderListResult, category: string): O
 export class BybitBroker implements IBroker {
   readonly id = BROKER_ID
   readonly name = BROKER_NAME
+  readonly tier = "pro" as const
   readonly capabilities: BrokerCapabilities = {
     pies: false,
     dividends: false,

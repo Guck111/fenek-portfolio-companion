@@ -26,6 +26,7 @@ export function createCryptoTools(broker: CryptoBroker): readonly ToolBinding[] 
         if (!r.ok) return r.result
         return safeRun(() => broker.getReport())
       },
+      tier: "pro",
     },
     {
       tool: {
@@ -57,6 +58,7 @@ export function createCryptoTools(broker: CryptoBroker): readonly ToolBinding[] 
           return Object.fromEntries(prices)
         })
       },
+      tier: "pro",
     },
     {
       tool: {
@@ -74,6 +76,7 @@ export function createCryptoTools(broker: CryptoBroker): readonly ToolBinding[] 
         if (!r.ok) return r.result
         return safeRun(() => broker.getLimitOrders())
       },
+      tier: "pro",
     },
   ]
 }

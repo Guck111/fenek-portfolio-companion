@@ -22,6 +22,7 @@ export function createBybitTools(broker: BybitBroker): readonly ToolBinding[] {
         if (!r.ok) return r.result
         return safeRun(() => broker.getPositions())
       },
+      tier: "pro",
     },
     {
       tool: {
@@ -36,6 +37,7 @@ export function createBybitTools(broker: BybitBroker): readonly ToolBinding[] {
         if (!r.ok) return r.result
         return safeRun(() => broker.getAccountReport())
       },
+      tier: "pro",
     },
     {
       tool: {
@@ -50,6 +52,7 @@ export function createBybitTools(broker: BybitBroker): readonly ToolBinding[] {
         if (!r.ok) return r.result
         return safeRun(() => broker.getDerivativePositions())
       },
+      tier: "pro",
     },
     {
       tool: {
@@ -64,6 +67,7 @@ export function createBybitTools(broker: BybitBroker): readonly ToolBinding[] {
         if (!r.ok) return r.result
         return safeRun(() => broker.getOpenOrders())
       },
+      tier: "pro",
     },
     {
       tool: {
@@ -78,6 +82,7 @@ export function createBybitTools(broker: BybitBroker): readonly ToolBinding[] {
         if (!r.ok) return r.result
         return safeRun(() => broker.getBalancesOverview())
       },
+      tier: "pro",
     },
     {
       tool: {
@@ -92,6 +97,7 @@ export function createBybitTools(broker: BybitBroker): readonly ToolBinding[] {
         if (!r.ok) return r.result
         return safeRun(() => broker.getEarnPositions())
       },
+      tier: "pro",
     },
     {
       tool: {
@@ -106,6 +112,7 @@ export function createBybitTools(broker: BybitBroker): readonly ToolBinding[] {
         if (!r.ok) return r.result
         return safeRun(() => broker.getKeyInfo())
       },
+      tier: "pro",
     },
   ]
 }

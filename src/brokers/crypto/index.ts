@@ -63,6 +63,7 @@ export interface CryptoReport {
 export class CryptoBroker implements IBroker {
   readonly id = BROKER_ID
   readonly name = BROKER_NAME
+  readonly tier = "pro" as const
   readonly capabilities: BrokerCapabilities = {
     pies: false,
     dividends: false,
