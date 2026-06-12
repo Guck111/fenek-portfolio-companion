@@ -1370,3 +1370,207 @@ section.alt {
 .center-narrow {
 	max-width: var(--measure);
 }
+
+/* ============================================================
+   Site additions — landing components
+   ============================================================ */
+
+/* demo frame (hero media placeholder, ready to accept a <video>) */
+.demo-frame {
+	width: min(440px, 100%);
+	background: var(--card);
+	border: 1px solid var(--line);
+	border-radius: 18px;
+	box-shadow: 0 26px 60px -34px rgba(40, 34, 22, 0.5);
+	overflow: hidden;
+}
+.demo-bar {
+	display: flex;
+	align-items: center;
+	gap: 7px;
+	padding: 13px 16px;
+	border-bottom: 1px solid var(--line);
+}
+.demo-dot {
+	width: 9px;
+	height: 9px;
+	border-radius: 50%;
+	background: var(--line-2);
+}
+.demo-dot:nth-child(1) {
+	background: var(--sand-2);
+}
+.demo-dot:nth-child(3) {
+	background: var(--accent-tint);
+}
+.demo-bar-label {
+	margin-left: 8px;
+	font-family: var(--mono);
+	font-size: 11.5px;
+	color: var(--dim);
+}
+.demo-media {
+	position: relative;
+	aspect-ratio: 16 / 10;
+	background: var(--paper-2);
+}
+.demo-poster {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 14px;
+	text-align: center;
+	padding: 20px;
+}
+.demo-play {
+	color: var(--accent);
+}
+.demo-play svg {
+	width: 56px;
+	height: 56px;
+}
+.demo-cap {
+	font-family: var(--mono);
+	font-size: 11.5px;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: var(--dim);
+}
+.demo-video {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+/* trust strip (chips that link to /security) */
+.trust-strip {
+	padding: 30px 0;
+	border-bottom: 1px solid var(--line);
+}
+.chips-center {
+	justify-content: center;
+	margin-top: 0;
+}
+.chip-link {
+	text-decoration: none;
+	color: var(--soft);
+	transition:
+		border-color 0.15s ease,
+		color 0.15s ease,
+		background 0.15s ease;
+}
+.chip-link:hover {
+	border-color: var(--accent);
+	color: var(--ink);
+	background: var(--card);
+}
+
+/* newsletter form */
+.newsletter {
+	display: flex;
+	gap: 10px;
+	flex-wrap: wrap;
+	max-width: 480px;
+	margin-top: 22px;
+}
+.newsletter-input {
+	flex: 1 1 220px;
+	min-width: 0;
+	font-family: var(--sans);
+	font-size: 15px;
+	color: var(--ink);
+	background: var(--card);
+	border: 1px solid var(--line);
+	border-radius: 10px;
+	padding: 13px 15px;
+}
+.newsletter-input::placeholder {
+	color: var(--dim);
+}
+.newsletter .btn {
+	flex: 0 0 auto;
+	white-space: nowrap;
+}
+.newsletter-note {
+	margin: 10px 0 0;
+	font-family: var(--mono);
+	font-size: 12px;
+	color: var(--dim);
+}
+
+/* pricing */
+.free-badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 9px;
+	font-family: var(--mono);
+	font-size: 12px;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	background: #fff;
+	color: var(--accent-strong);
+	border-radius: 999px;
+	padding: 8px 15px;
+}
+.free-badge .tick {
+	width: 7px;
+	height: 7px;
+	border-radius: 50%;
+	background: var(--accent);
+}
+.callout .newsletter-input {
+	background: #fff;
+	border-color: transparent;
+}
+.callout .newsletter-note {
+	color: color-mix(in srgb, #fff 80%, var(--accent));
+}
+
+/* sources extra line + vote block */
+.source .extra {
+	color: var(--soft);
+	font-size: 14px;
+	margin-top: 10px;
+}
+.vote-row {
+	margin-top: 34px;
+	max-width: 520px;
+}
+.vote-row .kicker {
+	margin-bottom: 8px;
+}
+
+/* centered final CTA */
+.cta-center {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
+	gap: 18px;
+}
+.cta-center .cta-row {
+	justify-content: center;
+	margin-top: 4px;
+}
+.install-guide {
+	font-family: var(--sans);
+	font-size: 15px;
+	font-weight: 600;
+	text-decoration: none;
+}
+.install-guide:hover {
+	text-decoration: underline;
+}
+
+/* anchored sections clear the sticky header; pricing badge spacing */
+section[id] {
+	scroll-margin-top: 84px;
+}
+.callout .free-badge {
+	margin-bottom: 18px;
+}
