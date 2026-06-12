@@ -14,7 +14,7 @@ If private vulnerability reporting is not yet enabled on the repository, open a 
 
 ## Response Targets
 
-This project is non-commercial open-source software maintained on a best-effort basis. The targets below are commitments of intent, not service-level guarantees.
+This project is open-source software maintained on a best-effort basis. The targets below are commitments of intent, not service-level guarantees.
 
 | Stage | Target |
 |---|---|

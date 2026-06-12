@@ -129,6 +129,27 @@ describe("registry license gate", () => {
     expect(tool?.annotations?.readOnlyHint).toBe(true)
   })
 
+  it("a valid cached license shows no suffix and runs pro tools", async () => {
+    writeLicenseState({
+      keyFingerprint: keyFingerprint("key-1"),
+      lastVerdict: "valid",
+      checkedAt: new Date().toISOString(),
+    })
+    initLicensing({
+      paywallEnabled: true,
+      buildFlavor: "standard",
+      licenseKey: "key-1",
+      provider: null,
+    })
+    const pro = binding("bybit_fake", "pro")
+    registerTools([pro])
+    const tool = listTools().find((t) => t.name === "bybit_fake")
+    expect(tool?.description).toBe("bybit_fake description.")
+    const result = await callTool("bybit_fake", {})
+    expect(result.isError).toBeUndefined()
+    expect(pro.calls()).toBe(1)
+  })
+
   it("a revoked subscription surfaces the renew text through the registry", async () => {
     writeLicenseState({
       keyFingerprint: keyFingerprint("key-1"),

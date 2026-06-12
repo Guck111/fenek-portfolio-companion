@@ -31,7 +31,7 @@ Any other broker name, logo, or trademark that may appear in this project is the
 
 ## Use Limitations
 
-This project is provided as **non-commercial, free open-source software** under the MIT License. It is not a regulated financial service and is not intended for use as part of one. If you intend to deploy or integrate this software in a commercial or regulated context (for example, as part of services you provide to clients for compensation), you are solely responsible for obtaining all applicable licenses and complying with all applicable regulations in your jurisdiction.
+This project is provided as **open-source software under the MIT License**, free to use and to build from source (a paid convenience tier for crypto features is planned; see the Privacy Policy). It is not a regulated financial service and is not intended for use as part of one. If you intend to deploy or integrate this software in a commercial or regulated context (for example, as part of services you provide to clients for compensation), you are solely responsible for obtaining all applicable licenses and complying with all applicable regulations in your jurisdiction.
 
 ## Jurisdictional Note (Polish / Polski)
 

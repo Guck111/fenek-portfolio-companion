@@ -63,7 +63,12 @@ async function main(): Promise<void> {
   registerTools(createPlaybookTools())
   registerPrompts(createCorePrompts())
   await startServer()
-  void controlPlaneCheck() // fire-and-forget: never blocks initialize
+  // Fire-and-forget: never blocks initialize. Rejection-proof today; the
+  // catch guards future edits to the warmup path from killing the server.
+  void controlPlaneCheck().catch((error: unknown) => {
+    const message = error instanceof Error ? error.message : String(error)
+    console.error(`fenek: control-plane check failed: ${message}`)
+  })
 }
 
 main().catch((error: unknown) => {
