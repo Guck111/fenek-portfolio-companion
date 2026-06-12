@@ -12,15 +12,17 @@ echo "[pack-local] building TypeScript..."
 npm run build
 
 echo "[pack-local] stashing lockfile-verified mcpb CLI..."
-BIN_REL=$(node -p "const b = require('@anthropic-ai/mcpb/package.json').bin; typeof b === 'string' ? b : b.mcpb")
+# mcpb's package exports forbid resolving its package.json, so don't ask node
+# for the bin path — run the copied .bin shim directly (a relative symlink
+# that stays valid inside the copy).
 cp -R node_modules "$TOOLING_DIR/node_modules"
-MCPB_CLI="$TOOLING_DIR/node_modules/@anthropic-ai/mcpb/$BIN_REL"
+MCPB_CLI="$TOOLING_DIR/node_modules/.bin/mcpb"
 
 echo "[pack-local] pruning to production deps..."
 npm prune --omit=dev --silent
 
 echo "[pack-local] packing .mcpb..."
-node "$MCPB_CLI" pack
+"$MCPB_CLI" pack
 
 echo
 echo "[pack-local] done. Bundle: $(ls -lh ./*.mcpb | tail -1)"

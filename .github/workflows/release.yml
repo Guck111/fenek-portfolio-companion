@@ -46,15 +46,15 @@ jobs:
           cache: 'npm'
       - run: npm ci --ignore-scripts
       - run: npm run build
+      # mcpb's package exports forbid resolving its package.json, so don't ask
+      # node for the bin path — copy the tree and run the .bin shim directly
+      # (a relative symlink that stays valid inside the copy).
       - name: Stash the lockfile-verified mcpb CLI before pruning dev deps
-        run: |
-          BIN_REL=$(node -p "const b = require('@anthropic-ai/mcpb/package.json').bin; typeof b === 'string' ? b : b.mcpb")
-          cp -R node_modules /tmp/mcpb-tooling
-          echo "MCPB_CLI=/tmp/mcpb-tooling/@anthropic-ai/mcpb/$BIN_REL" >> "$GITHUB_ENV"
+        run: cp -R node_modules /tmp/mcpb-tooling
       - name: Prune to production dependencies (slim bundle)
         run: npm prune --omit=dev
       - name: Pack .mcpb (lockfile-verified mcpb copy, not a registry re-fetch)
-        run: node "$MCPB_CLI" pack
+        run: /tmp/mcpb-tooling/.bin/mcpb pack
       - name: Attest build provenance for the bundle
         uses: actions/attest-build-provenance@a2bbfa25375fe432b6a289bc6b6cd05ecd0c4c32 # v4
         with:
