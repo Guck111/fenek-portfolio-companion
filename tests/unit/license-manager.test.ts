@@ -174,6 +174,20 @@ describe("license manager", () => {
     const provider = fakeProvider({ kind: "valid" })
     initLicensing({ paywallEnabled: true, buildFlavor: "standard", licenseKey: "key-1", provider })
     expect(await ensureProAccess()).toEqual({ allowed: true })
+    expect(provider.calls).toBe(1)
+  })
+
+  it("a clock set backward (checkedAt in the future) never locks a paying user out", async () => {
+    writeLicenseState({
+      keyFingerprint: keyFingerprint("key-1"),
+      lastVerdict: "valid",
+      checkedAt: daysAgo(-3), // three days in the future
+    })
+    const provider = fakeProvider({ kind: "unreachable" })
+    initLicensing({ paywallEnabled: true, buildFlavor: "standard", licenseKey: "key-1", provider })
+    expect(getTier()).toBe("pro")
+    expect(await ensureProAccess()).toEqual({ allowed: true })
+    expect(provider.calls).toBe(0) // negative age counts as fresh; no refresh due
   })
 
   it("a changed key ignores the old cache", async () => {
