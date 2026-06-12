@@ -1,8 +1,11 @@
 const HomePage = () => {
 	return (
-		<main className="wrap">
-			<h1>Fenek</h1>
-		</main>
+		<section className="hero">
+			<div className="wrap">
+				<p className="eyebrow">Read-only MCP server · for Claude Desktop</p>
+				<h1 className="hero-name">Fenek</h1>
+			</div>
+		</section>
 	)
 }
 

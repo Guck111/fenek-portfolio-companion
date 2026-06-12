@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next"
 import type { ReactNode } from "react"
+import { SiteFooter } from "@/components/fenek/SiteFooter"
+import { SiteHeader } from "@/components/fenek/SiteHeader"
 import "./globals.css"
 
 export const metadata: Metadata = {
@@ -21,7 +23,14 @@ export const viewport: Viewport = {
 const RootLayout = ({ children }: { children: ReactNode }) => {
 	return (
 		<html lang="en">
-			<body>{children}</body>
+			<body>
+				<a className="skip" href="#app">
+					Skip to content
+				</a>
+				<SiteHeader />
+				<main id="app">{children}</main>
+				<SiteFooter />
+			</body>
 		</html>
 	)
 }
