@@ -6,6 +6,8 @@ import type {
 } from "@modelcontextprotocol/sdk/types.js"
 
 import type { IBroker, PromptBinding, ToolBinding } from "./base.js"
+import { ensureProAccess, getTier } from "../license/manager.js"
+import { PRO_TOOL_DESCRIPTION_SUFFIX, proDenialText } from "../license/texts.js"
 
 const brokers = new Map<string, IBroker>()
 const tools = new Map<string, ToolBinding>()
@@ -47,16 +49,30 @@ export function list(): readonly IBroker[] {
 }
 
 export function listTools(): readonly Tool[] {
-  return [...tools.values()].map((b) => b.tool)
+  return [...tools.values()].map((b) => {
+    if ((b.tier ?? "free") === "pro" && getTier() === "free") {
+      return {
+        ...b.tool,
+        description: `${b.tool.description ?? ""}${PRO_TOOL_DESCRIPTION_SUFFIX}`,
+      }
+    }
+    return b.tool
+  })
 }
 
-export function callTool(name: string, args: unknown): Promise<CallToolResult> {
+export async function callTool(name: string, args: unknown): Promise<CallToolResult> {
   const binding = tools.get(name)
   if (binding === undefined) {
-    return Promise.resolve({
+    return {
       isError: true,
       content: [{ type: "text", text: `Unknown tool: ${name}` }],
-    })
+    }
+  }
+  if ((binding.tier ?? "free") === "pro") {
+    const access = await ensureProAccess()
+    if (!access.allowed) {
+      return { isError: true, content: [{ type: "text", text: proDenialText(access.reason) }] }
+    }
   }
   return binding.handler(args)
 }

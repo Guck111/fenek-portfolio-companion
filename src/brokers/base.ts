@@ -11,10 +11,12 @@ import type { Pie, PieDetails } from "../domain/pie.js"
 import type { Transaction } from "../domain/transaction.js"
 import type { Dividend } from "../domain/dividend.js"
 import type { Page, PageOpts } from "../domain/pagination.js"
+import type { Tier } from "../license/manager.js"
 
 export interface ToolBinding {
   readonly tool: Tool
   readonly handler: (args: unknown) => Promise<CallToolResult>
+  readonly tier?: Tier
 }
 
 export interface PromptBinding {
@@ -36,6 +38,8 @@ export interface IBroker {
   readonly id: string
   readonly name: string
   readonly capabilities: BrokerCapabilities
+  /** Pro-gated data source (crypto). Absent = free. */
+  readonly tier?: Tier
 
   authenticate(config: BrokerConfig): Promise<void>
   getAccount(): Promise<Account>
