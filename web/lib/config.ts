@@ -3,7 +3,7 @@
 // TODO(arseni): replace the placeholder with the real Buttondown username once
 // the account exists (roadmap Task 0.2). Until then the embed form posts to a
 // list that does not resolve — harmless, but no one is subscribed.
-export const BUTTONDOWN_USERNAME = "fenek-PLACEHOLDER"
+export const BUTTONDOWN_USERNAME = "fenek"
 
 export const BUTTONDOWN_CONFIGURED = !BUTTONDOWN_USERNAME.includes("PLACEHOLDER")
 
