@@ -4,6 +4,9 @@ src/
 # Tests and fixtures
 tests/
 
+# Marketing website (separate Next.js app, never part of the extension bundle)
+web/
+
 # Project documentation (private use)
 docs/
 README.md
