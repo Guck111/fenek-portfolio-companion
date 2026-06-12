@@ -4,7 +4,7 @@ import { TrustStrip } from "@/components/fenek/TrustStrip"
 import { DownloadButton } from "@/components/ui/DownloadButton"
 import { DownloadIcon, GitHubIcon } from "@/components/ui/icons"
 import { NewsletterForm } from "@/components/ui/NewsletterForm"
-import { GITHUB_URL } from "@/lib/site"
+import { BUILDING_PRO_URL, GITHUB_URL } from "@/lib/site"
 
 const STEPS = [
 	{ title: "Download & install", body: "Download and double-click — Claude Desktop installs it." },
@@ -122,6 +122,13 @@ const HomePage = () => {
 							will become part of Pro — under $5/mo. Classic brokers like Trading 212 stay free
 							forever. Early newsletter subscribers get a launch discount. Everything stays open
 							source.
+						</p>
+						<p className="callout-aside">
+							{"Prefer full anonymity? "}
+							<a href={BUILDING_PRO_URL} target="_blank" rel="noopener noreferrer">
+								Build the Pro features from source
+							</a>
+							{" for free — no license, no checkout."}
 						</p>
 						<NewsletterForm tag="pro-waitlist" buttonLabel="Get the launch discount" />
 						<p className="newsletter-note">Release notes and the Pro launch, nothing else.</p>

@@ -1763,3 +1763,19 @@ section[id] {
 	line-height: 1.6;
 	margin: 12px 0 0;
 }
+
+/* links + self-build aside inside the accent callout */
+.callout a {
+	color: #fff;
+	text-decoration: underline;
+	text-underline-offset: 3px;
+}
+.callout a:hover {
+	color: var(--paper);
+}
+.callout-aside {
+	margin: 14px 0 0;
+	font-size: 15px;
+	line-height: 1.6;
+	color: color-mix(in srgb, #fff 82%, var(--accent));
+}
