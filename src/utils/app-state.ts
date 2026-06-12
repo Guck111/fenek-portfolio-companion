@@ -32,7 +32,7 @@ export function readStateFile<T>(fileName: string, schema: z.ZodType<T>): T | un
   }
 }
 
-export function writeStateFile(fileName: string, data: unknown): void {
+export function writeStateFile(fileName: string, data: Record<string, unknown>): void {
   try {
     const dir = resolveStateDir()
     mkdirSync(dir, { recursive: true })
