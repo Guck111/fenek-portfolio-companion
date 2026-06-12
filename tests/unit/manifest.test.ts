@@ -4,7 +4,10 @@ import { describe, expect, it } from "vitest"
 
 const require = createRequire(import.meta.url)
 const manifest = require("../../manifest.json") as {
-  user_config: Record<string, { title?: string; required?: boolean }>
+  user_config: Record<
+    string,
+    { title?: string; description?: string; required?: boolean; sensitive?: boolean }
+  >
   server: { mcp_config: { env: Record<string, string> } }
 }
 
@@ -37,5 +40,19 @@ describe("manifest user_config", () => {
       const title = manifest.user_config[key]?.title
       expect(typeof title === "string" && title.length > 0, `${key} needs a title`).toBe(true)
     }
+  })
+
+  it("exposes the Pro license key field", () => {
+    expect(configKeys).toContain("LICENSE_KEY")
+  })
+
+  it("keeps the license key sensitive (OS keychain)", () => {
+    expect(manifest.user_config["LICENSE_KEY"]?.sensitive).toBe(true)
+  })
+
+  it("tells the user to leave the license key blank until Pro launches", () => {
+    const description = manifest.user_config["LICENSE_KEY"]?.description ?? ""
+    expect(description).toContain("Not needed today")
+    expect(description).toContain("Leave blank")
   })
 })

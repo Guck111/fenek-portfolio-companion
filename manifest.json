@@ -32,7 +32,8 @@
         "T212_API_SECRET": "${user_config.T212_API_SECRET}",
         "WALLET_ADDRESSES": "${user_config.WALLET_ADDRESSES}",
         "BYBIT_API_KEY": "${user_config.BYBIT_API_KEY}",
-        "BYBIT_API_SECRET": "${user_config.BYBIT_API_SECRET}"
+        "BYBIT_API_SECRET": "${user_config.BYBIT_API_SECRET}",
+        "LICENSE_KEY": "${user_config.LICENSE_KEY}"
       }
     }
   },
@@ -71,6 +72,13 @@
       "type": "string",
       "title": "Bybit · API secret",
       "description": "Shown once when you create the Bybit key. Stored in your OS keychain.",
+      "required": false,
+      "sensitive": true
+    },
+    "LICENSE_KEY": {
+      "type": "string",
+      "title": "Fenek Pro · License key",
+      "description": "License key for Fenek Pro (crypto features: Bybit, on-chain wallets). Not needed today — Pro hasn't launched and all crypto features are currently free. Leave blank.",
       "required": false,
       "sensitive": true
     }
