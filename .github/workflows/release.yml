@@ -47,14 +47,15 @@ jobs:
       - run: npm ci --ignore-scripts
       - run: npm run build
       # mcpb's package exports forbid resolving its package.json, so don't ask
-      # node for the bin path — copy the tree and run the .bin shim directly
-      # (a relative symlink that stays valid inside the copy).
+      # node for the bin path — copy the tree and run the .bin shim directly.
+      # The copy MUST be named node_modules: node only resolves the CLI's own
+      # dependencies (commander, ...) from directories with that exact name.
       - name: Stash the lockfile-verified mcpb CLI before pruning dev deps
-        run: cp -R node_modules /tmp/mcpb-tooling
+        run: mkdir -p /tmp/mcpb-tooling && cp -R node_modules /tmp/mcpb-tooling/node_modules
       - name: Prune to production dependencies (slim bundle)
         run: npm prune --omit=dev
       - name: Pack .mcpb (lockfile-verified mcpb copy, not a registry re-fetch)
-        run: /tmp/mcpb-tooling/.bin/mcpb pack
+        run: /tmp/mcpb-tooling/node_modules/.bin/mcpb pack
       - name: Attest build provenance for the bundle
         uses: actions/attest-build-provenance@a2bbfa25375fe432b6a289bc6b6cd05ecd0c4c32 # v4
         with:
