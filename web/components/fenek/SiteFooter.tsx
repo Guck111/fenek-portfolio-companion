@@ -2,7 +2,7 @@ import Link from "next/link"
 import { LogoMark } from "@/components/ui/icons"
 import type { Dictionary } from "@/lib/dictionaries"
 import { type Lang, localizedHref } from "@/lib/i18n"
-import { GITHUB_ISSUES_URL, GITHUB_LICENSE_URL, GITHUB_URL } from "@/lib/site"
+import { GITHUB_LICENSE_URL, GITHUB_URL, SUPPORT_MAILTO } from "@/lib/site"
 
 const ext = { target: "_blank", rel: "noopener noreferrer" } as const
 
@@ -64,9 +64,7 @@ export const SiteFooter = ({ dict, lang }: SiteFooterProps) => {
 									</a>
 								</li>
 								<li>
-									<a href={GITHUB_ISSUES_URL} {...ext}>
-										{f.support}
-									</a>
+									<a href={SUPPORT_MAILTO}>{f.support}</a>
 								</li>
 							</ul>
 						</div>

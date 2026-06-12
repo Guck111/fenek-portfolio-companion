@@ -5,7 +5,8 @@
 export const SITE_URL = "https://fenek.tech"
 
 export const GITHUB_URL = "https://github.com/Guck111/fenek-portfolio-companion"
-export const GITHUB_ISSUES_URL = `${GITHUB_URL}/issues`
+export const SUPPORT_EMAIL = "support@fenek.tech"
+export const SUPPORT_MAILTO = `mailto:${SUPPORT_EMAIL}`
 export const GITHUB_LICENSE_URL = `${GITHUB_URL}/blob/master/LICENSE`
 export const GITHUB_SECURITY_URL = `${GITHUB_URL}/blob/master/SECURITY.md`
 export const BUILDING_PRO_URL = `${GITHUB_URL}/blob/master/docs/building-pro.md`
