@@ -1743,3 +1743,17 @@ section[id] {
 	border-radius: 5px;
 	padding: 1px 5px;
 }
+
+/* headings inside prose (privacy / longform) */
+.prose h2 {
+	font-size: clamp(20px, 2.4vw, 26px);
+	font-weight: 400;
+	margin-top: 40px;
+}
+.prose > h2:first-child {
+	margin-top: 0;
+}
+.prose h3 {
+	font-size: 18px;
+	margin-top: 26px;
+}
