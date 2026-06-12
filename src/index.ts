@@ -6,6 +6,9 @@ import { createCryptoTools } from "./brokers/crypto/tools.js"
 import { register, registerPrompts, registerTools } from "./brokers/registry.js"
 import { Trading212Broker } from "./brokers/trading212/index.js"
 import { createTrading212Tools } from "./brokers/trading212/tools.js"
+import { BUILD_FLAVOR } from "./generated/build-flavor.js"
+import { PAYWALL_ENABLED } from "./license/config.js"
+import { initLicensing } from "./license/manager.js"
 import { createCorePrompts } from "./prompts/index.js"
 import { startServer } from "./server.js"
 import { createAnalyticsTools } from "./tools/analytics/index.js"
@@ -46,7 +49,12 @@ async function configureBybitBroker(): Promise<void> {
 }
 
 async function main(): Promise<void> {
-  await controlPlaneCheck()
+  initLicensing({
+    paywallEnabled: PAYWALL_ENABLED,
+    buildFlavor: BUILD_FLAVOR,
+    licenseKey: process.env["LICENSE_KEY"],
+    provider: null, // the first real merchant adapter arrives with the Pro release
+  })
   await configureBrokers()
   await configureCryptoBroker()
   await configureBybitBroker()
@@ -55,6 +63,7 @@ async function main(): Promise<void> {
   registerTools(createPlaybookTools())
   registerPrompts(createCorePrompts())
   await startServer()
+  void controlPlaneCheck() // fire-and-forget: never blocks initialize
 }
 
 main().catch((error: unknown) => {

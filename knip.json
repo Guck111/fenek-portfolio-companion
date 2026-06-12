@@ -2,6 +2,5 @@
   "$schema": "https://unpkg.com/knip@6/schema.json",
   "entry": ["tests/**/*.test.ts"],
   "project": ["src/**/*.ts", "tests/**/*.ts"],
-  "ignoreExportsUsedInFile": true,
-  "ignore": ["src/generated/**", "src/license/manager.ts"]
+  "ignoreExportsUsedInFile": true
 }
