@@ -5,6 +5,9 @@ type NewsletterFormProps = {
 	buttonLabel?: string
 	placeholder?: string
 	ariaLabel?: string
+	// Optional free-text field posted as Buttondown subscriber metadata
+	// (name must be `metadata__<key>`). Used by the "vote for the next source" form.
+	extraField?: { name: string; label: string; placeholder: string }
 }
 
 // Plain HTML POST to Buttondown — no JavaScript, no third-party script. This is
@@ -14,6 +17,7 @@ export const NewsletterForm = ({
 	buttonLabel = "Get release notes",
 	placeholder = "you@example.com",
 	ariaLabel = "Email address",
+	extraField,
 }: NewsletterFormProps) => (
 	<form
 		className="newsletter"
@@ -21,6 +25,16 @@ export const NewsletterForm = ({
 		method="post"
 		target="_blank"
 	>
+		{extraField ? (
+			<input
+				className="newsletter-input newsletter-extra"
+				type="text"
+				name={extraField.name}
+				placeholder={extraField.placeholder}
+				aria-label={extraField.label}
+				maxLength={120}
+			/>
+		) : null}
 		<input
 			className="newsletter-input"
 			type="email"

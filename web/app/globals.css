@@ -1850,3 +1850,8 @@ section[id] {
 .lang-menu a[aria-current="true"] .code {
 	color: var(--accent);
 }
+
+/* "which source" vote field — own row above the email + button */
+.newsletter-extra {
+	flex: 1 1 100%;
+}

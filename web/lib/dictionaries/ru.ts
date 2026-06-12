@@ -92,8 +92,10 @@ export const ru: Dictionary = {
 						"Solana, TON, Bitcoin, Litecoin, Dogecoin — без ключей, читаются из публичных обозревателей.",
 				},
 			],
-			voteKicker: "Голосуйте за следующего брокера",
+			voteKicker: "Голосуйте за следующий источник",
 			voteButton: "Голосовать и подписаться",
+			voteFieldLabel: "Какой источник хотите дальше?",
+			voteFieldPlaceholder: "напр. IBKR, Kraken, кошелёк Ethereum…",
 		},
 		pricing: {
 			badge: "Сегодня бесплатно",

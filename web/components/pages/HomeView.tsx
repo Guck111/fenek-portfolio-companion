@@ -89,6 +89,11 @@ export const HomeView = ({ dict, lang }: { dict: Dictionary; lang: Lang }) => {
 							buttonLabel={t.sources.voteButton}
 							placeholder={c.emailPlaceholder}
 							ariaLabel={c.emailLabel}
+							extraField={{
+								name: "metadata__requested_source",
+								label: t.sources.voteFieldLabel,
+								placeholder: t.sources.voteFieldPlaceholder,
+							}}
 						/>
 					</div>
 				</div>

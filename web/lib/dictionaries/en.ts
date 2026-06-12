@@ -96,8 +96,10 @@ const en = {
 					extra: "Solana, TON, Bitcoin, Litecoin, Dogecoin — keyless, read from public explorers.",
 				},
 			],
-			voteKicker: "Vote for the next broker",
+			voteKicker: "Vote for the next source",
 			voteButton: "Vote & subscribe",
+			voteFieldLabel: "Which source do you want next?",
+			voteFieldPlaceholder: "e.g. IBKR, Kraken, an Ethereum wallet…",
 		},
 		pricing: {
 			badge: "Free today",
