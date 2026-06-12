@@ -3,5 +3,5 @@
   "entry": ["tests/**/*.test.ts"],
   "project": ["src/**/*.ts", "tests/**/*.ts"],
   "ignoreExportsUsedInFile": true,
-  "ignore": ["src/generated/**"]
+  "ignore": ["src/generated/**", "src/license/provider.ts"]
 }
