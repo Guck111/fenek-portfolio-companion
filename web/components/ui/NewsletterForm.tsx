@@ -4,6 +4,7 @@ type NewsletterFormProps = {
 	tag?: string
 	buttonLabel?: string
 	placeholder?: string
+	ariaLabel?: string
 }
 
 // Plain HTML POST to Buttondown — no JavaScript, no third-party script. This is
@@ -12,6 +13,7 @@ export const NewsletterForm = ({
 	tag,
 	buttonLabel = "Get release notes",
 	placeholder = "you@example.com",
+	ariaLabel = "Email address",
 }: NewsletterFormProps) => (
 	<form
 		className="newsletter"
@@ -25,7 +27,7 @@ export const NewsletterForm = ({
 			name="email"
 			required
 			placeholder={placeholder}
-			aria-label="Email address"
+			aria-label={ariaLabel}
 			autoComplete="email"
 		/>
 		{tag ? <input type="hidden" name="tag" value={tag} /> : null}

@@ -3,33 +3,41 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useState } from "react"
+import { LanguageSwitcher } from "@/components/fenek/LanguageSwitcher"
 import { GitHubIcon, LogoMark, MenuIcon } from "@/components/ui/icons"
+import type { Dictionary } from "@/lib/dictionaries"
+import { type Lang, localizedHref, stripLocale } from "@/lib/i18n"
 import { GITHUB_URL } from "@/lib/site"
 
-const NAV = [
-	{ href: "/security", label: "Security" },
-	{ href: "/install", label: "Install" },
-	{ href: "/changelog", label: "Changelog" },
-]
+type SiteHeaderProps = {
+	lang: Lang
+	nav: Dictionary["nav"]
+}
 
-export const SiteHeader = () => {
+export const SiteHeader = ({ lang, nav }: SiteHeaderProps) => {
 	const pathname = usePathname()
 	const [open, setOpen] = useState(false)
-	const isCurrent = (href: string) => pathname === href || pathname === `${href}/`
+	const canonical = stripLocale(pathname)
+	const items = [
+		{ path: "/security", label: nav.security },
+		{ path: "/install", label: nav.install },
+		{ path: "/changelog", label: nav.changelog },
+	]
+	const isCurrent = (path: string) => canonical === path || canonical === `${path}/`
 
 	return (
 		<header className="site-header">
 			<div className="wrap header-row">
-				<Link className="brand" href="/" aria-label="Fenek">
+				<Link className="brand" href={localizedHref(lang, "/")} aria-label="Fenek">
 					<LogoMark className="mark" />
 					<span>Fenek</span>
 				</Link>
-				<nav className={open ? "nav open" : "nav"} id="primary-nav" aria-label="Primary">
-					{NAV.map((item) => (
+				<nav className={open ? "nav open" : "nav"} id="primary-nav" aria-label={nav.primary}>
+					{items.map((item) => (
 						<Link
-							key={item.href}
-							href={item.href}
-							aria-current={isCurrent(item.href) ? "page" : undefined}
+							key={item.path}
+							href={localizedHref(lang, item.path)}
+							aria-current={isCurrent(item.path) ? "page" : undefined}
 							onClick={() => setOpen(false)}
 						>
 							{item.label}
@@ -37,14 +45,15 @@ export const SiteHeader = () => {
 					))}
 				</nav>
 				<div className="header-tools">
+					<LanguageSwitcher lang={lang} label={nav.chooseLanguage} />
 					<a className="gh-link" href={GITHUB_URL} target="_blank" rel="noopener noreferrer">
 						<GitHubIcon />
-						<span>GitHub</span>
+						<span>{nav.github}</span>
 					</a>
 					<button
 						className="nav-toggle"
 						type="button"
-						aria-label="Menu"
+						aria-label={nav.menu}
 						aria-expanded={open}
 						aria-controls="primary-nav"
 						onClick={() => setOpen((value) => !value)}

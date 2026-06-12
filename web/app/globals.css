@@ -1779,3 +1779,74 @@ section[id] {
 	line-height: 1.6;
 	color: color-mix(in srgb, #fff 82%, var(--accent));
 }
+
+/* ============================================================
+   Language switcher
+   ============================================================ */
+.lang {
+	position: relative;
+}
+.lang-btn {
+	font-family: var(--mono);
+	font-size: 12.5px;
+	letter-spacing: 0.04em;
+	display: inline-flex;
+	align-items: center;
+	gap: 7px;
+	background: var(--card);
+	color: var(--ink);
+	border: 1px solid var(--line);
+	border-radius: 8px;
+	padding: 8px 11px;
+	cursor: pointer;
+}
+.lang-btn:hover {
+	border-color: var(--dim);
+}
+.lang-btn svg {
+	width: 13px;
+	height: 13px;
+	color: var(--soft);
+}
+.lang-menu {
+	position: absolute;
+	right: 0;
+	top: calc(100% + 8px);
+	min-width: 172px;
+	background: var(--card);
+	border: 1px solid var(--line);
+	border-radius: 10px;
+	box-shadow: 0 14px 34px rgba(40, 34, 22, 0.14);
+	padding: 6px;
+	z-index: 120;
+	display: none;
+}
+.lang-menu.open {
+	display: block;
+}
+.lang-menu a {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	font-family: var(--sans);
+	font-size: 14px;
+	color: var(--ink);
+	text-decoration: none;
+	padding: 9px 11px;
+	border-radius: 7px;
+}
+.lang-menu a:hover {
+	background: var(--paper-2);
+}
+.lang-menu a .code {
+	font-family: var(--mono);
+	font-size: 11px;
+	color: var(--dim);
+}
+.lang-menu a[aria-current="true"] {
+	color: var(--accent);
+}
+.lang-menu a[aria-current="true"] .code {
+	color: var(--accent);
+}

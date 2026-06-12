@@ -1,18 +1,17 @@
 import Link from "next/link"
+import { type Lang, localizedHref } from "@/lib/i18n"
 
-const ITEMS = [
-	"Read-only by design",
-	"Keys in your OS keychain",
-	"Zero telemetry",
-	"Open source (MIT)",
-]
+type TrustStripProps = {
+	items: string[]
+	lang: Lang
+}
 
-export const TrustStrip = () => (
-	<section className="trust-strip" aria-label="Why you can trust Fenek">
+export const TrustStrip = ({ items, lang }: TrustStripProps) => (
+	<section className="trust-strip">
 		<div className="wrap">
 			<div className="chips chips-center">
-				{ITEMS.map((label) => (
-					<Link key={label} className="chip chip-link" href="/security">
+				{items.map((label) => (
+					<Link key={label} className="chip chip-link" href={localizedHref(lang, "/security")}>
 						<span className="tick" />
 						<span>{label}</span>
 					</Link>

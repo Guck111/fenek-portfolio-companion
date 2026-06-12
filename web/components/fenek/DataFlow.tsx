@@ -6,30 +6,33 @@ import {
 	MacIcon,
 	XMarkIcon,
 } from "@/components/ui/icons"
+import type { Dictionary } from "@/lib/dictionaries"
 
-const FOOT = ["Read-only requests", "Keys stay in your OS keychain", "Zero telemetry"]
+type DataFlowProps = {
+	flow: Dictionary["security"]["flow"]
+}
 
 // The "what leaves your computer" diagram: your machine talks to your broker
 // over HTTPS; the developer sits outside the channel, cut off from the flow.
-export const DataFlow = () => (
+export const DataFlow = ({ flow }: DataFlowProps) => (
 	<div className="flow">
-		<div className="kicker">What leaves your computer</div>
-		<div className="flow-head">Fenek talks to your brokers — and to no one else.</div>
+		<div className="kicker">{flow.kicker}</div>
+		<div className="flow-head">{flow.head}</div>
 		<div className="channel">
 			<div className="pnode major">
 				<div className="pnode-ic">
 					<MacIcon />
 				</div>
 				<div>
-					<div className="pnode-nm">Your machine</div>
-					<div className="pnode-sub">Claude Desktop + Fenek</div>
+					<div className="pnode-nm">{flow.machineName}</div>
+					<div className="pnode-sub">{flow.machineSub}</div>
 				</div>
 			</div>
 			<div className="link">
 				<div className="link-rail" />
 				<div className="link-lock">
 					<LockIcon />
-					<span>HTTPS</span>
+					<span>{flow.lock}</span>
 				</div>
 			</div>
 			<div className="pnode major">
@@ -37,8 +40,8 @@ export const DataFlow = () => (
 					<BankIcon />
 				</div>
 				<div>
-					<div className="pnode-nm">Your broker</div>
-					<div className="pnode-sub">Official read-only API</div>
+					<div className="pnode-nm">{flow.brokerName}</div>
+					<div className="pnode-sub">{flow.brokerSub}</div>
 				</div>
 			</div>
 		</div>
@@ -53,17 +56,14 @@ export const DataFlow = () => (
 					<AuthorIcon />
 				</div>
 				<div>
-					<div className="pnode-nm">The developer</div>
-					<div className="pnode-sub">No server. No analytics.</div>
+					<div className="pnode-nm">{flow.authorName}</div>
+					<div className="pnode-sub">{flow.authorSub}</div>
 				</div>
 			</div>
-			<div className="cut-cap">
-				Fenek has no backend. Nothing routes through the author, so there is nowhere else for your
-				data to go.
-			</div>
+			<div className="cut-cap">{flow.sever}</div>
 		</div>
 		<div className="flow-foot">
-			{FOOT.map((item) => (
+			{flow.foot.map((item) => (
 				<div className="ff" key={item}>
 					<span className="ff-ic">
 						<CheckIcon />
