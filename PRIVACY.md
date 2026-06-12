@@ -12,7 +12,7 @@ When you use this software:
 2. The server reads your API credentials from environment variables provided by Claude Desktop's user-config mechanism, which uses your operating system's keychain (macOS Keychain / Windows Credential Manager).
 3. The server makes HTTPS requests to the API endpoints for the sources you configured — for example `live.trading212.com` / `demo.trading212.com` for Trading 212, the Bybit API (`api.bybit.com`), and, for crypto wallets, public blockchain and price endpoints: a public Solana RPC node (`api.mainnet-beta.solana.com`), `mempool.space` (Bitcoin), `litecoinspace.org` (Litecoin), `api.blockcypher.com` (Dogecoin), `tonapi.io` (TON), Jupiter (`lite-api.jup.ag`, Solana limit orders and token symbols), and DefiLlama (`coins.llama.fi`, USD prices — receives token identifiers only, never your address). Crypto reads are **keyless**: only your public wallet address is sent — no key or secret is involved.
 4. The server returns parsed responses to Claude Desktop on your local machine.
-5. **No data leaves your machine to any destination other than the broker.** The author and contributors have no servers, no analytics endpoints, no error-reporting services involved in this data flow.
+5. **No data leaves your machine to any destination other than the broker** (true of this release in its entirety — see "Pro License Check" below for the only planned future addition). The author and contributors have no servers, no analytics endpoints, no error-reporting services involved in this data flow.
 
 ## What We Do Not Collect
 
@@ -24,7 +24,28 @@ The author and contributors do not collect, receive, store, or process any of th
 - Telemetry, analytics, error reports, crash dumps, or usage statistics
 - Your IP address, device information, operating system, or any other identifier
 
-There is no telemetry endpoint. There is no analytics SDK. There is no error-reporting service. You can verify this independently by reading the source code: `grep -rn "fetch\|http" src/` will surface every outbound network call, all of which target broker API hostnames.
+There is no telemetry endpoint. There is no analytics SDK. There is no error-reporting service. You can verify this independently by reading the source code: `grep -rn "fetch\|http" src/` will surface every outbound network call, all of which, in this build, target broker API hostnames.
+
+## Pro License Check (not yet active)
+
+A paid "Pro" tier (crypto features) is planned. Its entire enforcement
+mechanism ships in the source code today but is **disabled by a compile-time
+constant** (`PAYWALL_ENABLED` in `src/license/config.ts`) — you can verify
+with `grep -rn "PAYWALL_ENABLED" src/` that it is `false` and that no license
+network call can happen. As of this release, **no license request exists at
+runtime.**
+
+When the Pro tier launches (announced in the changelog), the following will
+become true — and only then:
+
+- **Pro subscribers only:** the extension exchanges the license key for a
+  cached monthly verdict with the merchant of record — roughly one HTTPS
+  request per month. The request contains the license key and nothing else.
+- **Free users:** never contact the license server. Nothing changes for them.
+- **Self-built `freepro` builds** (see `docs/building-pro.md`): never contact
+  the license server either, regardless of tier.
+- The cached verdict lives in a local state file containing timestamps and a
+  short key fingerprint — never the key itself, never any portfolio data.
 
 ## GDPR Position
 

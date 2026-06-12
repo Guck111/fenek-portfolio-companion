@@ -4,6 +4,17 @@ All notable changes to this project are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- Pro licensing groundwork, shipped **disabled**: tier-aware tool registry,
+  merchant-agnostic license manager (monthly verdict cache, 14-day grace,
+  "revoked" distinguished from "unreachable"), `LICENSE_KEY` field in
+  extension settings (stored in the OS keychain), and the official free
+  self-build path `npm run pack:freepro` (`docs/building-pro.md`). No license
+  network calls exist at runtime: the paywall constant is off, free tools are
+  unaffected, and crypto features remain free until a purchase channel exists.
+
 ## [0.4.1] - 2026-06-12
 
 Security hardening release: closes every finding from a full audit of the
@@ -173,6 +184,7 @@ First public release, submitted to the Anthropic MCP Directory.
 - Strictly read-only. API keys stored in the OS keychain. No telemetry; the only
   outbound host is the broker API the user configures.
 
+[Unreleased]: https://github.com/Guck111/fenek-portfolio-companion/compare/v0.4.1...HEAD
 [0.4.0]: https://github.com/Guck111/fenek-portfolio-companion/releases/tag/v0.4.0
 [0.3.0]: https://github.com/Guck111/fenek-portfolio-companion/releases/tag/v0.3.0
 [0.2.2]: https://github.com/Guck111/fenek-portfolio-companion/releases/tag/v0.2.2

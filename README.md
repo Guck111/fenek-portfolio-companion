@@ -8,7 +8,7 @@ Read-only MCP server that aggregates your portfolio data across wallets, exchang
 >
 > **UNOFFICIAL.** Not affiliated with, endorsed by, or sponsored by Trading 212, Bybit, or any other broker, exchange, or wallet provider.
 >
-> **NON-COMMERCIAL OSS.** Free open-source software provided under the MIT License. No paid features, no telemetry, no affiliate relationships.
+> **OPEN SOURCE, FREE TODAY.** MIT License, no telemetry, no affiliate relationships. No paid tier is active today: classic brokers and portfolio analytics stay free forever; crypto features will later join a paid Pro tier (see the Privacy Policy section), and building Pro from source stays officially free.
 
 ## Install
 
@@ -102,6 +102,7 @@ Notes and limitations:
 | [SECURITY.md](SECURITY.md) | Vulnerability disclosure process |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | How to contribute (DCO required) |
 | [docs/adding-a-broker.md](docs/adding-a-broker.md) | Adding a new broker adapter |
+| [docs/building-pro.md](docs/building-pro.md) | Building the free `freepro` flavor from source |
 
 ## Privacy Policy
 
@@ -111,6 +112,14 @@ traffic is to the broker/exchange/price API endpoints you configure (e.g. Tradin
 Bybit, DefiLlama, the Solana public RPC, mempool.space, blockcypher, tonapi, Jupiter). Your API keys are stored in your operating
 system's keychain by Claude Desktop, are never logged, and are transmitted only to the
 broker endpoints they belong to.
+
+A paid Pro tier for crypto features is planned; everything released so far is
+free, and classic brokers (Trading 212 today, more to come) plus portfolio
+analytics stay free forever. The enforcement code ships disabled — there is no
+license check at runtime today. When Pro launches, Pro subscribers' builds
+will add exactly one outbound call: a monthly license check that transmits the
+license key and nothing else. Free users never make it, and building Pro from
+source for free stays official: see [docs/building-pro.md](docs/building-pro.md).
 
 Full policy: **[PRIVACY.md](PRIVACY.md)**.
 
