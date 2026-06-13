@@ -39,20 +39,54 @@ export class ValidationError extends Error {
   }
 }
 
+interface BrokerGuidance {
+  readonly name: string
+  readonly scopes: string
+}
+
+// Per-broker read-scope guidance for auth failures. A new broker adds one line
+// here; the broker adapters themselves stay untouched.
+const BROKER_GUIDANCE: Readonly<Record<string, BrokerGuidance>> = {
+  t212: {
+    name: "Trading 212",
+    scopes:
+      "Account data, Portfolio, Pies, History, Metadata, and Orders (read) in Trading 212 → Settings → API",
+  },
+  bybit: {
+    name: "Bybit",
+    scopes:
+      "the read groups (Unified Trading, Assets/Wallet, Earn) in your Bybit API key settings — run bybit_get_key_info to see what the current key can access",
+  },
+}
+
+function brokerName(brokerId: string): string {
+  return BROKER_GUIDANCE[brokerId]?.name ?? brokerId
+}
+
+// Error texts are DIRECTIVE, not descriptive: each one states the single
+// next action and, where it matters, what NOT to do (retry, loop, fabricate).
+// They are user-facing — safe to show as-is. The "how to behave" backstop
+// lives in SERVER_INSTRUCTIONS (src/server.ts).
 export function toUserMessage(error: unknown): string {
   if (error instanceof AuthError) {
-    return `Authentication failed for ${error.brokerId}. Check API key and secret.`
+    const guidance = BROKER_GUIDANCE[error.brokerId]
+    const fix = guidance
+      ? `Enable ${guidance.scopes}.`
+      : "Enable read-only permissions for this source in its API settings."
+    return `${brokerName(error.brokerId)} rejected the request — the API key is missing a required read permission. ${fix} Re-running this will not help until the permission is added.`
   }
   if (error instanceof RateLimitError) {
-    const retry = error.retryAfterMs ? ` Retry after ${String(error.retryAfterMs)} ms.` : ""
-    return `Rate limit hit for ${error.brokerId}.${retry}`
+    const wait = error.retryAfterMs
+      ? ` Wait about ${String(Math.ceil(error.retryAfterMs / 1000))}s.`
+      : ""
+    return `${brokerName(error.brokerId)} is rate-limiting requests.${wait} Tell the user to try again shortly; do not retry the call now.`
   }
   if (error instanceof BrokerApiError) {
     const code = error.statusCode ? ` (HTTP ${String(error.statusCode)})` : ""
-    return `${error.brokerId} API error${code}: ${error.message}`
+    return `${brokerName(error.brokerId)} returned a server-side error${code}: ${error.message}. This is a problem on the broker's side, not the user's keys or data — do not loop on it.`
   }
   if (error instanceof ValidationError) {
-    return `Unexpected response shape from broker. ${error.message}`
+    return `A source returned data in an unexpected format, likely an API change. ${error.message} This is a Fenek issue to report, not the user's fault — do not fabricate or estimate any values.`
   }
   if (error instanceof Error) {
     return error.message

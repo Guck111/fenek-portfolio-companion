@@ -16,6 +16,13 @@ describe("server instructions", () => {
     expect(buildServerInstructions()).not.toContain(PRO_INSTRUCTIONS_SENTENCE)
   })
 
+  it("always carries the error-handling discipline block", () => {
+    const instructions = buildServerInstructions().toLowerCase()
+    expect(instructions).toContain("never retry")
+    expect(instructions).toMatch(/never invent|never fabricate/)
+    expect(instructions).toContain("empty")
+  })
+
   it("appends the Pro sentence when the paywall is armed on a standard build", () => {
     initLicensing({
       paywallEnabled: true,

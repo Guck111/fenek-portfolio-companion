@@ -30,6 +30,14 @@ describe("license config and texts", () => {
     }
   })
 
+  it("denial texts carry the no-retry / no-bypass directive", () => {
+    // no-key must forbid reading the crypto data through a different tool;
+    // revoked/unreachable must forbid retrying this turn.
+    expect(proDenialText("no-key").toLowerCase()).toContain("another tool")
+    expect(proDenialText("revoked").toLowerCase()).toContain("do not retry")
+    expect(proDenialText("unreachable").toLowerCase()).toContain("do not retry")
+  })
+
   it("tool suffix and aggregate note point at fenek.tech", () => {
     expect(PRO_TOOL_DESCRIPTION_SUFFIX).toContain("fenek.tech")
     expect(PRO_TOOL_DESCRIPTION_SUFFIX).toContain("Fenek Pro")

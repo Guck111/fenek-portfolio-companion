@@ -10,7 +10,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - **Fenek Pro is live.** Crypto sources (Bybit, on-chain wallets) now require a
   Fenek Pro license key, validated about once a month against Polar (the
   merchant of record, `api.polar.sh`); the check sends only the license key.
-  Classic brokers (Trading 212) and the cross-broker analytics stay free, and
+  Classic brokers (Trading 212) and the cross-broker overview stay free, and
   the official free self-build path `npm run pack:freepro`
   (`docs/building-pro.md`) still unlocks everything without a license. Built on
   the tier-aware tool registry and license manager (monthly verdict cache,
@@ -22,6 +22,10 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   release number. Toggle it with the new "Check for updates weekly" setting
   (`CHECK_UPDATES`). The manifest's homepage and privacy links now point at
   fenek.tech.
+- **Stricter error handling.** Tool errors now carry a directive next action —
+  the exact missing read scope, a "wait, don't retry" on rate limits, "don't
+  fabricate" on unexpected data — and the server instructs the assistant never
+  to retry, work around, speculate, or invent figures on an error or empty result.
 
 ## [0.4.1] - 2026-06-12
 

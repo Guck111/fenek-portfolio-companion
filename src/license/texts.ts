@@ -9,9 +9,9 @@ export const PRO_INSTRUCTIONS_SENTENCE = `If a tool returns a Fenek Pro licensin
 export type ProDenialReason = "no-key" | "revoked" | "unreachable"
 
 const DENIAL_TEXTS: Readonly<Record<ProDenialReason, string>> = {
-  "no-key": `This tool is part of Fenek Pro (crypto sources). No license key is configured. Get a key at ${SITE}, or build the free 'freepro' flavor from source — it is official and documented in docs/building-pro.md. All classic-broker and portfolio tools keep working without a license.`,
-  revoked: `The Fenek Pro subscription for the configured license key has ended (the license server confirmed the key is no longer active). Renew at ${SITE}. Crypto tools are paused until then; classic-broker and portfolio tools keep working.`,
-  unreachable: `Fenek could not validate the Pro license: the license server has been unreachable (either since the key was entered, or for longer than the 14-day grace window). This is not a billing decision — access resumes automatically once validation succeeds. Classic-broker and portfolio tools keep working.`,
+  "no-key": `This tool is part of Fenek Pro (crypto sources). No license key is configured. Get a key at ${SITE}, or build the free 'freepro' flavor from source — it is official and documented in docs/building-pro.md. Do not try to read this crypto data through another tool — the whole crypto category needs the license. All classic-broker and portfolio tools keep working without a license.`,
+  revoked: `The Fenek Pro subscription for the configured license key has ended (the license server confirmed the key is no longer active). Renew at ${SITE}. Do not retry this turn; a renewal takes effect on the next session. Crypto tools are paused until then; classic-broker and portfolio tools keep working.`,
+  unreachable: `Fenek could not validate the Pro license: the license server has been unreachable (either since the key was entered, or for longer than the 14-day grace window). This is not a billing decision — do not retry repeatedly; access resumes automatically once validation succeeds. Classic-broker and portfolio tools keep working.`,
 }
 
 export function proDenialText(reason: ProDenialReason): string {
