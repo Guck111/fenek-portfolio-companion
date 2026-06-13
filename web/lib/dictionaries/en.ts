@@ -104,10 +104,10 @@ const en = {
 		pricing: {
 			badge: "Free today",
 			h2: "Free today. The core stays free forever.",
-			body: "Everything you can download today is free. Crypto features (Bybit, crypto wallets) will become part of Pro — under $5/mo. Classic brokers like Trading 212 stay free forever. Early newsletter subscribers get a launch discount. Everything stays open source.",
+			body: "Everything you can download today is free. Crypto features (Bybit, crypto wallets) will become part of Pro — under $5/mo. Classic brokers like Trading 212 stay free forever. Everything stays open source.",
 			aside: `Prefer full anonymity? [Build the Pro features from source](${BUILDING_PRO_URL}) for free — no license, no checkout.`,
 			note: "Release notes and the Pro launch, nothing else.",
-			button: "Get the launch discount",
+			button: "Get notified at launch",
 		},
 		install: {
 			eyebrow: "Install",
