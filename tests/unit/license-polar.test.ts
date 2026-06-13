@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest"
 
-import { createPolarProvider } from "../../src/license/polar.js"
+import { createPolarProvider, POLAR_PRODUCTION_CONFIG } from "../../src/license/polar.js"
 
 const CONFIG = {
   baseUrl: "https://sandbox-api.polar.sh",
@@ -106,6 +106,21 @@ describe("createPolarProvider", () => {
     })
     expect(init.headers).not.toHaveProperty("authorization")
     expect(init.headers).not.toHaveProperty("Authorization")
+  })
+})
+
+describe("POLAR_PRODUCTION_CONFIG", () => {
+  // Guards the armed paywall: a release must validate against the real Polar API
+  // with a real org id, never the sandbox or a placeholder left in by mistake.
+  it("targets the production Polar API, not the sandbox", () => {
+    expect(POLAR_PRODUCTION_CONFIG.baseUrl).toBe("https://api.polar.sh")
+    expect(POLAR_PRODUCTION_CONFIG.baseUrl).not.toContain("sandbox")
+  })
+
+  it("carries a real organization UUID, not a placeholder", () => {
+    expect(POLAR_PRODUCTION_CONFIG.organizationId).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
+    )
   })
 })
 

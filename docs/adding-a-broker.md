@@ -212,6 +212,20 @@ Inspector should list all your `myb_*` tools alongside the existing
 
 ---
 
+## Pro-tier brokers (crypto)
+
+Crypto and other Pro data sources are gated by the license tier, and the gate
+**fails open**: a broker or tool with no `tier` defaults to free
+(`broker.tier ?? "free"` in `src/license/gate.ts` and `src/brokers/registry.ts`).
+So a new crypto adapter shipped without the flag would hand out Pro data for
+free even with the paywall armed — a revenue leak. If your broker is Pro, set
+`readonly tier = "pro" as const` on the `IBroker` class **and** `tier: "pro"` on
+every Pro `ToolBinding` it exports. See Bybit (`src/brokers/bybit/index.ts`,
+`src/brokers/bybit/tools.ts`) and the crypto wallet broker
+(`src/brokers/crypto/index.ts`, `src/brokers/crypto/tools.ts`) for the pattern.
+
+---
+
 ## Adding a chain to the crypto adapter
 
 The crypto broker (`src/brokers/crypto/`) reads many chains behind one

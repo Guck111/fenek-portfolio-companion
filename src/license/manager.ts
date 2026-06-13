@@ -9,6 +9,13 @@ const DAY_MS = 24 * 60 * 60 * 1000
 export const CHECK_INTERVAL_MS = 30 * DAY_MS
 export const GRACE_MS = 14 * DAY_MS
 
+// First-run retries: with no cached verdict yet, allow a few network attempts
+// per process so a transient blip on the very first check recovers on a later
+// tool call instead of locking the user out until restart — without unbounded
+// retries during a real outage. Cached verdicts (revoked / grace) re-check at
+// most once per process instead.
+const FIRST_RUN_MAX_ATTEMPTS = 3
+
 export type Tier = "free" | "pro"
 
 export interface LicenseRuntime {
@@ -32,14 +39,14 @@ const INERT_RUNTIME: LicenseRuntime = {
 let runtime: LicenseRuntime = INERT_RUNTIME
 let cached: LicenseState | undefined
 let cacheLoaded = false
-let networkAttempted = false
+let networkAttempts = 0
 let inflight: Promise<void> | null = null
 
 export function initLicensing(next: LicenseRuntime): void {
   runtime = next
   cached = undefined
   cacheLoaded = false
-  networkAttempted = false
+  networkAttempts = 0
   inflight = null
 }
 
@@ -81,20 +88,26 @@ function resolve(nowMs: number): Resolution {
   }
   loadCacheOnce()
   if (cached === undefined) {
-    // Never validated with this key — deny until the first verdict arrives.
-    return { access: { allowed: false, reason: "unreachable" }, refreshDue: true }
+    // Never validated with this key — deny until the first verdict arrives, but
+    // allow a few retries so a transient first-check blip recovers in-session.
+    return {
+      access: { allowed: false, reason: "unreachable" },
+      refreshDue: networkAttempts < FIRST_RUN_MAX_ATTEMPTS,
+    }
   }
   if (cached.lastVerdict === "revoked") {
     // Re-check at most once per process so a renewed subscription recovers
     // on the next session without waiting out the monthly cadence.
-    return { access: { allowed: false, reason: "revoked" }, refreshDue: !networkAttempted }
+    return { access: { allowed: false, reason: "revoked" }, refreshDue: networkAttempts === 0 }
   }
   const age = nowMs - Date.parse(cached.checkedAt)
   if (age <= CHECK_INTERVAL_MS) return { access: { allowed: true }, refreshDue: false }
   if (age <= CHECK_INTERVAL_MS + GRACE_MS) {
-    return { access: { allowed: true }, refreshDue: true }
+    // In the grace window the cached verdict still grants access; re-check at
+    // most once per process to try to refresh it.
+    return { access: { allowed: true }, refreshDue: networkAttempts === 0 }
   }
-  return { access: { allowed: false, reason: "unreachable" }, refreshDue: true }
+  return { access: { allowed: false, reason: "unreachable" }, refreshDue: networkAttempts === 0 }
 }
 
 export function getTier(): Tier {
@@ -103,8 +116,11 @@ export function getTier(): Tier {
 
 async function refresh(key: string): Promise<void> {
   const provider = runtime.provider
-  if (provider === null || networkAttempted) return
-  networkAttempted = true
+  if (provider === null) return
+  // Count every attempt (including a transient unreachable) so resolve()'s
+  // per-branch refreshDue caps the number of network round-trips per process.
+  // The single-flight in ensureProAccess collapses concurrent calls to one.
+  networkAttempts++
   const verdict = await provider.validate(key)
   if (verdict.kind === "unreachable") return // grace keeps ruling; checkedAt stays
   const next: LicenseState = {

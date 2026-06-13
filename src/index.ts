@@ -9,11 +9,13 @@ import { createTrading212Tools } from "./brokers/trading212/tools.js"
 import { BUILD_FLAVOR } from "./generated/build-flavor.js"
 import { PAYWALL_ENABLED } from "./license/config.js"
 import { initLicensing } from "./license/manager.js"
+import { createPolarProvider, POLAR_PRODUCTION_CONFIG } from "./license/polar.js"
 import { createCorePrompts } from "./prompts/index.js"
 import { startServer } from "./server.js"
 import { createAnalyticsTools } from "./tools/analytics/index.js"
 import { createGettingStartedTool } from "./tools/getting_started.js"
 import { createPlaybookTools } from "./tools/playbooks/index.js"
+import { readUpdateState, runUpdateCheckIfDue } from "./utils/update-check.js"
 
 async function configureBrokers(): Promise<void> {
   const apiKey = process.env["T212_API_KEY"]
@@ -53,11 +55,9 @@ async function main(): Promise<void> {
     paywallEnabled: PAYWALL_ENABLED,
     buildFlavor: BUILD_FLAVOR,
     licenseKey: process.env["LICENSE_KEY"],
-    // Stays null until the paywall is armed (src/license/config.ts) and a
-    // production organization_id exists. To enable, import createPolarProvider
-    // from ./license/polar.js and pass:
-    //   createPolarProvider({ baseUrl: "https://api.polar.sh", organizationId: "<prod-org-uuid>" })
-    provider: null,
+    // The live Polar provider. Only consulted when the paywall is active
+    // (standard build + PAYWALL_ENABLED); a freepro build never calls it.
+    provider: createPolarProvider(POLAR_PRODUCTION_CONFIG),
   })
   await configureBrokers()
   await configureCryptoBroker()
@@ -72,6 +72,19 @@ async function main(): Promise<void> {
   void controlPlaneCheck().catch((error: unknown) => {
     const message = error instanceof Error ? error.message : String(error)
     console.error(`fenek: control-plane check failed: ${message}`)
+  })
+  // Weekly version check (opt-out via the CHECK_UPDATES toggle). Default on when
+  // the var is unset; a present value must be explicitly truthy, so an ambiguous
+  // host serialization of "off" (e.g. "", "0", "False") fails toward no network
+  // rather than leaking the version check. Fire-and-forget, after startServer so
+  // it never delays the initialize handshake.
+  const checkUpdatesRaw = process.env["CHECK_UPDATES"]
+  const checkUpdates =
+    checkUpdatesRaw === undefined ||
+    ["true", "1", "on", "yes"].includes(checkUpdatesRaw.trim().toLowerCase())
+  void runUpdateCheckIfDue({ checkUpdates, state: readUpdateState() }).catch((error: unknown) => {
+    const message = error instanceof Error ? error.message : String(error)
+    console.error(`fenek: update check failed: ${message}`)
   })
 }
 

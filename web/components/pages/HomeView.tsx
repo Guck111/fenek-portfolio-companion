@@ -2,6 +2,7 @@ import Link from "next/link"
 import { DemoFrame } from "@/components/fenek/DemoFrame"
 import { SiteShell } from "@/components/fenek/SiteShell"
 import { TrustStrip } from "@/components/fenek/TrustStrip"
+import { CheckoutButton } from "@/components/ui/CheckoutButton"
 import { DownloadButton } from "@/components/ui/DownloadButton"
 import { DownloadIcon, GitHubIcon } from "@/components/ui/icons"
 import { NewsletterForm } from "@/components/ui/NewsletterForm"
@@ -111,13 +112,9 @@ export const HomeView = ({ dict, lang }: { dict: Dictionary; lang: Lang }) => {
 						<p className="callout-aside">
 							<RichText text={t.pricing.aside} lang={lang} />
 						</p>
-						<NewsletterForm
-							tag="pro-waitlist"
-							buttonLabel={t.pricing.button}
-							placeholder={c.emailPlaceholder}
-							ariaLabel={c.emailLabel}
-						/>
-						<p className="newsletter-note">{t.pricing.note}</p>
+						<div className="cta-row">
+							<CheckoutButton label={t.pricing.button} />
+						</div>
 					</div>
 				</div>
 			</section>

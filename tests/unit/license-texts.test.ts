@@ -9,8 +9,8 @@ import {
 } from "../../src/license/texts.js"
 
 describe("license config and texts", () => {
-  it("ships with the paywall OFF (iron rule: no purchase channel exists yet)", () => {
-    expect(PAYWALL_ENABLED).toBe(false)
+  it("ships with the paywall ON (purchase channel is live: fenek.tech + Polar)", () => {
+    expect(PAYWALL_ENABLED).toBe(true)
   })
 
   it("denial texts distinguish the three states and never promise a price", () => {

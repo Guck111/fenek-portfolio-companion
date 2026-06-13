@@ -15,6 +15,14 @@ export interface PolarConfig {
   readonly organizationId: string
 }
 
+// The live Polar deployment that arms the paywall. organizationId is a public
+// identifier (see the note above), so hardcoding it in open source is safe.
+// index.ts passes this to createPolarProvider when the paywall is on.
+export const POLAR_PRODUCTION_CONFIG: PolarConfig = {
+  baseUrl: "https://api.polar.sh",
+  organizationId: "a61e9096-d39e-4126-92ac-6523e8f5d160",
+}
+
 const VALIDATE_PATH = "/v1/customer-portal/license-keys/validate"
 
 // A license check must not hang a Pro tool call; on a slow or dead license

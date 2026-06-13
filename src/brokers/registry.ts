@@ -6,8 +6,10 @@ import type {
 } from "@modelcontextprotocol/sdk/types.js"
 
 import type { IBroker, PromptBinding, ToolBinding } from "./base.js"
+import { BUILD_DATE, BUILD_VERSION } from "../generated/build-info.js"
 import { ensureProAccess, getTier } from "../license/manager.js"
 import { PRO_TOOL_DESCRIPTION_SUFFIX, proDenialText } from "../license/texts.js"
+import { getUpdateNotice, isReminderLatched, readUpdateState } from "../utils/update-check.js"
 
 const brokers = new Map<string, IBroker>()
 const tools = new Map<string, ToolBinding>()
@@ -74,7 +76,21 @@ export async function callTool(name: string, args: unknown): Promise<CallToolRes
       return { isError: true, content: [{ type: "text", text: proDenialText(access.reason) }] }
     }
   }
-  return binding.handler(args)
+  return appendUpdateNotice(await binding.handler(args))
+}
+
+// Appends the once-per-session update nudge to a successful tool result. An
+// error result is returned untouched so a failure never carries an unrelated
+// notice. Returns null-equivalent (the original) when nothing is due.
+export function appendUpdateNotice(result: CallToolResult): CallToolResult {
+  // Skip the state-file read entirely once the notice has already fired.
+  if (result.isError === true || isReminderLatched()) return result
+  const notice = getUpdateNotice(readUpdateState(), {
+    buildVersion: BUILD_VERSION,
+    buildDate: BUILD_DATE,
+  })
+  if (notice === null) return result
+  return { ...result, content: [...result.content, { type: "text", text: `---\n${notice}` }] }
 }
 
 export function registerTools(toolBindings: readonly ToolBinding[]): void {

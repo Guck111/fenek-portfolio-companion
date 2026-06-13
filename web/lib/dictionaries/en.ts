@@ -102,12 +102,11 @@ const en = {
 			voteFieldPlaceholder: "e.g. IBKR, Kraken, an Ethereum wallet…",
 		},
 		pricing: {
-			badge: "Free today",
-			h2: "Free today. The core stays free forever.",
-			body: "Everything you can download today is free. Crypto features (Bybit, crypto wallets) will become part of Pro — under $5/mo. Classic brokers like Trading 212 stay free forever. Everything stays open source.",
+			badge: "Fenek Pro",
+			h2: "Crypto is Pro. Classic brokers free forever.",
+			body: "Crypto features — Bybit and on-chain wallets — are part of Fenek Pro, under $5/mo. Classic brokers like Trading 212 and the portfolio analytics are free forever, and everything stays open source.",
 			aside: `Prefer full anonymity? [Build the Pro features from source](${BUILDING_PRO_URL}) for free — no license, no checkout.`,
-			note: "Release notes and the Pro launch, nothing else.",
-			button: "Get notified at launch",
+			button: "Get Fenek Pro",
 		},
 		install: {
 			eyebrow: "Install",
@@ -142,11 +141,12 @@ const en = {
 			foot: ["Read-only requests", "Keys stay in your OS keychain", "Zero telemetry"],
 		},
 		outbound: {
-			h2: "Three kinds of outbound requests",
-			lead: "Exactly three kinds of outbound requests leave your machine, and you can verify each one in the source code:",
+			h2: "Four kinds of outbound requests",
+			lead: "Exactly four kinds of outbound requests leave your machine, and you can verify each one in the source code:",
 			items: [
 				"**Calls to your brokers’ official APIs** (Trading 212, Bybit, public blockchain explorers) — that’s the product.",
-				"**A weekly anonymous version check** against `api.github.com`. Only the version number is read from the response. Turn it off with the “Check for updates” toggle in extension settings.",
+				"**A weekly anonymous version check** against `api.github.com`. Only the latest release number is read from the response. Turn it off with the “Check for updates weekly” toggle in extension settings.",
+				"**A monthly license check** against `api.polar.sh` — Pro only. It sends just your license key and reads back whether the subscription is active. Free builds and source builds never make this call.",
 				"**Nothing else.** No analytics, no error reporting, no telemetry. This website has no analytics or cookies either.",
 			],
 		},
@@ -198,8 +198,8 @@ const en = {
 				body: "If you subscribe, your email is stored by Buttondown (our newsletter provider) and used only to send release notes and product updates. Unsubscribe anytime; see [Buttondown’s privacy policy](https://buttondown.com/legal/privacy).",
 			},
 			{
-				h2: "Future Pro subscriptions",
-				body: "Future Pro subscriptions will be processed by a merchant of record; payment data never reaches us. The extension’s license check sends only the license key.",
+				h2: "Pro subscriptions",
+				body: "Pro subscriptions are processed by Polar, our merchant of record; payment data never reaches us. The extension’s monthly license check sends only the license key.",
 			},
 		],
 	},
@@ -243,6 +243,47 @@ const en = {
 			sub: "Every released version of Fenek. Don’t want to check this page? Get release notes by email.",
 		},
 		button: "Get release notes",
+	},
+	success: {
+		meta: {
+			title: "You’re Pro — activate Fenek Pro",
+			description:
+				"Your Fenek Pro payment went through. Paste your license key into the extension to unlock the crypto sources.",
+		},
+		intro: {
+			eyebrow: "Fenek Pro",
+			h1: "You’re Pro now",
+			sub: "Payment received. One step left — paste your license key into the extension.",
+		},
+		activate: {
+			h2: "Activate your license",
+			steps: [
+				"Find your license key — Polar emailed it to you, and it’s in your Polar customer portal.",
+				"In Claude Desktop, open **Settings → Extensions → Fenek** and paste it into the **Fenek Pro · License key** field.",
+				"That’s it — your crypto sources (Bybit, on-chain wallets) unlock. The key is stored in your OS keychain and re-checked about once a month.",
+			],
+		},
+		manage: {
+			h2: "Manage your subscription",
+			body: "Update payment details or cancel anytime in the Polar customer portal.",
+			button: "Manage subscription",
+		},
+		note: "Payments are handled by Polar, our merchant of record — your card details never reach us.",
+		cta: { home: "Back to home", install: "Installation guide" },
+	},
+	checkoutCancelled: {
+		meta: {
+			title: "Checkout cancelled",
+			description:
+				"You left the Fenek Pro checkout before paying. Nothing was charged — and you can always build Pro from source for free.",
+		},
+		intro: {
+			eyebrow: "Fenek Pro",
+			h1: "Nothing was charged",
+			sub: "You left checkout before paying — no charge was made.",
+		},
+		body: `Changed your mind? No problem. Crypto features are part of Fenek Pro, but you can always [build them from source](${BUILDING_PRO_URL}) for free — no license, no checkout. Classic brokers like Trading 212 stay free forever.`,
+		cta: { retry: "Get Fenek Pro", home: "Back to home" },
 	},
 }
 

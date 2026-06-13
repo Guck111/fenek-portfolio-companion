@@ -10,7 +10,7 @@ Read-only MCP server that aggregates your portfolio data across wallets, exchang
 >
 > **UNOFFICIAL.** Not affiliated with, endorsed by, or sponsored by Trading 212, Bybit, or any other broker, exchange, or wallet provider.
 >
-> **OPEN SOURCE, FREE TODAY.** MIT License, no telemetry, no affiliate relationships. No paid tier is active today: classic brokers (Trading 212 today, more to come) and portfolio analytics stay free forever; crypto features will later join a paid Pro tier (see [the website](https://fenek.tech)), and building Pro from source stays officially free.
+> **OPEN SOURCE.** MIT License, no telemetry, no affiliate relationships. Crypto features (Bybit, on-chain wallets) are part of paid Fenek Pro — under $5/mo (see [the website](https://fenek.tech)); classic brokers (Trading 212 today, more to come) and portfolio analytics are free forever; and building Pro from source stays officially free.
 
 ## Install
 
@@ -109,19 +109,21 @@ Notes and limitations:
 ## Privacy Policy
 
 This server runs entirely on your machine and sends **zero telemetry**. No analytics,
-no error reporting, no usage statistics, no "phone home." The only outbound network
-traffic is to the broker/exchange/price API endpoints you configure (e.g. Trading 212,
-Bybit, DefiLlama, the Solana public RPC, mempool.space, blockcypher, tonapi, Jupiter). Your API keys are stored in your operating
+no error reporting, no usage statistics, no "phone home." The outbound network traffic
+is to the broker/exchange/price API endpoints you configure (e.g. Trading 212,
+Bybit, DefiLlama, the Solana public RPC, mempool.space, blockcypher, tonapi, Jupiter),
+plus an opt-out weekly version check against api.github.com (only the latest release
+number is read; turn it off with `CHECK_UPDATES=false`). Your API keys are stored in your operating
 system's keychain by Claude Desktop, are never logged, and are transmitted only to the
 broker endpoints they belong to.
 
-A paid Pro tier for crypto features is planned; everything released so far is
-free, and classic brokers (Trading 212 today, more to come) plus portfolio
-analytics stay free forever. The enforcement code ships disabled — there is no
-license check at runtime today. When Pro launches, Pro subscribers' builds
-will add exactly one outbound call: a monthly license check that transmits the
-license key and nothing else. Free users never make it, and building Pro from
-source for free stays official: see [docs/building-pro.md](docs/building-pro.md).
+Crypto features (Bybit, on-chain wallets) are part of paid Fenek Pro; classic
+brokers (Trading 212 today, more to come) plus portfolio analytics are free
+forever. On a standard build, a Pro subscriber's build makes exactly one extra
+outbound call: a monthly license check to api.polar.sh that transmits the
+license key and nothing else. Free users and source builds never make it, and
+building Pro from source for free stays official: see
+[docs/building-pro.md](docs/building-pro.md).
 
 Full policy: **[PRIVACY.md](PRIVACY.md)**.
 

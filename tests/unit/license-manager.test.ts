@@ -96,6 +96,52 @@ describe("license manager", () => {
     expect(await ensureProAccess()).toEqual({ allowed: false, reason: "unreachable" })
   })
 
+  it("first run unreachable then reachable → recovers in-session without a restart", async () => {
+    // A transient blip on the very first check must not lock a paying user out
+    // for the whole session: the next tool call retries and recovers.
+    const verdicts: LicenseVerdict[] = [{ kind: "unreachable" }, { kind: "valid" }]
+    const provider = {
+      calls: 0,
+      validate: (): Promise<LicenseVerdict> => {
+        const v = verdicts[provider.calls] ?? { kind: "valid" }
+        provider.calls++
+        return Promise.resolve(v)
+      },
+    }
+    initLicensing({ paywallEnabled: true, buildFlavor: "standard", licenseKey: "key-1", provider })
+    expect(await ensureProAccess()).toEqual({ allowed: false, reason: "unreachable" })
+    expect(await ensureProAccess()).toEqual({ allowed: true })
+    expect(provider.calls).toBe(2)
+  })
+
+  it("cached revoked + repeated unreachable still re-checks at most once per process", async () => {
+    writeLicenseState({
+      keyFingerprint: keyFingerprint("key-1"),
+      lastVerdict: "revoked",
+      checkedAt: daysAgo(2),
+    })
+    const provider = fakeProvider({ kind: "unreachable" })
+    initLicensing({ paywallEnabled: true, buildFlavor: "standard", licenseKey: "key-1", provider })
+    await ensureProAccess()
+    await ensureProAccess()
+    await ensureProAccess()
+    expect(provider.calls).toBe(1)
+  })
+
+  it("grace window + repeated unreachable re-checks at most once per process", async () => {
+    writeLicenseState({
+      keyFingerprint: keyFingerprint("key-1"),
+      lastVerdict: "valid",
+      checkedAt: daysAgo(35),
+    })
+    const provider = fakeProvider({ kind: "unreachable" })
+    initLicensing({ paywallEnabled: true, buildFlavor: "standard", licenseKey: "key-1", provider })
+    await ensureProAccess()
+    await ensureProAccess()
+    await ensureProAccess()
+    expect(provider.calls).toBe(1)
+  })
+
   it("fresh cached valid verdict → pro without any network call", async () => {
     writeLicenseState({
       keyFingerprint: keyFingerprint("key-1"),

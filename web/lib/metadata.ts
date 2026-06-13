@@ -2,7 +2,14 @@ import type { Metadata } from "next"
 import type { Dictionary } from "@/lib/dictionaries"
 import { type Lang, localizedPath } from "@/lib/i18n"
 
-type PageKey = "home" | "security" | "privacy" | "install" | "changelog"
+type PageKey =
+	| "home"
+	| "security"
+	| "privacy"
+	| "install"
+	| "changelog"
+	| "success"
+	| "checkoutCancelled"
 
 const PAGE_PATH: Record<PageKey, string> = {
 	home: "/",
@@ -10,11 +17,20 @@ const PAGE_PATH: Record<PageKey, string> = {
 	privacy: "/privacy",
 	install: "/install",
 	changelog: "/changelog",
+	success: "/success",
+	checkoutCancelled: "/checkout-cancelled",
 }
 
 // Per-page, per-locale metadata: localized title/description, a self-canonical,
 // hreflang alternates for both locales, and matching Open Graph / Twitter cards.
-export const buildMetadata = (page: PageKey, lang: Lang, dict: Dictionary): Metadata => {
+// Pass noindex for transactional pages (checkout success/cancel) that must stay
+// out of search and the sitemap.
+export const buildMetadata = (
+	page: PageKey,
+	lang: Lang,
+	dict: Dictionary,
+	noindex = false,
+): Metadata => {
 	const path = PAGE_PATH[page]
 	const meta = dict[page].meta
 	const canonical = localizedPath(lang, path)
@@ -23,6 +39,7 @@ export const buildMetadata = (page: PageKey, lang: Lang, dict: Dictionary): Meta
 	return {
 		title: page === "home" ? { absolute: meta.title } : meta.title,
 		description: meta.description,
+		...(noindex ? { robots: { index: false, follow: true } } : {}),
 		alternates: {
 			canonical,
 			languages: { en: enHref, ru: ruHref, "x-default": enHref },

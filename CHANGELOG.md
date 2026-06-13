@@ -4,16 +4,24 @@ All notable changes to this project are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.5.0] - 2026-06-13
 
 ### Added
-- Pro licensing groundwork, shipped **disabled**: tier-aware tool registry,
-  merchant-agnostic license manager (monthly verdict cache, 14-day grace,
-  "revoked" distinguished from "unreachable"), `LICENSE_KEY` field in
-  extension settings (stored in the OS keychain), and the official free
-  self-build path `npm run pack:freepro` (`docs/building-pro.md`). No license
-  network calls exist at runtime: the paywall constant is off, free tools are
-  unaffected, and crypto features remain free until a purchase channel exists.
+- **Fenek Pro is live.** Crypto sources (Bybit, on-chain wallets) now require a
+  Fenek Pro license key, validated about once a month against Polar (the
+  merchant of record, `api.polar.sh`); the check sends only the license key.
+  Classic brokers (Trading 212) and the cross-broker analytics stay free, and
+  the official free self-build path `npm run pack:freepro`
+  (`docs/building-pro.md`) still unlocks everything without a license. Built on
+  the tier-aware tool registry and license manager (monthly verdict cache,
+  14-day grace, "revoked" distinguished from "unreachable") with the
+  `LICENSE_KEY` field stored in the OS keychain.
+- **Update notices.** Fenek now reminds you in chat when a newer version is out:
+  a no-network age-based nudge when a build is over two months old, plus an
+  opt-out weekly check against `api.github.com` that reads only the latest
+  release number. Toggle it with the new "Check for updates weekly" setting
+  (`CHECK_UPDATES`). The manifest's homepage and privacy links now point at
+  fenek.tech.
 
 ## [0.4.1] - 2026-06-12
 

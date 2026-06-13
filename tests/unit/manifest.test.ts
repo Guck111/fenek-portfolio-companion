@@ -50,9 +50,12 @@ describe("manifest user_config", () => {
     expect(manifest.user_config["LICENSE_KEY"]?.sensitive).toBe(true)
   })
 
-  it("tells the user to leave the license key blank until Pro launches", () => {
+  it("points the user at fenek.tech for a Pro key and marks the field optional", () => {
     const description = manifest.user_config["LICENSE_KEY"]?.description ?? ""
-    expect(description).toContain("Not needed today")
-    expect(description).toContain("Leave blank")
+    expect(description).toContain("Fenek Pro")
+    expect(description).toContain("fenek.tech")
+    expect(description.toLowerCase()).toContain("blank")
+    // Go-live: no "crypto is currently free / Pro hasn't launched" messaging.
+    expect(description).not.toContain("Not needed today")
   })
 })
