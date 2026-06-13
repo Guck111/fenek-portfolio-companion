@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FlexQueryResponse queryName="Fenek" type="AF">
+  <FlexStatements count="1">
+    <FlexStatement accountId="U0000000" fromDate="20240101" toDate="20240131" period="LastMonth" whenGenerated="20240201;120000">
+      <AccountInformation accountId="U0000000" currency="USD" name="Sample Account" accountType="Individual"/>
+      <EquitySummaryInBase>
+        <EquitySummaryByReportDateInBase reportDate="20240130" cash="1000.50" total="15000.75" stock="14000.25"/>
+        <EquitySummaryByReportDateInBase reportDate="20240131" cash="1200.00" total="15500.00" stock="14300.00"/>
+      </EquitySummaryInBase>
+      <CashReport>
+        <CashReportCurrency currency="BASE_SUMMARY" endingCash="1200.00"/>
+        <CashReportCurrency currency="USD" endingCash="1000.00"/>
+        <CashReportCurrency currency="EUR" endingCash="200.00"/>
+      </CashReport>
+      <OpenPositions>
+        <OpenPosition accountId="U0000000" currency="USD" symbol="AAPL" description="Apple Inc." conid="265598" position="100" markPrice="190.50" positionValue="19050.00" costBasisPrice="150.25" costBasisMoney="15025.00" fifoPnlUnrealized="4025.00" assetCategory="STK"/>
+        <OpenPosition accountId="U0000000" currency="USD" symbol="PG" description="Procter &amp; Gamble Co." conid="4194" position="-10" markPrice="160.00" positionValue="-1600.00" costBasisPrice="155.00" costBasisMoney="-1550.00" fifoPnlUnrealized="-50.00" assetCategory="STK"/>
+      </OpenPositions>
+      <CashTransactions>
+        <CashTransaction accountId="U0000000" type="Dividends" symbol="AAPL" conid="265598" amount="24.00" currency="USD" dateTime="20240115;120000" description="AAPL(US0378331005) Cash Dividend" transactionID="1001"/>
+        <CashTransaction accountId="U0000000" type="Withholding Tax" symbol="AAPL" conid="265598" amount="-3.60" currency="USD" dateTime="20240115;120000" description="AAPL(US0378331005) Withholding" transactionID="1002"/>
+        <CashTransaction accountId="U0000000" type="Deposits &amp; Withdrawals" amount="5000.00" currency="USD" dateTime="20240102;090000" description="Wire deposit" transactionID="1003"/>
+        <CashTransaction accountId="U0000000" type="Deposits &amp; Withdrawals" amount="-500.00" currency="USD" dateTime="20240120;090000" description="Withdrawal" transactionID="1004"/>
+        <CashTransaction accountId="U0000000" type="Broker Interest Received" amount="1.25" currency="USD" dateTime="20240131;235959" description="USD credit interest" transactionID="1005"/>
+        <CashTransaction accountId="U0000000" type="Other Fees" amount="-1.00" currency="USD" dateTime="20240131;235959" description="ADR fee" transactionID="1006"/>
+        <CashTransaction accountId="U0000000" type="Some Future Type" amount="2.00" currency="USD" dateTime="20240131;235959" description="unclassified action" transactionID="1007"/>
+      </CashTransactions>
+      <Trades>
+        <Trade accountId="U0000000" symbol="AAPL" description="Apple Inc." assetCategory="STK" currency="USD" buySell="BUY" quantity="100" tradePrice="150.25" tradeMoney="15025.00" ibCommission="-1.00" netCash="-15026.00" fifoPnlRealized="0" dateTime="20240105;100000"/>
+        <Trade accountId="U0000000" symbol="MSFT" description="Microsoft Corp." assetCategory="STK" currency="USD" buySell="SELL" quantity="-20" tradePrice="400.00" tradeMoney="-8000.00" ibCommission="-1.00" netCash="7999.00" fifoPnlRealized="500.00" dateTime="20240110;110000"/>
+      </Trades>
+    </FlexStatement>
+  </FlexStatements>
+</FlexQueryResponse>
