@@ -37,7 +37,8 @@ const en = {
 		support: "Support",
 		disc1:
 			"Fenek Portfolio Companion is open source (MIT). Not affiliated with any broker or exchange.",
-		disc2: "Not investment advice — Fenek only reads and organizes your own data.",
+		disc2:
+			"Not investment advice. Fenek is read-only — it never places trades, holds funds, or recommends anything. It only reads and displays your own data.",
 		meta1: "Read-only · Zero telemetry",
 		meta2: "Runs locally in Claude Desktop",
 	},
@@ -50,7 +51,7 @@ const en = {
 		hero: {
 			eyebrow: "Read-only MCP server · for Claude Desktop",
 			h1: "Ask Claude about your portfolio",
-			lede: "Read-only. Runs on your machine. Your keys never leave your computer.",
+			lede: "Read-only — it never trades or gives advice. Runs on your machine; your keys never leave your computer.",
 			demoLabel: "Claude Desktop · Fenek",
 			demoCaption: "Live demo coming soon",
 		},
@@ -71,7 +72,7 @@ const en = {
 				{ title: "Paste your keys", body: "Paste read-only API keys from your broker." },
 				{
 					title: "Ask anything",
-					body: "Ask Claude anything about your positions, dividends, risk.",
+					body: "Ask Claude anything about your positions, dividends, and holdings.",
 				},
 			],
 		},
@@ -104,7 +105,7 @@ const en = {
 		pricing: {
 			badge: "Fenek Pro",
 			h2: "Crypto is Pro. Classic brokers free forever.",
-			body: "Crypto features — Bybit and on-chain wallets — are part of Fenek Pro, under $5/mo. Classic brokers like Trading 212 and the portfolio analytics are free forever, and everything stays open source.",
+			body: "Crypto features — reading your Bybit and on-chain wallet balances — are part of Fenek Pro, under $5/mo. Classic brokers like Trading 212 and the cross-broker overview are free forever, and everything stays open source.",
 			aside: `Prefer full anonymity? [Build the Pro features from source](${BUILDING_PRO_URL}) for free — no license, no checkout.`,
 			button: "Get Fenek Pro",
 		},
