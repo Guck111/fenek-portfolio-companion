@@ -53,7 +53,11 @@ async function main(): Promise<void> {
     paywallEnabled: PAYWALL_ENABLED,
     buildFlavor: BUILD_FLAVOR,
     licenseKey: process.env["LICENSE_KEY"],
-    provider: null, // the first real merchant adapter arrives with the Pro release
+    // Stays null until the paywall is armed (src/license/config.ts) and a
+    // production organization_id exists. To enable, import createPolarProvider
+    // from ./license/polar.js and pass:
+    //   createPolarProvider({ baseUrl: "https://api.polar.sh", organizationId: "<prod-org-uuid>" })
+    provider: null,
   })
   await configureBrokers()
   await configureCryptoBroker()
