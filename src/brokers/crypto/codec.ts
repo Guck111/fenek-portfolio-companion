@@ -197,3 +197,146 @@ export function base64UrlToBytes(input: string): Uint8Array | null {
   const normalized = input.replace(/-/g, "+").replace(/_/g, "/")
   return new Uint8Array(Buffer.from(normalized, "base64"))
 }
+
+// --- Keccak-256 (Ethereum Keccak, NOT NIST SHA3-256) -----------------------
+//
+// EIP-55 address checksums hash the lowercase hex string with Keccak-256. Node's
+// crypto exposes "sha3-256", but that applies the NIST padding (0x06); Ethereum
+// kept the original Keccak padding (0x01), so the two digests disagree. This is a
+// small, dependency-free Keccak-f[1600] sponge. It runs once per address, so the
+// readable BigInt-lane form is preferred over a faster 32-bit-split version.
+
+const KECCAK_ROUNDS = 24
+const KECCAK_RATE_BYTES = 136 // 1600-bit state − 2×256-bit capacity = 1088-bit rate
+const KECCAK_OUTPUT_BYTES = 32
+const LANE_MASK = (1n << 64n) - 1n
+
+const KECCAK_ROUND_CONSTANTS: readonly bigint[] = [
+  0x0000000000000001n,
+  0x0000000000008082n,
+  0x800000000000808an,
+  0x8000000080008000n,
+  0x000000000000808bn,
+  0x0000000080000001n,
+  0x8000000080008081n,
+  0x8000000000008009n,
+  0x000000000000008an,
+  0x0000000000000088n,
+  0x0000000080008009n,
+  0x000000008000000an,
+  0x000000008000808bn,
+  0x800000000000008bn,
+  0x8000000000008089n,
+  0x8000000000008003n,
+  0x8000000000008002n,
+  0x8000000000000080n,
+  0x000000000000800an,
+  0x800000008000000an,
+  0x8000000080008081n,
+  0x8000000000008080n,
+  0x0000000080000001n,
+  0x8000000080008008n,
+]
+
+// Cumulative rotation offsets r[t] = ((t+1)(t+2)/2) mod 64 along the ρ/π walk.
+const KECCAK_RHO: readonly number[] = [
+  1, 3, 6, 10, 15, 21, 28, 36, 45, 55, 2, 14, 27, 41, 56, 8, 25, 43, 62, 18, 39, 61, 20, 44,
+]
+
+/** Read a lane, satisfying noUncheckedIndexedAccess; the state is always full. */
+function lane(state: readonly bigint[], i: number): bigint {
+  return state[i] ?? 0n
+}
+
+/** Rotate a 64-bit lane left by n bits. */
+function rotl64(x: bigint, n: number): bigint {
+  const s = BigInt(n)
+  return ((x << s) | (x >> (64n - s))) & LANE_MASK
+}
+
+/** The Keccak-f[1600] permutation, in place over 25 lanes (lane[x][y] = state[x + 5y]). */
+function keccakF(state: bigint[]): void {
+  for (let round = 0; round < KECCAK_ROUNDS; round++) {
+    // θ — column parity, then diffuse into every lane.
+    const c: bigint[] = []
+    for (let x = 0; x < 5; x++) {
+      c[x] =
+        lane(state, x) ^
+        lane(state, x + 5) ^
+        lane(state, x + 10) ^
+        lane(state, x + 15) ^
+        lane(state, x + 20)
+    }
+    for (let x = 0; x < 5; x++) {
+      const d = lane(c, (x + 4) % 5) ^ rotl64(lane(c, (x + 1) % 5), 1)
+      for (let y = 0; y < 25; y += 5) state[x + y] = lane(state, x + y) ^ d
+    }
+    // ρ + π — rotate and scatter lanes along the (x, y) walk.
+    let x = 1
+    let y = 0
+    let current = lane(state, 1)
+    for (let t = 0; t < 24; t++) {
+      const newX = y
+      y = (2 * x + 3 * y) % 5
+      x = newX
+      const idx = x + 5 * y
+      const tmp = lane(state, idx)
+      state[idx] = rotl64(current, KECCAK_RHO[t] ?? 0)
+      current = tmp
+    }
+    // χ — non-linear mix across each row.
+    for (let row = 0; row < 25; row += 5) {
+      const r0 = lane(state, row)
+      const r1 = lane(state, row + 1)
+      const r2 = lane(state, row + 2)
+      const r3 = lane(state, row + 3)
+      const r4 = lane(state, row + 4)
+      state[row] = r0 ^ (~r1 & LANE_MASK & r2)
+      state[row + 1] = r1 ^ (~r2 & LANE_MASK & r3)
+      state[row + 2] = r2 ^ (~r3 & LANE_MASK & r4)
+      state[row + 3] = r3 ^ (~r4 & LANE_MASK & r0)
+      state[row + 4] = r4 ^ (~r0 & LANE_MASK & r1)
+    }
+    // ι — break round symmetry.
+    state[0] = lane(state, 0) ^ (KECCAK_ROUND_CONSTANTS[round] ?? 0n)
+  }
+}
+
+/**
+ * Keccak-256 of arbitrary bytes (the hash behind EIP-55 address checksums). Pure,
+ * dependency-free; uses original-Keccak padding, distinct from NIST SHA3-256.
+ */
+export function keccak256(data: Uint8Array): Uint8Array {
+  const state: bigint[] = new Array<bigint>(25).fill(0n)
+
+  // pad10*1: append 0x01, zero-fill to a rate multiple, set the final byte's top
+  // bit. When a single byte remains, the two pad bits share it (0x01 ^ 0x80 = 0x81).
+  const padLen = KECCAK_RATE_BYTES - (data.length % KECCAK_RATE_BYTES)
+  const padded = new Uint8Array(data.length + padLen)
+  padded.set(data)
+  padded[data.length] = (padded[data.length] ?? 0) ^ 0x01
+  padded[padded.length - 1] = (padded[padded.length - 1] ?? 0) ^ 0x80
+
+  // Absorb each rate-sized block as little-endian 64-bit lanes.
+  for (let offset = 0; offset < padded.length; offset += KECCAK_RATE_BYTES) {
+    for (let i = 0; i < KECCAK_RATE_BYTES / 8; i++) {
+      let value = 0n
+      for (let b = 7; b >= 0; b--) {
+        value = (value << 8n) | BigInt(padded[offset + i * 8 + b] ?? 0)
+      }
+      state[i] = lane(state, i) ^ value
+    }
+    keccakF(state)
+  }
+
+  // Squeeze: 32 output bytes fit inside the first rate block, no re-permute needed.
+  const out = new Uint8Array(KECCAK_OUTPUT_BYTES)
+  for (let i = 0; i < KECCAK_OUTPUT_BYTES / 8; i++) {
+    let value = lane(state, i)
+    for (let b = 0; b < 8; b++) {
+      out[i * 8 + b] = Number(value & 0xffn)
+      value >>= 8n
+    }
+  }
+  return out
+}

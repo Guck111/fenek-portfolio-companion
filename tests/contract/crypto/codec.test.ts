@@ -6,7 +6,12 @@ import {
   base64UrlToBytes,
   crc16Xmodem,
   decodeSegwitAddress,
+  keccak256,
 } from "../../../src/brokers/crypto/codec.js"
+
+function toHex(bytes: Uint8Array): string {
+  return [...bytes].map((b) => b.toString(16).padStart(2, "0")).join("")
+}
 
 describe("base58Decode (Bitcoin alphabet)", () => {
   it("decodes canonical base58 vectors", () => {
@@ -108,5 +113,37 @@ describe("base64UrlToBytes", () => {
 
   it("returns null for characters outside the base64url alphabet", () => {
     expect(base64UrlToBytes("not base64!")).toBeNull()
+  })
+})
+
+describe("keccak256 (Ethereum Keccak, not NIST SHA3)", () => {
+  const utf8 = (s: string): Uint8Array => new TextEncoder().encode(s)
+
+  it("hashes the empty input to the canonical Keccak-256 digest", () => {
+    expect(toHex(keccak256(new Uint8Array(0)))).toBe(
+      "c5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470",
+    )
+  })
+
+  it("hashes 'abc' to its canonical Keccak-256 digest (differs from SHA3-256)", () => {
+    // SHA3-256('abc') would be 3a985da7…; this must be the original-Keccak value.
+    expect(toHex(keccak256(utf8("abc")))).toBe(
+      "4e03657aea45a94fc7d47ba826c8d667c0d1e6e33a64a036ec44f58fa12d6c45",
+    )
+  })
+
+  it("always returns a 32-byte digest, including across the rate boundary", () => {
+    // 135/136/137 bytes straddle the 136-byte rate — exercises the pad10*1
+    // boundary where the 0x01 and 0x80 pad bits can land in the same byte.
+    for (const len of [0, 1, 135, 136, 137, 200]) {
+      expect(keccak256(utf8("a".repeat(len))).length).toBe(32)
+    }
+  })
+
+  it("produces distinct digests when only the second absorb block differs", () => {
+    // Same first 136 bytes, different tail → a correct multi-block absorb must
+    // fold the later block in, so the digests cannot collide.
+    const head = "a".repeat(136)
+    expect(toHex(keccak256(utf8(head + "x")))).not.toBe(toHex(keccak256(utf8(head + "y"))))
   })
 })

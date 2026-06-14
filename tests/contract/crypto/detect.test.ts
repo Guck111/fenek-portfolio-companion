@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest"
 
 import { detectBitcoin } from "../../../src/brokers/crypto/chains/bitcoin/detect.js"
 import { detectDogecoin } from "../../../src/brokers/crypto/chains/dogecoin/detect.js"
+import { detectEvm } from "../../../src/brokers/crypto/chains/evm/detect.js"
 import { detectLitecoin } from "../../../src/brokers/crypto/chains/litecoin/detect.js"
 import { detectSolana } from "../../../src/brokers/crypto/chains/solana/detect.js"
 import { detectTon } from "../../../src/brokers/crypto/chains/ton/detect.js"
@@ -101,6 +102,45 @@ describe("detectLitecoin", () => {
   })
 })
 
+describe("detectEvm", () => {
+  it("accepts an all-lowercase address (no checksum to verify)", () => {
+    expect(detectEvm("0xde709f2102306220921060314715629080e2fb77")).toBe(true)
+    expect(detectEvm("0x27b1fdb04752bbc536007a920d24acb045561c26")).toBe(true)
+  })
+
+  it("accepts an all-uppercase address (no checksum to verify)", () => {
+    expect(detectEvm("0x52908400098527886E0F7030069857D2E4169EE7")).toBe(true)
+    expect(detectEvm("0x8617E340B3D01FA5F11F306F4090FD50E238070D")).toBe(true)
+  })
+
+  it("accepts mixed-case addresses with a valid EIP-55 checksum", () => {
+    expect(detectEvm("0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed")).toBe(true)
+    expect(detectEvm("0xfB6916095ca1df60bB79Ce92cE3Ea74c37c5d359")).toBe(true)
+    expect(detectEvm("0xdbF03B407c01E7cD3CBea99509d93f8DDDC8C6FB")).toBe(true)
+    expect(detectEvm("0xD1220A0cf47c7B9Be7A2E6BA89F429762e7b9aDb")).toBe(true)
+  })
+
+  it("rejects a mixed-case address whose EIP-55 checksum is wrong", () => {
+    // Valid address with one letter's case flipped (5a… → 5A…): bad checksum.
+    expect(detectEvm("0x5AAeb6053F3E94C9b9A09f33669435E7Ef1BeAed")).toBe(false)
+    expect(detectEvm("0xD1220a0cf47c7B9Be7A2E6BA89F429762e7b9aDb")).toBe(false)
+  })
+
+  it("rejects wrong length, non-hex, and a missing 0x prefix", () => {
+    expect(detectEvm("0xde709f2102306220921060314715629080e2fb7")).toBe(false) // 39 hex
+    expect(detectEvm("0xde709f2102306220921060314715629080e2fb777")).toBe(false) // 41 hex
+    expect(detectEvm("0xde709f2102306220921060314715629080e2fb7g")).toBe(false) // non-hex g
+    expect(detectEvm("de709f2102306220921060314715629080e2fb77")).toBe(false) // no 0x
+    expect(detectEvm("")).toBe(false)
+  })
+
+  it("does not match addresses of the other chains", () => {
+    expect(detectEvm("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v")).toBe(false) // Solana
+    expect(detectEvm("1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa")).toBe(false) // Bitcoin
+    expect(detectEvm("UQA5jmXrFi47-xvbqld9L2ah8udriH_kSYgozqhX69VeolFc")).toBe(false) // TON
+  })
+})
+
 describe("detectChain", () => {
   it("routes an address to the chain whose validator accepts it", () => {
     expect(detectChain("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v")).toBe("solana")
@@ -109,10 +149,10 @@ describe("detectChain", () => {
     expect(detectChain("bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4")).toBe("bitcoin")
     expect(detectChain("UQA5jmXrFi47-xvbqld9L2ah8udriH_kSYgozqhX69VeolFc")).toBe("ton")
     expect(detectChain("MQYud2L2pTHZ2uGc9RCqLJiTDauRzqGx92")).toBe("litecoin")
+    expect(detectChain("0x52908400098527886E0F7030069857D2E4169EE7")).toBe("evm")
   })
 
   it("returns null when no registered chain recognises the address", () => {
-    expect(detectChain("0x52908400098527886E0F7030069857D2E4169EE7")).toBeNull() // EVM — not yet
     expect(detectChain("tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx")).toBeNull() // testnet
     expect(detectChain("complete garbage !!!")).toBeNull()
   })

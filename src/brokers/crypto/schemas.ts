@@ -103,3 +103,19 @@ export const JupiterToken = z.object({
 })
 export const JupiterTokenSearchResponse = z.array(JupiterToken)
 export type JupiterToken = z.infer<typeof JupiterToken>
+
+// --- Blockscout v2 (keyless EVM balances: eth / arbitrum / optimism / base / polygon) ---
+export const BlockscoutAddress = z.object({
+  coin_balance: z.string().nullable().optional(), // native balance in wei; null/absent for a never-seen address
+})
+export const BlockscoutTokenBalance = z.object({
+  token: z.object({
+    address_hash: z.string(), // ERC-20 contract address
+    symbol: z.string().optional(),
+    decimals: z.string().nullable().optional(), // string per Blockscout; null for some NFTs
+    type: z.string().optional(), // "ERC-20" | "ERC-721" | "ERC-1155"
+  }),
+  value: z.string(), // raw integer string in the token's smallest unit
+})
+export const BlockscoutTokenBalances = z.array(BlockscoutTokenBalance)
+export type BlockscoutTokenBalance = z.infer<typeof BlockscoutTokenBalance>

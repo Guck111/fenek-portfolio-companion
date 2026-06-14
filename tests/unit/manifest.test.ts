@@ -46,6 +46,12 @@ describe("manifest user_config", () => {
     expect(configKeys).toContain("LICENSE_KEY")
   })
 
+  it("advertises Ethereum / EVM auto-detection on the wallet-addresses field", () => {
+    const description = manifest.user_config["WALLET_ADDRESSES"]?.description ?? ""
+    expect(description).toContain("Ethereum")
+    expect(description).toContain("EVM")
+  })
+
   it("keeps the license key sensitive (OS keychain)", () => {
     expect(manifest.user_config["LICENSE_KEY"]?.sensitive).toBe(true)
   })

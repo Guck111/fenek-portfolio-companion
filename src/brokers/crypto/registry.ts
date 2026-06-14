@@ -1,5 +1,7 @@
 import { detectBitcoin } from "./chains/bitcoin/detect.js"
 import { detectDogecoin } from "./chains/dogecoin/detect.js"
+import { detectEvm } from "./chains/evm/detect.js"
+import { fetchEvmHoldings } from "./chains/evm/read.js"
 import { detectLitecoin } from "./chains/litecoin/detect.js"
 import { detectSolana } from "./chains/solana/detect.js"
 import { fetchSolanaHoldings } from "./chains/solana/read.js"
@@ -18,7 +20,7 @@ import type { RawHolding } from "./types.js"
  */
 
 /** Normalised chain namespaces the detector can recognise. EVM chains collapse to one id. */
-export type ChainId = "solana" | "dogecoin" | "bitcoin" | "ton" | "litecoin"
+export type ChainId = "solana" | "dogecoin" | "bitcoin" | "ton" | "litecoin" | "evm"
 
 export interface ChainModule {
   readonly id: ChainId
@@ -38,6 +40,8 @@ export const CHAINS: readonly ChainModule[] = [
   { id: "bitcoin", detect: detectBitcoin, read: esploraReader(BITCOIN) },
   { id: "litecoin", detect: detectLitecoin, read: esploraReader(LITECOIN) },
   { id: "ton", detect: detectTon, read: fetchTonHoldings },
+  // EVM family (Ethereum + L2s): one 0x address, read across every network.
+  { id: "evm", detect: detectEvm, read: fetchEvmHoldings },
 ]
 
 /** Return the chain whose validator accepts `raw`, or null if none recognise it. */

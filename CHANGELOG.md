@@ -4,6 +4,18 @@ All notable changes to this project are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0] - 2026-06-14
+
+### Added
+- **Ethereum & EVM wallets (Pro).** Paste a public `0x…` address into the wallet
+  field and Fenek reads it across Ethereum, Arbitrum, Optimism, Base, and Polygon
+  — native balance plus ERC-20 holdings — keyless through public Blockscout
+  instances, priced via DefiLlama. The chain is auto-detected (EIP-55 checksum
+  validated), so EVM addresses sit alongside the existing Solana/TON/Bitcoin/
+  Litecoin/Dogecoin wallets in the same field, with no API key. As a crypto
+  source it falls under Fenek Pro. NFTs (ERC-721/1155) are excluded, and
+  per-network reads are isolated so one slow explorer never sinks the others.
+
 ## [0.5.0] - 2026-06-13
 
 ### Added

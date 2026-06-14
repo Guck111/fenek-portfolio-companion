@@ -1,0 +1,42 @@
+[
+  {
+    "token": {
+      "address_hash": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+      "name": "USD Coin",
+      "symbol": "USDC",
+      "decimals": "6",
+      "type": "ERC-20",
+      "exchange_rate": "1.0",
+      "holders_count": "3000000",
+      "icon_url": "https://example.invalid/usdc.png"
+    },
+    "token_id": null,
+    "token_instance": null,
+    "value": "123456789"
+  },
+  {
+    "token": {
+      "address_hash": "0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D",
+      "name": "BoredApeYachtClub",
+      "symbol": "BAYC",
+      "decimals": null,
+      "type": "ERC-721",
+      "holders_count": "5000"
+    },
+    "token_id": "42",
+    "token_instance": null,
+    "value": "1"
+  },
+  {
+    "token": {
+      "address_hash": "0x495f947276749Ce646f68AC8c248420045cb7b5e",
+      "name": "OpenSea Shared Storefront",
+      "symbol": "OPENSTORE",
+      "decimals": null,
+      "type": "ERC-1155"
+    },
+    "token_id": "123",
+    "token_instance": null,
+    "value": "5"
+  }
+]
