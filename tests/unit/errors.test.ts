@@ -31,6 +31,13 @@ describe("toUserMessage — directive next-action texts", () => {
     expect(msg.toLowerCase()).toContain("permission")
   })
 
+  it("AuthError points IBKR users at the Flex token and required Flex Query sections", () => {
+    const msg = toUserMessage(new AuthError("1015", "ibkr"))
+    expect(msg).toContain("Interactive Brokers")
+    expect(msg).toContain("Flex")
+    expect(msg).toContain("Open Positions")
+  })
+
   it("RateLimitError tells the assistant not to retry now", () => {
     const msg = toUserMessage(new RateLimitError("429", "bybit"))
     expect(msg.toLowerCase()).toContain("rate-limit")

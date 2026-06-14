@@ -57,6 +57,11 @@ const BROKER_GUIDANCE: Readonly<Record<string, BrokerGuidance>> = {
     scopes:
       "the read groups (Unified Trading, Assets/Wallet, Earn) in your Bybit API key settings — run bybit_get_key_info to see what the current key can access",
   },
+  ibkr: {
+    name: "Interactive Brokers",
+    scopes:
+      "the sections of your Flex Query (Open Positions, Net Asset Value, Cash Report, Cash Transactions) and a non-expired Flex Web Service token — regenerate the token in Client Portal → Settings → Account Settings → Flex Web Service if it expired",
+  },
 }
 
 function brokerName(brokerId: string): string {
