@@ -21,16 +21,17 @@ afterEach(() => {
 })
 
 describe("mapFlexError", () => {
-  it("maps token/account/IP codes to AuthError", () => {
-    for (const code of ["1011", "1012", "1013", "1015"]) {
+  it("maps token/account/IP/setup codes to AuthError (user-fixable, retrying won't help)", () => {
+    // token: 1011/1012/1013/1015; user setup of query/account/request: 1014/1016/1020
+    for (const code of ["1011", "1012", "1013", "1015", "1014", "1016", "1020"]) {
       expect(mapFlexError(code, "x")).toBeInstanceOf(AuthError)
     }
   })
   it("maps 1018 to RateLimitError", () => {
     expect(mapFlexError("1018", "x")).toBeInstanceOf(RateLimitError)
   })
-  it("maps query/reference/other codes to BrokerApiError", () => {
-    for (const code of ["1014", "1003", "1017", "1020"]) {
+  it("maps genuine broker-side codes (not available / legacy / reference) to BrokerApiError", () => {
+    for (const code of ["1003", "1010", "1017"]) {
       expect(mapFlexError(code, "x")).toBeInstanceOf(BrokerApiError)
     }
   })

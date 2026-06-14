@@ -30,13 +30,22 @@ const RETRY_CODES = new Set([
   "1019",
   "1021",
 ])
-const AUTH_CODES = new Set(["1011", "1012", "1013", "1015"])
+// Codes the USER can fix in their IBKR setup and where retrying as-is won't help:
+// token problems (1011/1012/1013/1015) and request-validation problems caused by a
+// wrong token / Query ID / account (1014/1016/1020). All map to AuthError so the
+// user gets the Flex token + Query Id remediation guidance instead of a misleading
+// "broker's side" message (verified against the live endpoint: a bad token+query
+// yields 1020, not 1015).
+const AUTH_CODES = new Set(["1011", "1012", "1013", "1014", "1015", "1016", "1020"])
 
 const AUTH_MESSAGES: Readonly<Record<string, string>> = {
   1011: "IBKR Flex service account is inactive.",
   1012: "IBKR Flex token has expired — regenerate it in Client Portal → Settings → Account Settings → Flex Web Service.",
   1013: "IBKR Flex request blocked by the token's IP restriction — clear the 'Valid For IP Address' field on the token, or add the calling IP.",
+  1014: "IBKR Flex Query ID is invalid — check the Query ID in Client Portal → Performance & Reports → Flex Queries.",
   1015: "IBKR Flex token is invalid — regenerate it in Client Portal → Settings → Account Settings → Flex Web Service.",
+  1016: "IBKR Flex: the account is not valid for this Flex Query — check the account selected in the Flex Query.",
+  1020: "IBKR Flex could not validate the request — check that the Flex token and Query ID are correct.",
 }
 
 export function mapFlexError(code: string, message: string): Error {
