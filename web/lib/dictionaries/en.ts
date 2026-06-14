@@ -1,4 +1,4 @@
-import { BUILDING_PRO_URL, GITHUB_URL, RELEASES_LATEST_URL } from "@/lib/site"
+import { BUILDING_PRO_URL, CLAUDE_DESKTOP_URL, GITHUB_URL, RELEASES_LATEST_URL } from "@/lib/site"
 
 // English is the source dictionary: it defines the Dictionary type that every
 // other locale must satisfy. Strings may use inline markdown (**bold**, `code`,
@@ -52,6 +52,7 @@ const en = {
 			eyebrow: "Read-only MCP server · for Claude Desktop",
 			h1: "Ask Claude about your portfolio",
 			lede: "Read-only — it never trades or gives advice. Runs on your machine; your keys never leave your computer.",
+			requires: `Runs as an extension inside the free [Claude Desktop](${CLAUDE_DESKTOP_URL}) app — macOS and Windows.`,
 			demoLabel: "Claude Desktop · Fenek",
 			demoCaption: "Live demo coming soon",
 		},
@@ -61,6 +62,28 @@ const en = {
 			"Zero telemetry",
 			"Open source (MIT)",
 		],
+		does: {
+			h2: "What it does — and what it never does",
+			lede: "Fenek reads. That’s the whole job — it has no code path that can move money or place an order.",
+			can: {
+				badge: "Does",
+				items: [
+					"Reads positions, dividends, transactions, and order history across your brokers",
+					"Reads Bybit spot, derivatives, and Earn — plus on-chain wallet balances by public address",
+					"Builds one cross-broker overview and answers your questions in plain language",
+					"Runs locally inside Claude Desktop — your keys stay in your OS keychain",
+				],
+			},
+			cannot: {
+				badge: "Never does",
+				items: [
+					"Place, change, or cancel an order",
+					"Move, deposit, or withdraw funds",
+					"Give buy, sell, or rebalancing advice",
+					"Send your data anywhere — no servers, no telemetry, no tracking",
+				],
+			},
+		},
 		how: {
 			h2: "How it works",
 			lede: "Three steps, no backend. Everything runs locally inside Claude Desktop.",

@@ -4,7 +4,7 @@ import { SiteShell } from "@/components/fenek/SiteShell"
 import { TrustStrip } from "@/components/fenek/TrustStrip"
 import { CheckoutButton } from "@/components/ui/CheckoutButton"
 import { DownloadButton } from "@/components/ui/DownloadButton"
-import { DownloadIcon, GitHubIcon } from "@/components/ui/icons"
+import { BlockIcon, CheckIcon, DownloadIcon, GitHubIcon } from "@/components/ui/icons"
 import { NewsletterForm } from "@/components/ui/NewsletterForm"
 import type { Dictionary } from "@/lib/dictionaries"
 import { type Lang, localizedHref } from "@/lib/i18n"
@@ -40,6 +40,9 @@ export const HomeView = ({ dict, lang }: { dict: Dictionary; lang: Lang }) => {
 									<span>{c.viewSource}</span>
 								</a>
 							</div>
+							<p className="hero-note">
+								<RichText text={t.hero.requires} lang={lang} />
+							</p>
 						</div>
 						<div className="hero-art">
 							<DemoFrame label={t.hero.demoLabel} caption={t.hero.demoCaption} />
@@ -49,6 +52,43 @@ export const HomeView = ({ dict, lang }: { dict: Dictionary; lang: Lang }) => {
 			</section>
 
 			<TrustStrip items={t.trust} lang={lang} />
+
+			<section aria-labelledby="does-h">
+				<div className="wrap">
+					<div className="section-head">
+						<h2 id="does-h">{t.does.h2}</h2>
+						<p>{t.does.lede}</p>
+					</div>
+					<div className="cols2">
+						<div className="col-card can">
+							<div className="hd">
+								<span className="badge">{t.does.can.badge}</span>
+							</div>
+							<ul>
+								{t.does.can.items.map((item) => (
+									<li key={item}>
+										<CheckIcon className="gi" />
+										<span>{item}</span>
+									</li>
+								))}
+							</ul>
+						</div>
+						<div className="col-card cannot">
+							<div className="hd">
+								<span className="badge">{t.does.cannot.badge}</span>
+							</div>
+							<ul>
+								{t.does.cannot.items.map((item) => (
+									<li key={item}>
+										<BlockIcon className="gi" />
+										<span>{item}</span>
+									</li>
+								))}
+							</ul>
+						</div>
+					</div>
+				</div>
+			</section>
 
 			<section aria-labelledby="how-h">
 				<div className="wrap">

@@ -1,8 +1,9 @@
 // Canonical, build-time constants for the Fenek site.
 // External hosts the built site references: github.com, fenek.tech,
-// buttondown.com (newsletter form), and polar.sh (Pro checkout + customer
-// portal). The Polar links are user-click <a href>s, not automatic requests —
-// the only automatic outbound call the site makes is the Buttondown form.
+// buttondown.com (newsletter form), polar.sh (Pro checkout + customer
+// portal), and claude.ai (Claude Desktop download link). All of those except
+// the Buttondown form are user-click <a href>s, not automatic requests — the
+// only automatic outbound call the site makes is the Buttondown form.
 
 export const SITE_URL = "https://fenek.tech"
 
@@ -12,6 +13,10 @@ export const SUPPORT_MAILTO = `mailto:${SUPPORT_EMAIL}`
 export const GITHUB_LICENSE_URL = `${GITHUB_URL}/blob/master/LICENSE`
 export const GITHUB_SECURITY_URL = `${GITHUB_URL}/blob/master/SECURITY.md`
 export const BUILDING_PRO_URL = `${GITHUB_URL}/blob/master/docs/building-pro.md`
+
+// Claude Desktop download. Fenek runs as an extension inside it, so the site
+// points first-time visitors here. A user-click link, not an automatic request.
+export const CLAUDE_DESKTOP_URL = "https://claude.ai/download"
 
 // Points at whatever release is currently flagged "Latest" on GitHub (v0.4.1+).
 // The release *page* — used by the install steps as a human-readable pointer.
