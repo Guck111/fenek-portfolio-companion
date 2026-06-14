@@ -138,6 +138,39 @@ const en = {
 			lede: "One file, double-click to install. No account, no backend.",
 			guide: "Installation guide →",
 		},
+		faq: {
+			h2: "Questions",
+			items: [
+				{
+					q: "Is it safe to give Fenek my API keys?",
+					a: "Your keys go straight into Claude Desktop’s OS keychain (macOS Keychain / Windows Credential Manager), marked sensitive — Fenek never logs or prints them. It’s read-only and fully open source, so you can read every line. When you create a key, use read-only permissions. [See the security page](/security).",
+				},
+				{
+					q: "Can Fenek place trades or move my money?",
+					a: "No. Fenek has no trading or withdrawal code at all — it can only read. It never places orders, moves funds, or gives buy or sell advice.",
+				},
+				{
+					q: "Do I need anything besides Fenek?",
+					a: `Yes — the free [Claude Desktop](${CLAUDE_DESKTOP_URL}) app for macOS or Windows. Fenek installs into it as an extension; there is no separate account or backend.`,
+				},
+				{
+					q: "What does it cost?",
+					a: `Classic brokers like Trading 212 and the cross-broker overview are free forever. The crypto sources — Bybit and on-chain wallets — are part of Fenek Pro at $4.99/mo. You can also [build Pro from source](${BUILDING_PRO_URL}) for free.`,
+				},
+				{
+					q: "How do I cancel Pro?",
+					a: "Anytime, in the Polar customer portal — it is a simple monthly subscription with no lock-in, billed by Polar as merchant of record.",
+				},
+				{
+					q: "Which sources are supported?",
+					a: "Trading 212, Bybit (spot, derivatives, and Earn), and on-chain wallets for Solana, TON, Bitcoin, Litecoin, and Dogecoin. Want another? Vote for it in the Supported sources section above.",
+				},
+				{
+					q: "Does Fenek send my data anywhere?",
+					a: "No analytics, no telemetry. The only outbound traffic is your brokers’ APIs, a weekly version check you can switch off, and — on Pro only — a monthly license check. [The security page lists all four](/security).",
+				},
+			],
+		},
 	},
 	security: {
 		meta: {

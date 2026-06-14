@@ -4,7 +4,7 @@ import { SiteShell } from "@/components/fenek/SiteShell"
 import { TrustStrip } from "@/components/fenek/TrustStrip"
 import { CheckoutButton } from "@/components/ui/CheckoutButton"
 import { DownloadButton } from "@/components/ui/DownloadButton"
-import { BlockIcon, CheckIcon, DownloadIcon, GitHubIcon } from "@/components/ui/icons"
+import { BlockIcon, CheckIcon, DownloadIcon, GitHubIcon, PlusIcon } from "@/components/ui/icons"
 import { NewsletterForm } from "@/components/ui/NewsletterForm"
 import type { Dictionary } from "@/lib/dictionaries"
 import { type Lang, localizedHref } from "@/lib/i18n"
@@ -155,6 +155,27 @@ export const HomeView = ({ dict, lang }: { dict: Dictionary; lang: Lang }) => {
 						<div className="cta-row">
 							<CheckoutButton label={t.pricing.button} />
 						</div>
+					</div>
+				</div>
+			</section>
+
+			<section aria-labelledby="faq-h">
+				<div className="wrap">
+					<div className="section-head">
+						<h2 id="faq-h">{t.faq.h2}</h2>
+					</div>
+					<div className="faq">
+						{t.faq.items.map((item) => (
+							<details key={item.q}>
+								<summary>
+									<span>{item.q}</span>
+									<PlusIcon className="pm" />
+								</summary>
+								<p className="ans">
+									<RichText text={item.a} lang={lang} />
+								</p>
+							</details>
+						))}
 					</div>
 				</div>
 			</section>
