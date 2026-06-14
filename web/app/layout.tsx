@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 		template: "%s — Fenek",
 	},
 	description:
-		"Read-only aggregator of your portfolio data across EU-available wallets, exchanges and brokers (Trading 212, Bybit incl. derivatives & Earn, Bitcoin/Litecoin/Dogecoin/Solana/TON wallets). Data collection only — no recommendations.",
+		"A read-only companion for Claude Desktop. It reads your whole portfolio — Trading 212, Bybit, and crypto wallets — and never moves a thing. Runs locally, zero telemetry.",
 	applicationName: "Fenek",
 	robots: { index: true, follow: true },
 }

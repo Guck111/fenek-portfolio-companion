@@ -19,7 +19,7 @@
 	--card: #fcfbf7;
 	--ink: #1b1a16;
 	--soft: #5b564c;
-	--dim: #a69e8f;
+	--dim: #6e6857; /* quiet labels — kept ≥4.5:1 on paper/card/alt for WCAG AA */
 	--line: #dcd6c8;
 	--line-2: #e6e1d4;
 	--accent: #1e5a4b;

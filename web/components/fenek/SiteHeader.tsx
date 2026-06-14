@@ -46,7 +46,13 @@ export const SiteHeader = ({ lang, nav }: SiteHeaderProps) => {
 				</nav>
 				<div className="header-tools">
 					<LanguageSwitcher lang={lang} label={nav.chooseLanguage} />
-					<a className="gh-link" href={GITHUB_URL} target="_blank" rel="noopener noreferrer">
+					<a
+						className="gh-link"
+						href={GITHUB_URL}
+						target="_blank"
+						rel="noopener noreferrer"
+						aria-label={nav.github}
+					>
 						<GitHubIcon />
 						<span>{nav.github}</span>
 					</a>
