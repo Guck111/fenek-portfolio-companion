@@ -112,13 +112,14 @@ export const BybitFixedTermPositionResult = z.object({
 export type BybitFixedTermPositionResult = z.infer<typeof BybitFixedTermPositionResult>
 
 // GET /v5/earn/token/position?coin=BYUSDT → flat result (no list).
-// aprE8/bonusAprE8 are integers scaled by 1e8.
+// aprE8/bonusAprE8 are integers scaled by 1e8 — Bybit serializes them as
+// strings, so accept either (apyFromE8 coerces). Same shape as apyE8 below.
 export const BybitTokenPositionResult = z.object({
   totalAmount: z.string().optional(),
   totalYield: z.string().optional(),
   yesterdayYield: z.string().optional(),
-  aprE8: z.number().optional(),
-  bonusAprE8: z.number().optional(),
+  aprE8: z.union([z.string(), z.number()]).optional(),
+  bonusAprE8: z.union([z.string(), z.number()]).optional(),
 })
 export type BybitTokenPositionResult = z.infer<typeof BybitTokenPositionResult>
 

@@ -81,6 +81,19 @@ describe("bybit earn mappers", () => {
     expect(positions[0]?.apy).toBe(5)
   })
 
+  it("accepts stringified aprE8/bonusAprE8 (Bybit returns them as strings, not numbers)", () => {
+    // Live Earn token-position payload sends these E8 fields as strings; the
+    // schema must not reject them (matches the sibling apyE8 union on dual-assets).
+    const result = BybitTokenPositionResult.parse({
+      totalAmount: "250",
+      totalYield: "3.1",
+      aprE8: "5000000",
+      bonusAprE8: "1000000",
+    })
+    const positions = mapTokenPosition(result)
+    expect(positions[0]?.apy).toBe(5)
+  })
+
   it("returns no token position when nothing is held", () => {
     expect(mapTokenPosition(BybitTokenPositionResult.parse({ totalAmount: "0" }))).toHaveLength(0)
   })

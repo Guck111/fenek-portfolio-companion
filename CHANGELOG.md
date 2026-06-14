@@ -4,6 +4,15 @@ All notable changes to this project are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+- **Bybit Earn token position no longer errors out.** Bybit serializes the
+  `aprE8`/`bonusAprE8` APY fields as strings, but the schema required numbers, so
+  reading a flexible-savings (token) position failed validation. The schema now
+  accepts a string or a number (the APY is normalized identically), matching how
+  the dual-asset `apyE8` field was already handled.
+
 ## [0.6.0] - 2026-06-14
 
 ### Added
