@@ -7,6 +7,9 @@ tests/
 # Marketing website (separate Next.js app, never part of the extension bundle)
 web/
 
+# README banner image (GitHub-only, not needed at runtime)
+assets/
+
 # Project documentation (private use)
 docs/
 README.md

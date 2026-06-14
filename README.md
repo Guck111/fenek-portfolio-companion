@@ -1,8 +1,26 @@
+<p align="center">
+  <a href="https://fenek.tech"><img src="assets/banner.png" alt="Fenek — big ears for your portfolio: listens to everything, touches nothing" width="640"></a>
+</p>
+
+<p align="center">
+  <a href="https://fenek.tech">Website</a> ·
+  <a href="https://fenek.tech/install">Install</a> ·
+  <a href="https://fenek.tech/security">Security</a> ·
+  <a href="https://fenek.tech/changelog">Changelog</a>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/license-MIT-1E5A4B?style=flat-square" alt="License: MIT">
+  <img src="https://img.shields.io/github/v/release/Guck111/fenek-portfolio-companion?style=flat-square&color=1E5A4B&label=release" alt="Latest release">
+  <img src="https://img.shields.io/badge/read--only-enforced-1E5A4B?style=flat-square" alt="Read-only">
+  <img src="https://img.shields.io/badge/telemetry-zero-1E5A4B?style=flat-square" alt="Zero telemetry">
+  <img src="https://img.shields.io/badge/build_provenance-verified-1E5A4B?style=flat-square" alt="Build provenance verified">
+  <img src="https://img.shields.io/badge/runs-locally-1E5A4B?style=flat-square" alt="Runs locally">
+</p>
+
 # Fenek Portfolio Companion
 
 Read-only MCP server that aggregates your portfolio data across wallets, exchanges and brokers available in Europe — currently Trading 212, Interactive Brokers (end-of-day via Flex), Bybit, and Solana, TON, Bitcoin, Litecoin and Dogecoin wallets — and makes it available to Claude to read and organize. It is a data aggregator: it reads your own data and shows neutral, descriptive figures on it, never advice and never recommendations. It places no trades, holds no funds, and has no custody. Architected to add more sources without changing the core or existing adapters.
-
-**Website & downloads: [fenek.tech](https://fenek.tech)** — install guide, security details, and changelog.
 
 > **NOT FINANCIAL ADVICE.** This is an informational tool. You are solely responsible for any decisions you make based on its output. The author is not a registered investment advisor in any jurisdiction. Read [DISCLAIMER.md](DISCLAIMER.md) before using.
 >
@@ -11,6 +29,17 @@ Read-only MCP server that aggregates your portfolio data across wallets, exchang
 > **UNOFFICIAL.** Not affiliated with, endorsed by, or sponsored by Trading 212, Bybit, or any other broker, exchange, or wallet provider.
 >
 > **OPEN SOURCE.** MIT License, no telemetry, no affiliate relationships. Crypto features (Bybit, on-chain wallets) are part of paid Fenek Pro — under $5/mo (see [the website](https://fenek.tech)); classic brokers (Trading 212 and Interactive Brokers today, more to come) and the cross-broker overview are free forever; and building Pro from source stays officially free.
+
+## Supported sources
+
+Every source is read-only, opt-in, and additive — configure only the ones you use; leave the rest blank to skip them.
+
+| Source | Type | Tier | Auth |
+|---|---|---|---|
+| Trading 212 | Classic broker | Free | API key + secret (read-only scopes) |
+| Interactive Brokers | Classic broker — end-of-day via Flex | Free | Flex token + query ID (read-only) |
+| Bybit | Crypto exchange | Pro | API key + secret (read-only) |
+| On-chain wallets | Solana · TON · Bitcoin · Litecoin · Dogecoin | Pro | Public address (keyless) |
 
 ## Install
 
@@ -38,7 +67,8 @@ Whether your key belongs to a **demo** (paper) or **live** account is detected a
 
 Credentials are stored by Claude Desktop in your operating system's keychain (macOS Keychain / Windows Credential Manager). They are never logged, never written to disk by this server, and never transmitted anywhere except the Trading 212 API endpoints you configured. See [PRIVACY.md](PRIVACY.md).
 
-### Interactive Brokers — optional
+<details>
+<summary><strong>Interactive Brokers — optional</strong></summary>
 
 You can also surface your **Interactive Brokers** account through the read-only **Flex Web Service** — no running gateway, no desktop app, no OAuth. Opt-in and additive — leave the fields blank to skip it.
 
@@ -52,7 +82,10 @@ Notes and limitations:
 - **One account.** A first-cut adapter reads a single account; if your Flex Query covers several, scope it to one in Client Portal.
 - **Read-only and not financial advice**, exactly like the rest of this server.
 
-### Crypto wallets — optional
+</details>
+
+<details>
+<summary><strong>Crypto wallets — optional</strong></summary>
 
 In addition to (or instead of) Trading 212, you can surface on-chain holdings by **public wallet address**. Opt-in and additive — leave the field blank to skip it entirely.
 
@@ -68,7 +101,10 @@ Notes and limitations:
 - **Jupiter limit orders (limited).** `crypto_get_limit_orders` reads open orders from Jupiter's public Trigger v1 API (no extra key — `lite-api.jup.ag`). **Heads-up:** Jupiter's current **Limit Order V2 keeps order details private** (hidden until execution), so those orders are not exposed by any public API and won't appear here — an empty result does **not** mean you have none; check jup.ag. Funds locked by open V2 orders are still visible indirectly as reduced wallet balances.
 - Read-only and not financial advice, exactly like the rest of this server.
 
-### Bybit — optional
+</details>
+
+<details>
+<summary><strong>Bybit — optional</strong></summary>
 
 You can also surface your **Bybit** holdings: Unified-account coin balances, **derivatives positions** (USDT/USDC perpetuals, inverse contracts, options), **Earn / staked balances**, the **Funding wallet**, and a cross-account totals overview. Opt-in and additive — leave the fields blank to skip it. Mainnet only.
 
@@ -90,6 +126,8 @@ Notes and limitations:
 - **USD valuation only.** Coins are valued in USD by Bybit. The exchange does not return spot cost basis, so spot balances carry **no average price / profit-loss**; derivatives positions do report unrealized and realized P&L in their settle coin. In `portfolio_overview` the Bybit USD total appears as its own currency bucket alongside your other accounts — currencies are never summed (no FX conversion).
 - **Unpriced coins are omitted** from `bybit_get_positions`. Only coins with a non-zero balance and a USD value are shown.
 - Read-only and not financial advice, exactly like the rest of this server.
+
+</details>
 
 ## What it can do
 
