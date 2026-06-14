@@ -376,6 +376,14 @@ section.alt {
 	font-size: 18px;
 }
 
+/* a row of buttons/links — intrinsic layout only; vertical spacing is set
+   per context by the page that uses it, never baked in here */
+.cta-row {
+	display: flex;
+	gap: 12px;
+	flex-wrap: wrap;
+}
+
 /* ============================================================
    Hero
    ============================================================ */
@@ -1746,8 +1754,9 @@ section[id] {
 	line-height: 1.6;
 	color: var(--dim);
 }
+/* note-box is a pure visual component — no layout margin; callers add a
+   dedicated spacing class (.pricing-note, .success-keynote, …) */
 .note-box {
-	margin: 26px 0 0;
 	max-width: var(--measure);
 	padding: 14px 18px;
 	background: var(--paper-2);
@@ -1757,6 +1766,19 @@ section[id] {
 	font-size: 14.5px;
 	line-height: 1.6;
 	color: var(--ink);
+}
+.pricing-note {
+	margin-top: 26px;
+}
+
+/* ============================================================
+   Success page — page-specific spacing (kept off shared primitives)
+   ============================================================ */
+.success-keynote {
+	margin: 0 0 32px;
+}
+.success-actions {
+	margin-top: 24px;
 }
 
 /* ============================================================
