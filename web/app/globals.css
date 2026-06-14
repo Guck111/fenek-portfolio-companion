@@ -380,7 +380,6 @@ section.alt {
 }
 .section-head {
 	max-width: 62ch;
-	margin-bottom: 40px;
 }
 .section-head p {
 	color: var(--soft);
@@ -1465,9 +1464,6 @@ section[id] {
 }
 .content-section {
 	padding: 38px 0;
-}
-.content-section .section-head {
-	margin-bottom: 28px;
 }
 .prose {
 	max-width: var(--measure);

@@ -25,7 +25,7 @@ export const SecurityView = ({ dict, lang }: { dict: Dictionary; lang: Lang }) =
 
 			<section className="content-section" aria-labelledby="outbound-h">
 				<div className="wrap">
-					<div className="section-head">
+					<div className="section-head mb-xl">
 						<h2 id="outbound-h">{t.outbound.h2}</h2>
 					</div>
 					<div className="prose">
@@ -45,7 +45,7 @@ export const SecurityView = ({ dict, lang }: { dict: Dictionary; lang: Lang }) =
 
 			<section className="content-section alt" aria-labelledby="verify-h">
 				<div className="wrap">
-					<div className="section-head">
+					<div className="section-head mb-xl">
 						<h2 id="verify-h">{t.verify.h2}</h2>
 					</div>
 					<div className="prose">
@@ -60,7 +60,7 @@ export const SecurityView = ({ dict, lang }: { dict: Dictionary; lang: Lang }) =
 
 			<section className="content-section" aria-labelledby="keys-h">
 				<div className="wrap">
-					<div className="section-head">
+					<div className="section-head mb-xl">
 						<h2 id="keys-h">{t.keys.h2}</h2>
 					</div>
 					<div className="prose">
@@ -79,7 +79,7 @@ export const SecurityView = ({ dict, lang }: { dict: Dictionary; lang: Lang }) =
 
 			<section className="content-section alt" aria-labelledby="provenance-h">
 				<div className="wrap">
-					<div className="section-head">
+					<div className="section-head mb-xl">
 						<h2 id="provenance-h">{t.provenance.h2}</h2>
 					</div>
 					<div className="prose">

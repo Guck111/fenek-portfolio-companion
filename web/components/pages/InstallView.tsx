@@ -31,7 +31,7 @@ export const InstallView = ({ dict, lang }: { dict: Dictionary; lang: Lang }) =>
 
 			<section className="content-section alt" aria-labelledby="req-h">
 				<div className="wrap">
-					<div className="section-head">
+					<div className="section-head mb-xl">
 						<h2 id="req-h">{t.requirements.h2}</h2>
 					</div>
 					<div className="prose">
@@ -48,7 +48,7 @@ export const InstallView = ({ dict, lang }: { dict: Dictionary; lang: Lang }) =>
 
 			<section className="content-section" aria-labelledby="steps-h">
 				<div className="wrap">
-					<div className="section-head">
+					<div className="section-head mb-xl">
 						<h2 id="steps-h">{t.steps.h2}</h2>
 					</div>
 					<div className="prose">
@@ -67,7 +67,7 @@ export const InstallView = ({ dict, lang }: { dict: Dictionary; lang: Lang }) =>
 
 			<section className="content-section alt" aria-labelledby="updates-h">
 				<div className="wrap">
-					<div className="section-head">
+					<div className="section-head mb-xl">
 						<h2 id="updates-h">{t.updates.h2}</h2>
 					</div>
 					<div className="prose">

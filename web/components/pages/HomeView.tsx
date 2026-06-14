@@ -51,7 +51,7 @@ export const HomeView = ({ dict, lang }: { dict: Dictionary; lang: Lang }) => {
 
 			<section aria-labelledby="does-h">
 				<div className="wrap">
-					<div className="section-head">
+					<div className="section-head mb-2xl">
 						<h2 id="does-h">{t.does.h2}</h2>
 						<p>{t.does.lede}</p>
 					</div>
@@ -88,7 +88,7 @@ export const HomeView = ({ dict, lang }: { dict: Dictionary; lang: Lang }) => {
 
 			<section aria-labelledby="how-h">
 				<div className="wrap">
-					<div className="section-head">
+					<div className="section-head mb-2xl">
 						<h2 id="how-h">{t.how.h2}</h2>
 						<p>{t.how.lede}</p>
 					</div>
@@ -106,7 +106,7 @@ export const HomeView = ({ dict, lang }: { dict: Dictionary; lang: Lang }) => {
 
 			<section className="alt" aria-labelledby="src-h">
 				<div className="wrap">
-					<div className="section-head">
+					<div className="section-head mb-2xl">
 						<h2 id="src-h">{t.sources.h2}</h2>
 						<p>{t.sources.lede}</p>
 					</div>
@@ -159,7 +159,7 @@ export const HomeView = ({ dict, lang }: { dict: Dictionary; lang: Lang }) => {
 
 			<section aria-labelledby="faq-h">
 				<div className="wrap">
-					<div className="section-head">
+					<div className="section-head mb-2xl">
 						<h2 id="faq-h">{t.faq.h2}</h2>
 					</div>
 					<div className="faq">
