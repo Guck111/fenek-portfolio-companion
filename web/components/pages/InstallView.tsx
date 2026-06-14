@@ -29,6 +29,23 @@ export const InstallView = ({ dict, lang }: { dict: Dictionary; lang: Lang }) =>
 				</div>
 			</section>
 
+			<section className="content-section alt" aria-labelledby="req-h">
+				<div className="wrap">
+					<div className="section-head">
+						<h2 id="req-h">{t.requirements.h2}</h2>
+					</div>
+					<div className="prose">
+						<ul>
+							{t.requirements.items.map((item) => (
+								<li key={item}>
+									<RichText text={item} lang={lang} />
+								</li>
+							))}
+						</ul>
+					</div>
+				</div>
+			</section>
+
 			<section className="content-section" aria-labelledby="steps-h">
 				<div className="wrap">
 					<div className="section-head">

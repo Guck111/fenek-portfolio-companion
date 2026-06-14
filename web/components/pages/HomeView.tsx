@@ -2,9 +2,8 @@ import Link from "next/link"
 import { DemoFrame } from "@/components/fenek/DemoFrame"
 import { SiteShell } from "@/components/fenek/SiteShell"
 import { TrustStrip } from "@/components/fenek/TrustStrip"
-import { CheckoutButton } from "@/components/ui/CheckoutButton"
 import { DownloadButton } from "@/components/ui/DownloadButton"
-import { DownloadIcon, GitHubIcon } from "@/components/ui/icons"
+import { BlockIcon, CheckIcon, GitHubIcon, PlusIcon } from "@/components/ui/icons"
 import { NewsletterForm } from "@/components/ui/NewsletterForm"
 import type { Dictionary } from "@/lib/dictionaries"
 import { type Lang, localizedHref } from "@/lib/i18n"
@@ -26,10 +25,7 @@ export const HomeView = ({ dict, lang }: { dict: Dictionary; lang: Lang }) => {
 							</h1>
 							<p className="lede">{t.hero.lede}</p>
 							<div className="cta-row">
-								<a className="btn btn-pri" href="#install">
-									<DownloadIcon />
-									<span>{c.download}</span>
-								</a>
+								<DownloadButton label={c.download} />
 								<a
 									className="btn btn-sec"
 									href={GITHUB_URL}
@@ -40,6 +36,9 @@ export const HomeView = ({ dict, lang }: { dict: Dictionary; lang: Lang }) => {
 									<span>{c.viewSource}</span>
 								</a>
 							</div>
+							<p className="hero-note">
+								<RichText text={t.hero.requires} lang={lang} />
+							</p>
 						</div>
 						<div className="hero-art">
 							<DemoFrame label={t.hero.demoLabel} caption={t.hero.demoCaption} />
@@ -49,6 +48,43 @@ export const HomeView = ({ dict, lang }: { dict: Dictionary; lang: Lang }) => {
 			</section>
 
 			<TrustStrip items={t.trust} lang={lang} />
+
+			<section aria-labelledby="does-h">
+				<div className="wrap">
+					<div className="section-head">
+						<h2 id="does-h">{t.does.h2}</h2>
+						<p>{t.does.lede}</p>
+					</div>
+					<div className="cols2">
+						<div className="col-card can">
+							<div className="hd">
+								<span className="badge">{t.does.can.badge}</span>
+							</div>
+							<ul>
+								{t.does.can.items.map((item) => (
+									<li key={item}>
+										<CheckIcon className="gi" />
+										<span>{item}</span>
+									</li>
+								))}
+							</ul>
+						</div>
+						<div className="col-card cannot">
+							<div className="hd">
+								<span className="badge">{t.does.cannot.badge}</span>
+							</div>
+							<ul>
+								{t.does.cannot.items.map((item) => (
+									<li key={item}>
+										<BlockIcon className="gi" />
+										<span>{item}</span>
+									</li>
+								))}
+							</ul>
+						</div>
+					</div>
+				</div>
+			</section>
 
 			<section aria-labelledby="how-h">
 				<div className="wrap">
@@ -113,8 +149,31 @@ export const HomeView = ({ dict, lang }: { dict: Dictionary; lang: Lang }) => {
 							<RichText text={t.pricing.aside} lang={lang} />
 						</p>
 						<div className="cta-row">
-							<CheckoutButton label={t.pricing.button} />
+							<Link className="btn btn-pri" href={localizedHref(lang, "/pricing")}>
+								<span>{t.pricing.button}</span>
+							</Link>
 						</div>
+					</div>
+				</div>
+			</section>
+
+			<section aria-labelledby="faq-h">
+				<div className="wrap">
+					<div className="section-head">
+						<h2 id="faq-h">{t.faq.h2}</h2>
+					</div>
+					<div className="faq">
+						{t.faq.items.map((item) => (
+							<details key={item.q}>
+								<summary>
+									<span>{item.q}</span>
+									<PlusIcon className="pm" />
+								</summary>
+								<p className="ans">
+									<RichText text={item.a} lang={lang} />
+								</p>
+							</details>
+						))}
 					</div>
 				</div>
 			</section>

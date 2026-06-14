@@ -4,7 +4,8 @@ import { type Lang, localizedHref } from "@/lib/i18n"
 
 // Inline markdown used inside dictionary strings: **bold**, `code`, and
 // [text](url). Internal links (starting with "/") are localized to the current
-// locale; external links open in a new tab. Plain text in — never raw HTML.
+// locale; http(s) links open in a new tab; other schemes (mailto:, tel:) render
+// as a plain link. Plain text in — never raw HTML.
 export const renderRichText = (text: string, lang: Lang): ReactNode[] => {
 	const nodes: ReactNode[] = []
 	const pattern = /\[([^\]]+)\]\(([^)]+)\)|`([^`]+)`|\*\*([^*]+)\*\*/g
@@ -16,7 +17,13 @@ export const renderRichText = (text: string, lang: Lang): ReactNode[] => {
 		if (index > lastIndex) nodes.push(text.slice(lastIndex, index))
 		const [whole, linkText, linkUrl, code, bold] = match
 		if (linkText !== undefined && linkUrl !== undefined) {
-			if (/^https?:/.test(linkUrl)) {
+			if (linkUrl.startsWith("/")) {
+				nodes.push(
+					<Link key={key++} href={localizedHref(lang, linkUrl)}>
+						{linkText}
+					</Link>,
+				)
+			} else if (/^https?:/.test(linkUrl)) {
 				nodes.push(
 					<a key={key++} href={linkUrl} target="_blank" rel="noopener noreferrer">
 						{linkText}
@@ -24,9 +31,9 @@ export const renderRichText = (text: string, lang: Lang): ReactNode[] => {
 				)
 			} else {
 				nodes.push(
-					<Link key={key++} href={localizedHref(lang, linkUrl)}>
+					<a key={key++} href={linkUrl}>
 						{linkText}
-					</Link>,
+					</a>,
 				)
 			}
 		} else if (code !== undefined) {

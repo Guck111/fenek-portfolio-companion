@@ -1,4 +1,12 @@
-import { BUILDING_PRO_URL, GITHUB_URL, RELEASES_LATEST_URL } from "@/lib/site"
+import {
+	BUILDING_PRO_URL,
+	CLAUDE_DESKTOP_URL,
+	GITHUB_LICENSE_URL,
+	GITHUB_URL,
+	RELEASES_LATEST_URL,
+	SUPPORT_EMAIL,
+	SUPPORT_MAILTO,
+} from "@/lib/site"
 
 // English is the source dictionary: it defines the Dictionary type that every
 // other locale must satisfy. Strings may use inline markdown (**bold**, `code`,
@@ -6,6 +14,7 @@ import { BUILDING_PRO_URL, GITHUB_URL, RELEASES_LATEST_URL } from "@/lib/site"
 const en = {
 	nav: {
 		security: "Security",
+		pricing: "Pricing",
 		install: "Install",
 		changelog: "Changelog",
 		github: "GitHub",
@@ -29,9 +38,12 @@ const en = {
 		colSource: "Source",
 		home: "Home",
 		security: "Security",
+		pricing: "Pricing",
 		install: "Install",
 		changelog: "Changelog",
 		privacy: "Privacy",
+		terms: "Terms",
+		refund: "Refunds",
 		github: "GitHub",
 		license: "License (MIT)",
 		support: "Support",
@@ -52,6 +64,7 @@ const en = {
 			eyebrow: "Read-only MCP server · for Claude Desktop",
 			h1: "Ask Claude about your portfolio",
 			lede: "Read-only — it never trades or gives advice. Runs on your machine; your keys never leave your computer.",
+			requires: `Runs as an extension inside the free [Claude Desktop](${CLAUDE_DESKTOP_URL}) app — macOS and Windows.`,
 			demoLabel: "Claude Desktop · Fenek",
 			demoCaption: "Live demo coming soon",
 		},
@@ -61,6 +74,28 @@ const en = {
 			"Zero telemetry",
 			"Open source (MIT)",
 		],
+		does: {
+			h2: "What it does — and what it never does",
+			lede: "Fenek reads. That’s the whole job — it has no code path that can move money or place an order.",
+			can: {
+				badge: "Does",
+				items: [
+					"Reads positions, dividends, transactions, and order history across your brokers",
+					"Reads Bybit spot, derivatives, and Earn — plus on-chain wallet balances by public address",
+					"Builds one cross-broker overview and answers your questions in plain language",
+					"Runs locally inside Claude Desktop — your keys stay in your OS keychain",
+				],
+			},
+			cannot: {
+				badge: "Never does",
+				items: [
+					"Place, change, or cancel an order",
+					"Move, deposit, or withdraw funds",
+					"Give buy, sell, or rebalancing advice",
+					"Send your data anywhere — no servers, no telemetry, no tracking",
+				],
+			},
+		},
 		how: {
 			h2: "How it works",
 			lede: "Three steps, no backend. Everything runs locally inside Claude Desktop.",
@@ -105,7 +140,7 @@ const en = {
 		pricing: {
 			badge: "Fenek Pro",
 			h2: "Crypto is Pro. Classic brokers free forever.",
-			body: "Crypto features — reading your Bybit and on-chain wallet balances — are part of Fenek Pro, under $5/mo. Classic brokers like Trading 212 and the cross-broker overview are free forever, and everything stays open source.",
+			body: "Crypto features — reading your Bybit and on-chain wallet balances — are part of Fenek Pro at $4.99/mo. Classic brokers like Trading 212 and the cross-broker overview are free forever, and everything stays open source.",
 			aside: `Prefer full anonymity? [Build the Pro features from source](${BUILDING_PRO_URL}) for free — no license, no checkout.`,
 			button: "Get Fenek Pro",
 		},
@@ -114,6 +149,39 @@ const en = {
 			h2: "Get Fenek for Claude Desktop",
 			lede: "One file, double-click to install. No account, no backend.",
 			guide: "Installation guide →",
+		},
+		faq: {
+			h2: "Questions",
+			items: [
+				{
+					q: "Is it safe to give Fenek my API keys?",
+					a: "Your keys go straight into Claude Desktop’s OS keychain (macOS Keychain / Windows Credential Manager), marked sensitive — Fenek never logs or prints them. It’s read-only and fully open source, so you can read every line. When you create a key, use read-only permissions. [See the security page](/security).",
+				},
+				{
+					q: "Can Fenek place trades or move my money?",
+					a: "No. Fenek has no trading or withdrawal code at all — it can only read. It never places orders, moves funds, or gives buy or sell advice.",
+				},
+				{
+					q: "Do I need anything besides Fenek?",
+					a: `Yes — the free [Claude Desktop](${CLAUDE_DESKTOP_URL}) app for macOS or Windows. Fenek installs into it as an extension; there is no separate account or backend.`,
+				},
+				{
+					q: "What does it cost?",
+					a: `Classic brokers like Trading 212 and the cross-broker overview are free forever. The crypto sources — Bybit and on-chain wallets — are part of Fenek Pro at $4.99/mo. You can also [build Pro from source](${BUILDING_PRO_URL}) for free.`,
+				},
+				{
+					q: "How do I cancel Pro?",
+					a: "Anytime, in the Polar customer portal — it is a simple monthly subscription with no lock-in, billed by Polar as merchant of record.",
+				},
+				{
+					q: "Which sources are supported?",
+					a: "Trading 212, Bybit (spot, derivatives, and Earn), and on-chain wallets for Solana, TON, Bitcoin, Litecoin, and Dogecoin. Want another? Vote for it in the Supported sources section above.",
+				},
+				{
+					q: "Does Fenek send my data anywhere?",
+					a: "No analytics, no telemetry. The only outbound traffic is your brokers’ APIs, a weekly version check you can switch off, and — on Pro only — a monthly license check. [The security page lists all four](/security).",
+				},
+			],
 		},
 	},
 	security: {
@@ -217,6 +285,15 @@ const en = {
 			demoLabel: "Installing Fenek",
 			demoCaption: "Install walkthrough coming soon",
 		},
+		requirements: {
+			h2: "What you need",
+			items: [
+				`The free [Claude Desktop](${CLAUDE_DESKTOP_URL}) app for macOS or Windows — Fenek runs inside it.`,
+				"Read-only API keys for the brokers you use (Trading 212, Bybit). Crypto wallets need only public addresses.",
+				"A [Fenek Pro](/pricing) subscription ($4.99/mo) only if you want the crypto sources — classic brokers are free.",
+				"Nothing else — no separate account, no backend, no command line.",
+			],
+		},
 		steps: {
 			h2: "Step by step",
 			items: [
@@ -285,6 +362,128 @@ const en = {
 		},
 		body: `Changed your mind? No problem. Crypto features are part of Fenek Pro, but you can always [build them from source](${BUILDING_PRO_URL}) for free — no license, no checkout. Classic brokers like Trading 212 stay free forever.`,
 		cta: { retry: "Get Fenek Pro", home: "Back to home" },
+	},
+	pricing: {
+		meta: {
+			title: "Pricing",
+			description:
+				"Classic brokers are free forever. Crypto sources are Fenek Pro — $4.99/mo, cancel anytime. Everything is open source, and you can build Pro from source for free.",
+		},
+		intro: {
+			eyebrow: "Pricing",
+			h1: "Simple pricing",
+			sub: "Classic brokers and the cross-broker overview are free forever. The crypto sources are Fenek Pro — $4.99 a month, cancel anytime. It is all open source, so you can build Pro yourself for free.",
+		},
+		plans: {
+			free: {
+				name: "Free",
+				price: "$0",
+				period: "forever",
+				tagline: "Classic brokers and the whole cross-broker overview.",
+				cta: "Download Fenek",
+				features: [
+					"Trading 212 — positions, pies, dividends, transactions, order history",
+					"Every future classic broker (IBKR, eToro, …) as it ships",
+					"Cross-broker portfolio overview and analytics",
+					"Runs locally · keys in your OS keychain · zero telemetry",
+					"Open source (MIT)",
+				],
+			},
+			pro: {
+				name: "Fenek Pro",
+				price: "$4.99",
+				period: "per month",
+				badge: "All sources",
+				tagline: "Everything in Free, plus every crypto source.",
+				cta: "Get Fenek Pro",
+				features: [
+					"Everything in Free",
+					"Bybit — spot, derivatives, and Earn",
+					"On-chain wallets — Solana, TON, Bitcoin, Litecoin, Dogecoin",
+					"All future crypto exchanges and chains",
+					"Cancel anytime · billed monthly by Polar",
+				],
+			},
+		},
+		buildAside: `Prefer full anonymity? [Build the Pro features from source](${BUILDING_PRO_URL}) for free — no license, no checkout.`,
+		terms:
+			"Fenek Pro is a monthly subscription billed by Polar, our merchant of record — your card details never reach us. Cancel anytime; there is no lock-in. See [Refunds & cancellation](/refund).",
+	},
+	terms: {
+		meta: {
+			title: "Terms of Service",
+			description:
+				"Plain-language terms for using Fenek and Fenek Pro: open source, read-only, not financial advice, billed by Polar.",
+		},
+		intro: {
+			eyebrow: "Legal",
+			h1: "Terms of Service",
+			sub: "The plain-language terms for using Fenek and Fenek Pro.",
+		},
+		sections: [
+			{
+				h2: "The software",
+				body: `Fenek Portfolio Companion is open-source software under the [MIT License](${GITHUB_LICENSE_URL}). It runs locally inside Claude Desktop and is read-only — it reads your data and never places trades, moves funds, or cancels orders.`,
+			},
+			{
+				h2: "Not financial advice",
+				body: "Fenek is a data tool, not a financial adviser. Nothing it shows is investment, tax, or legal advice, and figures it displays may be incomplete or delayed. Your decisions are your own.",
+			},
+			{
+				h2: "Your accounts and keys",
+				body: "You connect your own broker and exchange API keys using read-only permissions. You are responsible for keeping them safe and for following each provider’s own terms. Keys are stored only in your operating system’s keychain through Claude Desktop; see the [Security page](/security).",
+			},
+			{
+				h2: "Fenek Pro",
+				body: "Fenek Pro is an optional paid subscription that unlocks the crypto sources, billed by Polar at $4.99/mo. See [Pricing](/pricing) and the [Refunds & cancellation policy](/refund). You can also build the Pro features from source for free — no payment required.",
+			},
+			{
+				h2: "Acceptable use",
+				body: "Use Fenek to read your own portfolio data. Do not use it to break any broker’s or exchange’s terms, or any applicable law.",
+			},
+			{
+				h2: "Warranty and liability",
+				body: "Fenek is provided “as is”, without warranty of any kind, to the maximum extent permitted by law. To that same extent, the authors are not liable for any loss or damage arising from its use.",
+			},
+			{
+				h2: "Changes to these terms",
+				body: "These terms may change over time; the current version always lives on this page. Material changes affecting Fenek Pro will be communicated to subscribers.",
+			},
+			{
+				h2: "Contact",
+				body: `Questions about these terms? Email [${SUPPORT_EMAIL}](${SUPPORT_MAILTO}).`,
+			},
+		],
+	},
+	refund: {
+		meta: {
+			title: "Refunds & cancellation",
+			description:
+				"How Fenek Pro billing, cancellation, and refunds work. Cancel anytime, no lock-in — and the Pro features are always free to build from source.",
+		},
+		intro: {
+			eyebrow: "Legal",
+			h1: "Refunds & cancellation",
+			sub: "How Fenek Pro billing, cancellation, and refunds work.",
+		},
+		sections: [
+			{
+				h2: "Cancel anytime",
+				body: "Fenek Pro is a monthly subscription with no lock-in. Cancel anytime in the Polar customer portal — you keep Pro until the end of the period you have already paid for, and it simply stops renewing after that.",
+			},
+			{
+				h2: "Refunds",
+				body: `Payments are handled by Polar, our merchant of record. If something went wrong or Pro is not what you expected, email [${SUPPORT_EMAIL}](${SUPPORT_MAILTO}) within 14 days of a charge and we will arrange a refund with Polar. If you are an EU consumer, your statutory rights still apply.`,
+			},
+			{
+				h2: "You can always use Pro for free",
+				body: `You never have to pay to use the Pro features — you can [build them from source](${BUILDING_PRO_URL}) for free. The classic brokers stay free forever.`,
+			},
+			{
+				h2: "Billing questions",
+				body: `Manage your payment details and invoices in the Polar customer portal, or email [${SUPPORT_EMAIL}](${SUPPORT_MAILTO}).`,
+			},
+		],
 	},
 }
 
