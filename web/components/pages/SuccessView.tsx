@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { SiteShell } from "@/components/fenek/SiteShell"
+import { DownloadButton } from "@/components/ui/DownloadButton"
 import type { Dictionary } from "@/lib/dictionaries"
 import { type Lang, localizedHref } from "@/lib/i18n"
 import { RichText } from "@/lib/markdown"
@@ -21,6 +22,7 @@ export const SuccessView = ({ dict, lang }: { dict: Dictionary; lang: Lang }) =>
 				<div className="wrap">
 					<div className="section-head">
 						<h2>{t.activate.h2}</h2>
+						<p>{t.activate.lead}</p>
 					</div>
 					<div className="prose">
 						<ol className="numbered">
@@ -32,6 +34,9 @@ export const SuccessView = ({ dict, lang }: { dict: Dictionary; lang: Lang }) =>
 								</li>
 							))}
 						</ol>
+					</div>
+					<div className="cta-row">
+						<DownloadButton label={t.activate.download} />
 					</div>
 				</div>
 			</section>
