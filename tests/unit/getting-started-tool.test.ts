@@ -31,6 +31,7 @@ describe("fenek_getting_started tool", () => {
     expect(result.isError ?? false).toBe(false)
     expect(text).toMatch(/read-only/i)
     expect(text).toMatch(/Trading 212/i)
+    expect(text).toMatch(/Interactive Brokers/i)
     expect(text).toMatch(/Solana/i)
     expect(text).toMatch(/\bTON\b/)
     expect(text).toMatch(/Bybit/i)
