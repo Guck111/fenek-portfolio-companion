@@ -65,4 +65,24 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ github.ref_name }}
         run: |
-          gh release create "$TAG" ./*.mcpb --title "$TAG" --notes "See CHANGELOG.md for release notes. Verify provenance with: gh attestation verify <file>.mcpb --repo Guck111/fenek-portfolio-companion"
+          # Release notes = this version's CHANGELOG section (between "## [<version>]"
+          # and the next "## [" heading) plus a provenance footer. TAG comes from
+          # env (not inlined), and the awk program is a fixed literal — the tag is
+          # only passed as a quoted -v value and to gh, never into code.
+          version="${TAG#v}"
+          notes="$(mktemp)"
+          awk -v v="$version" '
+            index($0, "## [" v "]") == 1 { grab = 1; next }
+            grab && /^## \[/ { exit }
+            grab { print }
+          ' CHANGELOG.md > "$notes"
+          if [ ! -s "$notes" ]; then echo "See CHANGELOG.md for release notes." > "$notes"; fi
+          {
+            echo
+            echo "---"
+            echo "Verify provenance:"
+            echo '```'
+            echo "gh attestation verify fenek-portfolio-companion.mcpb --repo Guck111/fenek-portfolio-companion"
+            echo '```'
+          } >> "$notes"
+          gh release create "$TAG" ./*.mcpb --title "$TAG" --notes-file "$notes"
