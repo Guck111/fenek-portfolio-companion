@@ -331,15 +331,18 @@ const en = {
 		intro: {
 			eyebrow: "Fenek Pro",
 			h1: "You’re Pro now",
-			sub: "Payment received. One step left — paste your license key into the extension.",
+			sub: "Payment received. Install the free Fenek extension if you haven’t, then paste your license key in.",
 		},
 		activate: {
 			h2: "Activate your license",
+			lead: "Fenek Pro is a license key for the free Fenek extension — not a separate download. Install Fenek first if you haven’t, then paste your key in.",
 			steps: [
+				"**Install Fenek** if you haven’t yet — download the latest version below and double-click it.",
 				"Find your license key — Polar emailed it to you, and it’s in your Polar customer portal.",
 				"In Claude Desktop, open **Settings → Extensions → Fenek** and paste it into the **Fenek Pro · License key** field.",
 				"That’s it — your crypto sources (Bybit, on-chain wallets) unlock. The key is stored in your OS keychain and re-checked about once a month.",
 			],
+			download: "Download the latest Fenek",
 		},
 		manage: {
 			h2: "Manage your subscription",
@@ -405,6 +408,7 @@ const en = {
 				],
 			},
 		},
+		note: "Fenek Pro is a license key for the Fenek extension — install the free app first, then paste your key in. There is no separate Pro download.",
 		buildAside: `Prefer full anonymity? [Build the Pro features from source](${BUILDING_PRO_URL}) for free — no license, no checkout.`,
 		terms:
 			"Fenek Pro is a monthly subscription billed by Polar, our merchant of record — your card details never reach us. Cancel anytime; there is no lock-in. See [Refunds & cancellation](/refund).",
