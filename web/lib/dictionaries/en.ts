@@ -3,6 +3,7 @@ import {
 	CLAUDE_DESKTOP_URL,
 	GITHUB_LICENSE_URL,
 	GITHUB_URL,
+	POLAR_PORTAL_URL,
 	RELEASES_LATEST_URL,
 	SUPPORT_EMAIL,
 	SUPPORT_MAILTO,
@@ -335,11 +336,11 @@ const en = {
 		},
 		activate: {
 			h2: "Activate your license",
+			keyNote: `**Your license key is in your inbox** — Polar just emailed it to you. You can also copy it any time from your [Polar customer portal](${POLAR_PORTAL_URL}).`,
 			lead: "Fenek Pro is a license key for the free Fenek extension — not a separate download. Install Fenek first if you haven’t, then paste your key in.",
 			steps: [
 				"**Install Fenek** if you haven’t yet — download the latest version below and double-click it.",
-				"Find your license key — Polar emailed it to you, and it’s in your Polar customer portal.",
-				"In Claude Desktop, open **Settings → Extensions → Fenek** and paste it into the **Fenek Pro · License key** field.",
+				"In Claude Desktop, open **Settings → Extensions → Fenek** and paste your key into the **Fenek Pro · License key** field.",
 				"That’s it — your crypto sources (Bybit, on-chain wallets) unlock. The key is stored in your OS keychain and re-checked about once a month.",
 			],
 			download: "Download the latest Fenek",

@@ -3,6 +3,7 @@ import {
 	CLAUDE_DESKTOP_URL,
 	GITHUB_LICENSE_URL,
 	GITHUB_URL,
+	POLAR_PORTAL_URL,
 	RELEASES_LATEST_URL,
 	SUPPORT_EMAIL,
 	SUPPORT_MAILTO,
@@ -330,11 +331,11 @@ export const ru: Dictionary = {
 		},
 		activate: {
 			h2: "Активируйте лицензию",
+			keyNote: `**Ваш лицензионный ключ — в почте** — Polar только что прислал его. Скопировать его в любой момент можно в [Polar customer portal](${POLAR_PORTAL_URL}).`,
 			lead: "Fenek Pro — это лицензионный ключ для бесплатного расширения Fenek, а не отдельная загрузка. Сначала установите Fenek, если ещё нет, затем вставьте ключ.",
 			steps: [
 				"**Установите Fenek**, если ещё нет — скачайте последнюю версию ниже и дважды кликните по ней.",
-				"Найдите лицензионный ключ — Polar прислал его на почту, и он есть в вашем Polar customer portal.",
-				"В Claude Desktop откройте **Settings → Extensions → Fenek** и вставьте его в поле **Fenek Pro · License key**.",
+				"В Claude Desktop откройте **Settings → Extensions → Fenek** и вставьте ключ в поле **Fenek Pro · License key**.",
 				"Готово — крипто-источники (Bybit, on-chain кошельки) разблокированы. Ключ хранится в хранилище ключей ОС и перепроверяется примерно раз в месяц.",
 			],
 			download: "Скачать последнюю версию Fenek",

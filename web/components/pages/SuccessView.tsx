@@ -20,6 +20,9 @@ export const SuccessView = ({ dict, lang }: { dict: Dictionary; lang: Lang }) =>
 
 			<section className="content-section">
 				<div className="wrap">
+					<p className="note-box">
+						<RichText text={t.activate.keyNote} lang={lang} />
+					</p>
 					<div className="section-head">
 						<h2>{t.activate.h2}</h2>
 						<p>{t.activate.lead}</p>

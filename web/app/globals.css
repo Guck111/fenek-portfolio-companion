@@ -1746,7 +1746,7 @@ section[id] {
 	line-height: 1.6;
 	color: var(--dim);
 }
-.plan-note {
+.note-box {
 	margin: 26px 0 0;
 	max-width: var(--measure);
 	padding: 14px 18px;
