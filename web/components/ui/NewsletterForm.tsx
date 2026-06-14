@@ -5,6 +5,7 @@ type NewsletterFormProps = {
 	buttonLabel?: string
 	placeholder?: string
 	ariaLabel?: string
+	className?: string
 	// Optional free-text field posted as Buttondown subscriber metadata
 	// (name must be `metadata__<key>`). Used by the "vote for the next source" form.
 	extraField?: { name: string; label: string; placeholder: string }
@@ -17,10 +18,11 @@ export const NewsletterForm = ({
 	buttonLabel = "Get release notes",
 	placeholder = "you@example.com",
 	ariaLabel = "Email address",
+	className = "",
 	extraField,
 }: NewsletterFormProps) => (
 	<form
-		className="newsletter"
+		className={`newsletter ${className}`.trim()}
 		action={`https://buttondown.com/api/emails/embed-subscribe/${BUTTONDOWN_USERNAME}`}
 		method="post"
 		target="_blank"

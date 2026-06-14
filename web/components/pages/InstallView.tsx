@@ -80,6 +80,7 @@ export const InstallView = ({ dict, lang }: { dict: Dictionary; lang: Lang }) =>
 						buttonLabel={t.updates.button}
 						placeholder={c.emailPlaceholder}
 						ariaLabel={c.emailLabel}
+						className="mt-lg"
 					/>
 				</div>
 			</section>

@@ -1337,7 +1337,6 @@ section.alt {
 	gap: 10px;
 	flex-wrap: wrap;
 	max-width: 480px;
-	margin-top: 22px;
 }
 .newsletter-input {
 	flex: 1 1 220px;
