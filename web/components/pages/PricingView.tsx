@@ -61,7 +61,7 @@ export const PricingView = ({ dict, lang }: { dict: Dictionary; lang: Lang }) =>
 						</div>
 					</div>
 
-					<p className="plan-note">{t.note}</p>
+					<p className="note-box">{t.note}</p>
 					<p className="plan-aside">
 						<RichText text={t.buildAside} lang={lang} />
 					</p>
