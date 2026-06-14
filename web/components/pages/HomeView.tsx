@@ -119,7 +119,7 @@ export const HomeView = ({ dict, lang }: { dict: Dictionary; lang: Lang }) => {
 							</div>
 						))}
 					</div>
-					<div className="vote-row">
+					<div className="vote-row mt-xl">
 						<p className="kicker">{t.sources.voteKicker}</p>
 						<NewsletterForm
 							tag="next-broker"

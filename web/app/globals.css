@@ -446,7 +446,6 @@ section.alt {
 }
 
 .chips {
-	margin-top: 28px;
 	display: flex;
 	gap: 9px;
 	flex-wrap: wrap;
@@ -1317,7 +1316,6 @@ section.alt {
 }
 .chips-center {
 	justify-content: center;
-	margin-top: 0;
 }
 .chip-link {
 	text-decoration: none;
@@ -1401,7 +1399,6 @@ section.alt {
 	margin-top: 10px;
 }
 .vote-row {
-	margin-top: 34px;
 	max-width: 520px;
 }
 .vote-row .kicker {
@@ -1736,21 +1733,19 @@ section[id] {
 	justify-content: center;
 }
 .plan-aside {
-	margin: 28px 0 0;
 	max-width: var(--measure);
 	font-size: 15px;
 	line-height: 1.6;
 	color: var(--soft);
 }
 .plan-terms {
-	margin: 14px 0 0;
 	max-width: var(--measure);
 	font-size: 13.5px;
 	line-height: 1.6;
 	color: var(--dim);
 }
-/* note-box is a pure visual component — no layout margin; callers add a
-   dedicated spacing class (.pricing-note, .success-keynote, …) */
+/* note-box is a pure visual component — no layout margin; callers compose
+   spacing utilities (.mt-*, .mb-*) in markup */
 .note-box {
 	max-width: var(--measure);
 	padding: 14px 18px;
@@ -1761,19 +1756,6 @@ section[id] {
 	font-size: 14.5px;
 	line-height: 1.6;
 	color: var(--ink);
-}
-.pricing-note {
-	margin-top: 26px;
-}
-
-/* ============================================================
-   Success page — page-specific spacing (kept off shared primitives)
-   ============================================================ */
-.success-keynote {
-	margin: 0 0 32px;
-}
-.success-actions {
-	margin-top: 24px;
 }
 
 /* ============================================================

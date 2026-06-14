@@ -20,7 +20,7 @@ export const SuccessView = ({ dict, lang }: { dict: Dictionary; lang: Lang }) =>
 
 			<section className="content-section">
 				<div className="wrap">
-					<p className="note-box success-keynote">
+					<p className="note-box mb-xl">
 						<RichText text={t.activate.keyNote} lang={lang} />
 					</p>
 					<div className="section-head mb-xl">
@@ -38,7 +38,7 @@ export const SuccessView = ({ dict, lang }: { dict: Dictionary; lang: Lang }) =>
 							))}
 						</ol>
 					</div>
-					<div className="cta-row success-actions">
+					<div className="cta-row mt-lg">
 						<DownloadButton label={t.activate.download} />
 					</div>
 				</div>
@@ -52,7 +52,7 @@ export const SuccessView = ({ dict, lang }: { dict: Dictionary; lang: Lang }) =>
 					<div className="prose">
 						<p>{t.manage.body}</p>
 					</div>
-					<div className="cta-row success-actions">
+					<div className="cta-row mt-lg">
 						<a
 							className="btn btn-sec"
 							href={POLAR_PORTAL_URL}
@@ -63,7 +63,7 @@ export const SuccessView = ({ dict, lang }: { dict: Dictionary; lang: Lang }) =>
 						</a>
 					</div>
 					<p className="newsletter-note">{t.note}</p>
-					<div className="cta-row success-actions">
+					<div className="cta-row mt-lg">
 						<Link className="install-guide" href={localizedHref(lang, "/")}>
 							{t.cta.home}
 						</Link>
