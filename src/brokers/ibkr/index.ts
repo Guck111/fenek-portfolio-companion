@@ -118,7 +118,10 @@ export function mapAccount(
     accountId: info.accountId,
     currency,
     cash: money(cashAmount, currency),
-    totalValue: money(equity?.total ?? 0, currency),
+    // Prefer the equity-summary NAV; if that section is absent fall back to cash so
+    // the account never reports a 0 total while holding cash (which would understate
+    // the cross-broker overview). A correctly configured Flex Query includes NAV.
+    totalValue: money(equity?.total ?? cashAmount, currency),
     ...(equity?.stock !== undefined ? { invested: money(equity.stock, currency) } : {}),
   }
 }
@@ -126,39 +129,11 @@ export function mapAccount(
 const DIVIDEND_TYPES = new Set(["Dividends", "Payment In Lieu Of Dividends"])
 const WITHHOLDING_TYPE = "Withholding Tax"
 
-export function mapDividends(rows: readonly CashTransactionType[]): readonly Dividend[] {
-  // Index withholding-tax rows by symbol+date so each dividend can claim its pair.
-  const taxesByKey = new Map<string, CashTransactionType[]>()
-  for (const row of rows) {
-    if (row.type !== WITHHOLDING_TYPE) continue
-    const key = `${row.symbol ?? ""}|${dateKey(row.dateTime)}`
-    const bucket = taxesByKey.get(key)
-    if (bucket === undefined) taxesByKey.set(key, [row])
-    else bucket.push(row)
-  }
-
-  const dividends: Dividend[] = []
-  for (const row of rows) {
-    if (!DIVIDEND_TYPES.has(row.type)) continue
-    const key = `${row.symbol ?? ""}|${dateKey(row.dateTime)}`
-    const tax = taxesByKey.get(key)?.shift()
-    const gross = row.amount
-    const taxAmount = tax?.amount ?? 0
-    const currency = row.currency
-    dividends.push({
-      brokerId: BROKER_ID,
-      id: row.transactionID ?? `${row.symbol ?? "DIV"}-${row.dateTime ?? ""}`,
-      ticker: row.symbol ?? "",
-      instrumentId: row.conid ?? row.symbol ?? "",
-      ...(row.description !== undefined ? { name: row.description } : {}),
-      grossAmount: money(gross, currency),
-      netAmount: money(gross + taxAmount, currency),
-      ...(taxAmount !== 0 ? { taxWithheld: money(Math.abs(taxAmount), currency) } : {}),
-      paidDate: row.dateTime ?? row.settleDate ?? "",
-      kind: row.type,
-    })
-  }
-  return dividends
+// Pairing key for a withholding-tax row and its dividend: symbol + date + currency.
+// Currency is part of the key so a tax in a different currency never nets against
+// the dividend (the server never silently sums across currencies).
+function pairingKey(row: CashTransactionType): string {
+  return `${row.symbol ?? ""}|${dateKey(row.dateTime)}|${row.currency}`
 }
 
 function classifyTransactionKind(type: string, amount: number): TransactionKind {
@@ -168,10 +143,52 @@ function classifyTransactionKind(type: string, amount: number): TransactionKind 
   return "other"
 }
 
-export function mapTransactions(rows: readonly CashTransactionType[]): readonly Transaction[] {
+// Splits cash-transaction rows into dividends and (non-dividend) transactions in a
+// single pass. A withholding-tax row is netted into its matching dividend; a tax row
+// with NO matching dividend in the statement (e.g. the dividend settled in a prior
+// Flex period, or a standalone reversal) is surfaced as a transaction rather than
+// silently dropped from both outputs.
+export function mapCashActivity(rows: readonly CashTransactionType[]): {
+  readonly dividends: readonly Dividend[]
+  readonly transactions: readonly Transaction[]
+} {
+  const taxesByKey = new Map<string, CashTransactionType[]>()
+  for (const row of rows) {
+    if (row.type !== WITHHOLDING_TYPE) continue
+    const key = pairingKey(row)
+    const bucket = taxesByKey.get(key)
+    if (bucket === undefined) taxesByKey.set(key, [row])
+    else bucket.push(row)
+  }
+
+  const consumedTax = new Set<CashTransactionType>()
+  const dividends: Dividend[] = []
+  for (const row of rows) {
+    if (!DIVIDEND_TYPES.has(row.type)) continue
+    const tax = taxesByKey.get(pairingKey(row))?.shift()
+    if (tax !== undefined) consumedTax.add(tax)
+    const taxAmount = tax?.amount ?? 0
+    const currency = row.currency
+    dividends.push({
+      brokerId: BROKER_ID,
+      id: row.transactionID ?? `${row.symbol ?? "DIV"}-${row.dateTime ?? ""}`,
+      ticker: row.symbol ?? "",
+      instrumentId: row.conid ?? row.symbol ?? "",
+      ...(row.description !== undefined ? { name: row.description } : {}),
+      grossAmount: money(row.amount, currency),
+      netAmount: money(row.amount + taxAmount, currency),
+      // taxWithheld is the amount ACTUALLY withheld: only a negative tax row is a
+      // charge. A positive (refund/reversal) row raises net pay and withholds nothing.
+      ...(taxAmount < 0 ? { taxWithheld: money(-taxAmount, currency) } : {}),
+      paidDate: row.dateTime ?? row.settleDate ?? "",
+      kind: row.type,
+    })
+  }
+
   const transactions: Transaction[] = []
   for (const row of rows) {
-    if (DIVIDEND_TYPES.has(row.type) || row.type === WITHHOLDING_TYPE) continue
+    if (DIVIDEND_TYPES.has(row.type)) continue
+    if (row.type === WITHHOLDING_TYPE && consumedTax.has(row)) continue
     transactions.push({
       brokerId: BROKER_ID,
       id: row.transactionID ?? `${row.type}-${row.dateTime ?? ""}`,
@@ -181,7 +198,8 @@ export function mapTransactions(rows: readonly CashTransactionType[]): readonly 
       ...(row.description !== undefined ? { description: row.description } : {}),
     })
   }
-  return transactions
+
+  return { dividends, transactions }
 }
 
 export function mapTrade(t: TradeType): IbkrTrade {
@@ -257,12 +275,13 @@ export function buildStatement(xml: string): ParsedFlexStatement {
       : {}),
   }
 
+  const cashActivity = mapCashActivity(cashTxRows)
   return {
     meta,
     account: mapAccount(info, equityRows, cashRows),
     positions: positionRows.map(mapPosition),
-    dividends: mapDividends(cashTxRows),
-    transactions: mapTransactions(cashTxRows),
+    dividends: cashActivity.dividends,
+    transactions: cashActivity.transactions,
     trades: tradeRows.map(mapTrade),
   }
 }

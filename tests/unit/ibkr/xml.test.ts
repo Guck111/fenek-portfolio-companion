@@ -64,6 +64,24 @@ describe("parseXml — core scanner", () => {
   })
 })
 
+describe("parseXml — hardening", () => {
+  it("leaves out-of-range numeric character references verbatim instead of crashing", () => {
+    // > 0x10FFFF (decimal and hex) and the surrogate range must not throw.
+    expect(parseXml(`<R a="&#x110000;"/>`).attrs["a"]).toBe("&#x110000;")
+    expect(parseXml(`<R a="&#1114112;"/>`).attrs["a"]).toBe("&#1114112;")
+    expect(parseXml(`<R a="&#xD800;"/>`).attrs["a"]).toBe("&#xD800;")
+    expect(parseXml(`<M>&#xFFFFFF;</M>`).text).toBe("&#xFFFFFF;")
+    // valid references still decode
+    expect(parseXml(`<R a="&#65;&#x42;"/>`).attrs["a"]).toBe("AB")
+  })
+
+  it("keeps an attribute literally named __proto__ as an own property", () => {
+    const root = parseXml(`<R __proto__="x"/>`)
+    expect(Object.prototype.hasOwnProperty.call(root.attrs, "__proto__")).toBe(true)
+    expect(root.attrs["__proto__"]).toBe("x")
+  })
+})
+
 describe("parseSendRequestEnvelope", () => {
   const success = `<?xml version="1.0"?><FlexStatementResponse timestamp="x"><Status>Success</Status><ReferenceCode>1234567890</ReferenceCode><Url>https://gdcdyn.example/GetStatement</Url></FlexStatementResponse>`
 

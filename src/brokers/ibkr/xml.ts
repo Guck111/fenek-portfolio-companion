@@ -28,9 +28,16 @@ const NAMED_ENTITIES: Readonly<Record<string, string>> = {
   apos: "'",
 }
 
+// A code point String.fromCodePoint can render: in Unicode range and not a lone
+// surrogate. Out-of-range refs would make fromCodePoint throw a RangeError, so
+// they are left verbatim (treated like an unknown entity) instead of crashing.
+function isRenderableCodePoint(code: number): boolean {
+  return !Number.isNaN(code) && code >= 0 && code <= 0x10ffff && !(code >= 0xd800 && code <= 0xdfff)
+}
+
 // Decode the five predefined XML entities plus numeric character references
-// (&#NN; decimal, &#xHH; hex). Unknown entities are left verbatim rather than
-// dropped. Single linear pass — no nested expansion.
+// (&#NN; decimal, &#xHH; hex). Unknown or out-of-range entities are left verbatim
+// rather than dropped or thrown on. Single linear pass — no nested expansion.
 export function decodeEntities(value: string): string {
   if (!value.includes("&")) return value
   return value.replace(
@@ -38,11 +45,11 @@ export function decodeEntities(value: string): string {
     (whole, body: string) => {
       if (body.startsWith("#x") || body.startsWith("#X")) {
         const code = Number.parseInt(body.slice(2), 16)
-        return Number.isNaN(code) ? whole : String.fromCodePoint(code)
+        return isRenderableCodePoint(code) ? String.fromCodePoint(code) : whole
       }
       if (body.startsWith("#")) {
         const code = Number.parseInt(body.slice(1), 10)
-        return Number.isNaN(code) ? whole : String.fromCodePoint(code)
+        return isRenderableCodePoint(code) ? String.fromCodePoint(code) : whole
       }
       return NAMED_ENTITIES[body] ?? whole
     },
@@ -81,7 +88,9 @@ function parseTagBody(raw: string): { name: string; attrs: Record<string, string
   const name = raw.slice(nameStart, i)
   if (name.length === 0) throw new ValidationError("IBKR Flex XML: empty tag name")
 
-  const attrs: Record<string, string> = {}
+  // Null-prototype bag so an attribute literally named `__proto__` becomes a real
+  // own property (validated by zod) instead of silently writing the prototype slot.
+  const attrs = Object.create(null) as Record<string, string>
   while (i < len) {
     while (i < len && isWhitespace(raw[i])) i++
     if (i >= len || raw[i] === "/") break

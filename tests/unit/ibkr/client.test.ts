@@ -123,4 +123,26 @@ describe("IbkrFlexClient.fetchStatementXml", () => {
     expect(seen.length).toBeGreaterThan(0)
     expect(seen.every((ua) => ua !== null && ua.length > 0)).toBe(true)
   })
+
+  it("surfaces a persistent throttle (1018) as a RateLimitError, not a generic timeout", async () => {
+    const fetchMock = vi.fn((url: string) =>
+      Promise.resolve(
+        new Response(url.includes("/SendRequest") ? sendSuccess() : sendFail("1018"), {
+          status: 200,
+        }),
+      ),
+    )
+    vi.stubGlobal("fetch", fetchMock)
+
+    const client = new IbkrFlexClient({ token: "T", queryId: "Q" }, noSleep)
+    await expect(client.fetchStatementXml()).rejects.toBeInstanceOf(RateLimitError)
+  })
+
+  it("wraps a network failure into a typed BrokerApiError", async () => {
+    const fetchMock = vi.fn(() => Promise.reject(new TypeError("fetch failed")))
+    vi.stubGlobal("fetch", fetchMock)
+
+    const client = new IbkrFlexClient({ token: "T", queryId: "Q" }, noSleep)
+    await expect(client.fetchStatementXml()).rejects.toBeInstanceOf(BrokerApiError)
+  })
 })

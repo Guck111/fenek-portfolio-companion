@@ -5,8 +5,8 @@ import fs from "node:fs"
 
 import {
   buildStatement,
-  mapDividends,
-  mapTransactions,
+  mapAccount,
+  mapCashActivity,
   type ParsedFlexStatement,
 } from "../../../src/brokers/ibkr/index.js"
 import type { CashTransaction } from "../../../src/brokers/ibkr/schemas.js"
@@ -106,23 +106,124 @@ describe("single-account guard", () => {
   })
 })
 
-describe("mapDividends — unmatched tax", () => {
+describe("mapCashActivity — dividend without tax", () => {
   it("falls back to gross == net when no matching tax row exists", () => {
     const rows: CashTransaction[] = [
       { type: "Dividends", symbol: "KO", amount: 10, currency: "USD", dateTime: "20240301;120000" },
     ]
-    const [div] = mapDividends(rows)
-    expect(div?.grossAmount.amount).toBe(10)
-    expect(div?.netAmount.amount).toBe(10)
-    expect(div?.taxWithheld).toBeUndefined()
+    const { dividends } = mapCashActivity(rows)
+    expect(dividends[0]?.grossAmount.amount).toBe(10)
+    expect(dividends[0]?.netAmount.amount).toBe(10)
+    expect(dividends[0]?.taxWithheld).toBeUndefined()
   })
 })
 
-describe("mapTransactions — unknown type passthrough", () => {
+describe("mapCashActivity — unknown type passthrough", () => {
   it("routes an unrecognised action type to 'other' instead of throwing", () => {
     const rows: CashTransaction[] = [
       { type: "Brand New Action 2027", amount: 5, currency: "USD", dateTime: "20240301;120000" },
     ]
-    expect(mapTransactions(rows)[0]?.kind).toBe("other")
+    expect(mapCashActivity(rows).transactions[0]?.kind).toBe("other")
+  })
+})
+
+describe("mapCashActivity — orphan withholding tax is not lost", () => {
+  it("reports an unmatched withholding-tax charge as a transaction, not dropped", () => {
+    const rows: CashTransaction[] = [
+      {
+        type: "Withholding Tax",
+        symbol: "VOD",
+        amount: -3.6,
+        currency: "USD",
+        dateTime: "20240115;120000",
+        transactionID: "T1",
+      },
+    ]
+    const { dividends, transactions } = mapCashActivity(rows)
+    expect(dividends).toHaveLength(0)
+    // the −3.60 must survive somewhere
+    expect(transactions).toHaveLength(1)
+    expect(transactions[0]?.amount.amount).toBe(-3.6)
+  })
+
+  it("still consumes a paired tax (it does NOT also appear as a transaction)", () => {
+    const rows: CashTransaction[] = [
+      {
+        type: "Dividends",
+        symbol: "AAPL",
+        amount: 24,
+        currency: "USD",
+        dateTime: "20240115;120000",
+        transactionID: "D1",
+      },
+      {
+        type: "Withholding Tax",
+        symbol: "AAPL",
+        amount: -3.6,
+        currency: "USD",
+        dateTime: "20240115;120000",
+        transactionID: "W1",
+      },
+    ]
+    const { dividends, transactions } = mapCashActivity(rows)
+    expect(dividends).toHaveLength(1)
+    expect(dividends[0]?.netAmount.amount).toBeCloseTo(20.4)
+    expect(transactions).toHaveLength(0) // paired tax consumed, not double-counted
+  })
+})
+
+describe("mapCashActivity — withholding-tax refund (positive amount)", () => {
+  it("raises net pay and reports no amount withheld", () => {
+    const rows: CashTransaction[] = [
+      { type: "Dividends", symbol: "KO", amount: 10, currency: "USD", dateTime: "20240301;120000" },
+      {
+        type: "Withholding Tax",
+        symbol: "KO",
+        amount: 2,
+        currency: "USD",
+        dateTime: "20240301;120000",
+      },
+    ]
+    const div = mapCashActivity(rows).dividends[0]
+    expect(div?.netAmount.amount).toBe(12) // refund raises net
+    expect(div?.taxWithheld).toBeUndefined() // nothing was withheld, it was returned
+  })
+})
+
+describe("mapCashActivity — cross-currency tax never pairs", () => {
+  it("does not net a EUR tax against a USD dividend; the tax survives separately", () => {
+    const rows: CashTransaction[] = [
+      {
+        type: "Dividends",
+        symbol: "SAP",
+        amount: 10,
+        currency: "USD",
+        dateTime: "20240301;120000",
+      },
+      {
+        type: "Withholding Tax",
+        symbol: "SAP",
+        amount: -1,
+        currency: "EUR",
+        dateTime: "20240301;120000",
+      },
+    ]
+    const { dividends, transactions } = mapCashActivity(rows)
+    expect(dividends[0]?.netAmount).toEqual({ amount: 10, currency: "USD" }) // not netted
+    expect(dividends[0]?.taxWithheld).toBeUndefined()
+    expect(transactions).toHaveLength(1) // the EUR tax is an orphan → surfaced
+    expect(transactions[0]?.amount).toEqual({ amount: -1, currency: "EUR" })
+  })
+})
+
+describe("mapAccount — NAV fallback when EquitySummary is absent", () => {
+  it("uses base-summary cash for totalValue instead of reporting zero", () => {
+    const account = mapAccount(
+      { accountId: "U9", currency: "USD" },
+      [],
+      [{ currency: "BASE_SUMMARY", endingCash: 500 }],
+    )
+    expect(account.cash.amount).toBe(500)
+    expect(account.totalValue.amount).toBe(500) // not 0
   })
 })

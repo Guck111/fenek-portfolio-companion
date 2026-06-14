@@ -1,12 +1,9 @@
-import { createRequire } from "node:module"
-
+import { BUILD_VERSION } from "../../generated/build-info.js"
 import { AuthError, BrokerApiError, RateLimitError } from "../../utils/errors.js"
 
 import { parseSendRequestEnvelope, statementRootName } from "./xml.js"
 
-const require = createRequire(import.meta.url)
-const pkg = require("../../../package.json") as { version: string }
-const USER_AGENT = `fenek-portfolio-companion/${pkg.version}`
+const USER_AGENT = `fenek-portfolio-companion/${BUILD_VERSION}`
 
 const BROKER_ID = "ibkr"
 // Host honored from the <Url> returned by SendRequest for step 2; this base is
@@ -100,6 +97,7 @@ export class IbkrFlexClient {
     }
 
     const getUrl = `${url}?t=${encodeURIComponent(this.token)}&q=${encodeURIComponent(referenceCode)}&v=${FLEX_VERSION}`
+    let lastThrottleMessage: string | undefined
     for (let attempt = 0; attempt < MAX_POLLS; attempt++) {
       const body = await this.httpGet(getUrl)
       if (statementRootName(body) === "FlexQueryResponse") return body
@@ -110,17 +108,28 @@ export class IbkrFlexClient {
       if (!RETRY_CODES.has(code)) {
         throw mapFlexError(code, poll.errorMessage ?? "IBKR Flex GetStatement failed")
       }
+      if (code === "1018") lastThrottleMessage = poll.errorMessage ?? ""
       await this.sleep(code === "1018" ? THROTTLE_DELAY_MS : IN_PROGRESS_DELAY_MS)
     }
+    // A throttle that never cleared is a rate-limit, not a generation timeout — keep
+    // the RateLimitError directive (wait and retry) rather than a do-not-loop error.
+    if (lastThrottleMessage !== undefined) throw mapFlexError("1018", lastThrottleMessage)
     throw new BrokerApiError("IBKR Flex statement generation timed out after polling", BROKER_ID)
   }
 
   private async httpGet(url: string): Promise<string> {
-    const res = await fetch(url, {
-      headers: { "User-Agent": USER_AGENT },
-      redirect: "error",
-      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
-    })
+    let res: Response
+    try {
+      res = await fetch(url, {
+        headers: { "User-Agent": USER_AGENT },
+        redirect: "error",
+        signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+      })
+    } catch {
+      // Network failure (fetch → TypeError) or timeout (AbortSignal → DOMException).
+      // The URL carries the token, so it is never included in the error message.
+      throw new BrokerApiError("IBKR Flex is unreachable (network error or timeout)", BROKER_ID)
+    }
     if (res.status === 401 || res.status === 403) {
       throw new AuthError("IBKR Flex rejected the token", BROKER_ID)
     }
