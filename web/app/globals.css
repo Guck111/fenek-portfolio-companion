@@ -34,6 +34,18 @@
 	--measure: 68ch;
 	--radius: 14px;
 	--radius-sm: 9px;
+
+	/* spacing scale (multiples of 4) — drives the spacing utilities at end of file */
+	--space-2xs: 4px;
+	--space-xs: 8px;
+	--space-sm: 12px;
+	--space-md: 16px;
+	--space-lg: 24px;
+	--space-xl: 32px;
+	--space-2xl: 40px;
+	--space-3xl: 48px;
+	--space-4xl: 64px;
+	--space-5xl: 80px;
 }
 
 * {
@@ -1855,4 +1867,119 @@ section[id] {
 /* "which source" vote field — own row above the email + button */
 .newsletter-extra {
 	flex: 1 1 100%;
+}
+
+/* ============================================================
+   Spacing utilities — the ONLY place margins / vertical rhythm live.
+   Semantic & component classes stay margin-free; markup composes these.
+   Defined last so a utility always wins a single-class specificity tie.
+   ============================================================ */
+
+/* vertical rhythm via gap — handles dynamically rendered children */
+.stack-2xs {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-2xs);
+}
+.stack-xs {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-xs);
+}
+.stack-sm {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-sm);
+}
+.stack-md {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-md);
+}
+.stack-lg {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-lg);
+}
+.stack-xl {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-xl);
+}
+.stack-2xl {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-2xl);
+}
+.stack-3xl {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-3xl);
+}
+
+/* single-axis offsets for the one-off cases a stack does not cover */
+.mt-0 {
+	margin-top: 0;
+}
+.mt-2xs {
+	margin-top: var(--space-2xs);
+}
+.mt-xs {
+	margin-top: var(--space-xs);
+}
+.mt-sm {
+	margin-top: var(--space-sm);
+}
+.mt-md {
+	margin-top: var(--space-md);
+}
+.mt-lg {
+	margin-top: var(--space-lg);
+}
+.mt-xl {
+	margin-top: var(--space-xl);
+}
+.mt-2xl {
+	margin-top: var(--space-2xl);
+}
+.mt-3xl {
+	margin-top: var(--space-3xl);
+}
+.mt-4xl {
+	margin-top: var(--space-4xl);
+}
+.mt-5xl {
+	margin-top: var(--space-5xl);
+}
+.mb-0 {
+	margin-bottom: 0;
+}
+.mb-2xs {
+	margin-bottom: var(--space-2xs);
+}
+.mb-xs {
+	margin-bottom: var(--space-xs);
+}
+.mb-sm {
+	margin-bottom: var(--space-sm);
+}
+.mb-md {
+	margin-bottom: var(--space-md);
+}
+.mb-lg {
+	margin-bottom: var(--space-lg);
+}
+.mb-xl {
+	margin-bottom: var(--space-xl);
+}
+.mb-2xl {
+	margin-bottom: var(--space-2xl);
+}
+.mb-3xl {
+	margin-bottom: var(--space-3xl);
+}
+
+.mx-auto {
+	margin-left: auto;
+	margin-right: auto;
 }
