@@ -20,7 +20,7 @@
 
 # Fenek Portfolio Companion
 
-Read-only MCP server that aggregates your portfolio data across wallets, exchanges and brokers available in Europe — currently Trading 212, Interactive Brokers (end-of-day via Flex), Bybit, and Solana, TON, Bitcoin, Litecoin and Dogecoin wallets — and makes it available to Claude to read and organize. It is a data aggregator: it reads your own data and shows neutral, descriptive figures on it, never advice and never recommendations. It places no trades, holds no funds, and has no custody. Architected to add more sources without changing the core or existing adapters.
+Read-only MCP server that aggregates your portfolio data across wallets, exchanges and brokers available in Europe — currently Trading 212, Bybit, and Solana, TON, Bitcoin, Litecoin and Dogecoin wallets (Interactive Brokers coming soon) — and makes it available to Claude to read and organize. It is a data aggregator: it reads your own data and shows neutral, descriptive figures on it, never advice and never recommendations. It places no trades, holds no funds, and has no custody. Architected to add more sources without changing the core or existing adapters.
 
 > **NOT FINANCIAL ADVICE.** This is an informational tool. You are solely responsible for any decisions you make based on its output. The author is not a registered investment advisor in any jurisdiction. Read [DISCLAIMER.md](DISCLAIMER.md) before using.
 >
@@ -28,7 +28,7 @@ Read-only MCP server that aggregates your portfolio data across wallets, exchang
 >
 > **UNOFFICIAL.** Not affiliated with, endorsed by, or sponsored by Trading 212, Bybit, or any other broker, exchange, or wallet provider.
 >
-> **OPEN SOURCE.** MIT License, no telemetry, no affiliate relationships. Crypto features (Bybit, on-chain wallets) are part of paid Fenek Pro — under $5/mo (see [the website](https://fenek.tech)); classic brokers (Trading 212 and Interactive Brokers today, more to come) and the cross-broker overview are free forever; and building Pro from source stays officially free.
+> **OPEN SOURCE.** MIT License, no telemetry, no affiliate relationships. Crypto features (Bybit, on-chain wallets) are part of paid Fenek Pro — under $5/mo (see [the website](https://fenek.tech)); classic brokers (Trading 212 today, Interactive Brokers coming soon, more to come) and the cross-broker overview are free forever; and building Pro from source stays officially free.
 
 ## Supported sources
 
@@ -37,7 +37,7 @@ Every source is read-only, opt-in, and additive — configure only the ones you 
 | Source | Type | Tier | Auth |
 |---|---|---|---|
 | Trading 212 | Classic broker | Free | API key + secret (read-only scopes) |
-| Interactive Brokers | Classic broker — end-of-day via Flex | Free | Flex token + query ID (read-only) |
+| Interactive Brokers | Classic broker — end-of-day via Flex | Free | **Coming soon** — not yet configurable |
 | Bybit | Crypto exchange | Pro | API key + secret (read-only) |
 | On-chain wallets | Solana · TON · Bitcoin · Litecoin · Dogecoin | Pro | Public address (keyless) |
 
@@ -68,19 +68,9 @@ Whether your key belongs to a **demo** (paper) or **live** account is detected a
 Credentials are stored by Claude Desktop in your operating system's keychain (macOS Keychain / Windows Credential Manager). They are never logged, never written to disk by this server, and never transmitted anywhere except the Trading 212 API endpoints you configured. See [PRIVACY.md](PRIVACY.md).
 
 <details>
-<summary><strong>Interactive Brokers — optional</strong></summary>
+<summary><strong>Interactive Brokers — coming soon</strong></summary>
 
-You can also surface your **Interactive Brokers** account through the read-only **Flex Web Service** — no running gateway, no desktop app, no OAuth. Opt-in and additive — leave the fields blank to skip it.
-
-- **One-time setup in IBKR Client Portal:** create an **Activity Flex Query** (*Performance & Reports → Flex Queries*) that includes the sections **Open Positions, Net Asset Value, Cash Report, Cash Transactions** (and optionally **Trades**). Then enable the **Flex Web Service** (*Settings → Account Settings → Flex Web Service*) and generate a token.
-- **Flex token** — the read-only token from the Flex Web Service. You can scope its lifetime (6 hours up to a year) and optionally restrict it to an IP. Stored in your OS keychain. **It cannot place trades, move funds, or change anything** — Flex is read-only reporting by design.
-- **Flex Query ID** — the identifier of the Activity Flex Query above (not a secret).
-
-Notes and limitations:
-
-- **End-of-day, not live.** Flex statements are reporting data as of the last business day — positions and prices are the statement's marks, not a live intraday quote. Every IBKR tool result carries an `asOf` date so you know how fresh it is.
-- **One account.** A first-cut adapter reads a single account; if your Flex Query covers several, scope it to one in Client Portal.
-- **Read-only and not financial advice**, exactly like the rest of this server.
+Interactive Brokers support is **in the works** (read-only, end-of-day via the **Flex Web Service** — no running gateway, no desktop app, no OAuth). It is **not configurable in this release yet**, so no Interactive Brokers fields appear in settings and there is nothing to set up for it right now. It will ship once the field mapping is verified against a real account export.
 
 </details>
 
@@ -133,7 +123,7 @@ Notes and limitations:
 
 - Show positions, pies (incl. dividend totals and goal progress), transactions, dividends (incl. per-share amounts and interest-type events), executed-order history with realized P&L per fill, and all-time realized P&L of the account
 - Show exchange working hours (pre-market / after-hours / overnight sessions) for Trading 212 venues
-- Read Interactive Brokers (end-of-day, via the read-only Flex Web Service): positions, account NAV and cash, dividends with withholding tax netted, cash transactions, and raw trade history
+- _Coming soon:_ Interactive Brokers (end-of-day, via the read-only Flex Web Service) — positions, account NAV and cash, dividends with withholding tax, cash transactions, and trade history
 - Read on-chain crypto holdings (Solana, TON, Bitcoin, Litecoin, Dogecoin) by public address — keyless, valued in USD — plus look up USD prices for any watchlist coin
 - See open Jupiter (Solana) limit orders — legacy Trigger v1 only; current Limit Order V2 is private (see Crypto notes)
 - Read Bybit balances across **all** account types: Unified coins, Funding wallet, Earn / staked positions with APY, and total equity in USD
@@ -164,14 +154,14 @@ Notes and limitations:
 This server runs entirely on your machine and sends **zero telemetry**. No analytics,
 no error reporting, no usage statistics, no "phone home." The outbound network traffic
 is to the broker/exchange/price API endpoints you configure (e.g. Trading 212,
-the Interactive Brokers Flex Web Service, Bybit, DefiLlama, the Solana public RPC, mempool.space, blockcypher, tonapi, Jupiter),
+Bybit, DefiLlama, the Solana public RPC, mempool.space, blockcypher, tonapi, Jupiter),
 plus an opt-out weekly version check against api.github.com (only the latest release
 number is read; turn it off with `CHECK_UPDATES=false`). Your API keys are stored in your operating
 system's keychain by Claude Desktop, are never logged, and are transmitted only to the
 broker endpoints they belong to.
 
 Crypto features (Bybit, on-chain wallets) are part of paid Fenek Pro; classic
-brokers (Trading 212 and Interactive Brokers today, more to come) plus the cross-broker overview are
+brokers (Trading 212 today, Interactive Brokers coming soon, more to come) plus the cross-broker overview are
 free forever. On a standard build, a Pro subscriber's build makes exactly one extra
 outbound call: a monthly license check to api.polar.sh that transmits the
 license key and nothing else. Free users and source builds never make it, and
