@@ -16,9 +16,11 @@ export const InstallView = ({ dict, lang }: { dict: Dictionary; lang: Lang }) =>
 					<div className="hero-grid">
 						<div className="hero-text">
 							<p className="eyebrow">{t.hero.eyebrow}</p>
-							<h1 id="install-h">{t.hero.h1}</h1>
-							<p className="lede">{t.hero.lede}</p>
-							<div className="cta-row">
+							<h1 id="install-h" className="mt-md">
+								{t.hero.h1}
+							</h1>
+							<p className="lede mt-md">{t.hero.lede}</p>
+							<div className="cta-row mt-lg">
 								<DownloadButton label={c.download} />
 							</div>
 						</div>

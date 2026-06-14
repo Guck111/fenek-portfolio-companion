@@ -415,26 +415,17 @@ section.alt {
 	}
 }
 .hero h1.hero-name {
-	margin-top: 18px;
 	font-size: clamp(40px, 6vw, 66px);
 	font-weight: 400;
 	letter-spacing: -0.03em;
 }
 .hero .lede {
-	margin: 18px 0 0;
 	font-size: clamp(16.5px, 2vw, 19px);
 	line-height: 1.55;
 	color: var(--soft);
 	max-width: 46ch;
 }
-.hero .cta-row {
-	margin-top: 28px;
-	display: flex;
-	gap: 12px;
-	flex-wrap: wrap;
-}
 .hero-note {
-	margin: 16px 0 0;
 	font-size: 14px;
 	line-height: 1.5;
 	color: var(--soft);

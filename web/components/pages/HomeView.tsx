@@ -20,11 +20,11 @@ export const HomeView = ({ dict, lang }: { dict: Dictionary; lang: Lang }) => {
 					<div className="hero-grid">
 						<div className="hero-text">
 							<p className="eyebrow">{t.hero.eyebrow}</p>
-							<h1 id="hero-h" className="hero-name">
+							<h1 id="hero-h" className="hero-name mt-md">
 								{t.hero.h1}
 							</h1>
-							<p className="lede">{t.hero.lede}</p>
-							<div className="cta-row">
+							<p className="lede mt-md">{t.hero.lede}</p>
+							<div className="cta-row mt-lg">
 								<DownloadButton label={c.download} />
 								<a
 									className="btn btn-sec"
@@ -36,7 +36,7 @@ export const HomeView = ({ dict, lang }: { dict: Dictionary; lang: Lang }) => {
 									<span>{c.viewSource}</span>
 								</a>
 							</div>
-							<p className="hero-note">
+							<p className="hero-note mt-md">
 								<RichText text={t.hero.requires} lang={lang} />
 							</p>
 						</div>
