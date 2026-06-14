@@ -10,7 +10,7 @@ export const CheckoutCancelledView = ({ dict, lang }: { dict: Dictionary; lang: 
 	return (
 		<SiteShell dict={dict} lang={lang}>
 			<section className="page-intro">
-				<div className="wrap">
+				<div className="wrap stack-md">
 					<p className="eyebrow">{t.intro.eyebrow}</p>
 					<h1>{t.intro.h1}</h1>
 					<p className="page-sub">{t.intro.sub}</p>

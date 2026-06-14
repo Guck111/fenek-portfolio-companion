@@ -1454,14 +1454,10 @@ section[id] {
 .page-intro {
 	padding: 78px 0 10px;
 }
-.page-intro .eyebrow {
-	margin-bottom: 20px;
-}
 .page-intro h1 {
 	max-width: 20ch;
 }
 .page-sub {
-	margin: 18px 0 0;
 	max-width: 62ch;
 	font-size: clamp(16.5px, 2vw, 19px);
 	line-height: 1.6;

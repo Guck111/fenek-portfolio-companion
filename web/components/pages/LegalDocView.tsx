@@ -20,7 +20,7 @@ type LegalDocViewProps = {
 export const LegalDocView = ({ dict, lang, doc }: LegalDocViewProps) => (
 	<SiteShell dict={dict} lang={lang}>
 		<section className="page-intro">
-			<div className="wrap">
+			<div className="wrap stack-md">
 				<p className="eyebrow">{doc.intro.eyebrow}</p>
 				<h1>{doc.intro.h1}</h1>
 				<p className="page-sub">{doc.intro.sub}</p>
