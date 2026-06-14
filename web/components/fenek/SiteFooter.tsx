@@ -51,6 +51,12 @@ export const SiteFooter = ({ dict, lang }: SiteFooterProps) => {
 								<li>
 									<Link href={localizedHref(lang, "/privacy")}>{f.privacy}</Link>
 								</li>
+								<li>
+									<Link href={localizedHref(lang, "/terms")}>{f.terms}</Link>
+								</li>
+								<li>
+									<Link href={localizedHref(lang, "/refund")}>{f.refund}</Link>
+								</li>
 							</ul>
 						</div>
 						<div className="footer-col">

@@ -64,7 +64,9 @@ export const PricingView = ({ dict, lang }: { dict: Dictionary; lang: Lang }) =>
 					<p className="plan-aside">
 						<RichText text={t.buildAside} lang={lang} />
 					</p>
-					<p className="plan-terms">{t.terms}</p>
+					<p className="plan-terms">
+						<RichText text={t.terms} lang={lang} />
+					</p>
 				</div>
 			</section>
 		</SiteShell>

@@ -7,6 +7,8 @@ type PageKey =
 	| "security"
 	| "pricing"
 	| "privacy"
+	| "terms"
+	| "refund"
 	| "install"
 	| "changelog"
 	| "success"
@@ -17,6 +19,8 @@ const PAGE_PATH: Record<PageKey, string> = {
 	security: "/security",
 	pricing: "/pricing",
 	privacy: "/privacy",
+	terms: "/terms",
+	refund: "/refund",
 	install: "/install",
 	changelog: "/changelog",
 	success: "/success",

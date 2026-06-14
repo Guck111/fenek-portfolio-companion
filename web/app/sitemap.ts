@@ -4,7 +4,16 @@ import { SITE_URL } from "@/lib/site"
 
 export const dynamic = "force-static"
 
-const PATHS = ["/", "/security", "/pricing", "/install", "/privacy", "/changelog"]
+const PATHS = [
+	"/",
+	"/security",
+	"/pricing",
+	"/install",
+	"/privacy",
+	"/terms",
+	"/refund",
+	"/changelog",
+]
 
 const sitemap = (): MetadataRoute.Sitemap =>
 	LANGS.flatMap((lang) =>

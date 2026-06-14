@@ -1,4 +1,12 @@
-import { BUILDING_PRO_URL, CLAUDE_DESKTOP_URL, GITHUB_URL, RELEASES_LATEST_URL } from "@/lib/site"
+import {
+	BUILDING_PRO_URL,
+	CLAUDE_DESKTOP_URL,
+	GITHUB_LICENSE_URL,
+	GITHUB_URL,
+	RELEASES_LATEST_URL,
+	SUPPORT_EMAIL,
+	SUPPORT_MAILTO,
+} from "@/lib/site"
 
 // English is the source dictionary: it defines the Dictionary type that every
 // other locale must satisfy. Strings may use inline markdown (**bold**, `code`,
@@ -34,6 +42,8 @@ const en = {
 		install: "Install",
 		changelog: "Changelog",
 		privacy: "Privacy",
+		terms: "Terms",
+		refund: "Refunds",
 		github: "GitHub",
 		license: "License (MIT)",
 		support: "Support",
@@ -388,7 +398,83 @@ const en = {
 		},
 		buildAside: `Prefer full anonymity? [Build the Pro features from source](${BUILDING_PRO_URL}) for free — no license, no checkout.`,
 		terms:
-			"Fenek Pro is a monthly subscription billed by Polar, our merchant of record — your card details never reach us. Cancel anytime in the Polar customer portal; there is no lock-in.",
+			"Fenek Pro is a monthly subscription billed by Polar, our merchant of record — your card details never reach us. Cancel anytime; there is no lock-in. See [Refunds & cancellation](/refund).",
+	},
+	terms: {
+		meta: {
+			title: "Terms of Service",
+			description:
+				"Plain-language terms for using Fenek and Fenek Pro: open source, read-only, not financial advice, billed by Polar.",
+		},
+		intro: {
+			eyebrow: "Legal",
+			h1: "Terms of Service",
+			sub: "The plain-language terms for using Fenek and Fenek Pro.",
+		},
+		sections: [
+			{
+				h2: "The software",
+				body: `Fenek Portfolio Companion is open-source software under the [MIT License](${GITHUB_LICENSE_URL}). It runs locally inside Claude Desktop and is read-only — it reads your data and never places trades, moves funds, or cancels orders.`,
+			},
+			{
+				h2: "Not financial advice",
+				body: "Fenek is a data tool, not a financial adviser. Nothing it shows is investment, tax, or legal advice, and figures it displays may be incomplete or delayed. Your decisions are your own.",
+			},
+			{
+				h2: "Your accounts and keys",
+				body: "You connect your own broker and exchange API keys using read-only permissions. You are responsible for keeping them safe and for following each provider’s own terms. Keys are stored only in your operating system’s keychain through Claude Desktop; see the [Security page](/security).",
+			},
+			{
+				h2: "Fenek Pro",
+				body: "Fenek Pro is an optional paid subscription that unlocks the crypto sources, billed by Polar at $4.99/mo. See [Pricing](/pricing) and the [Refunds & cancellation policy](/refund). You can also build the Pro features from source for free — no payment required.",
+			},
+			{
+				h2: "Acceptable use",
+				body: "Use Fenek to read your own portfolio data. Do not use it to break any broker’s or exchange’s terms, or any applicable law.",
+			},
+			{
+				h2: "Warranty and liability",
+				body: "Fenek is provided “as is”, without warranty of any kind, to the maximum extent permitted by law. To that same extent, the authors are not liable for any loss or damage arising from its use.",
+			},
+			{
+				h2: "Changes to these terms",
+				body: "These terms may change over time; the current version always lives on this page. Material changes affecting Fenek Pro will be communicated to subscribers.",
+			},
+			{
+				h2: "Contact",
+				body: `Questions about these terms? Email [${SUPPORT_EMAIL}](${SUPPORT_MAILTO}).`,
+			},
+		],
+	},
+	refund: {
+		meta: {
+			title: "Refunds & cancellation",
+			description:
+				"How Fenek Pro billing, cancellation, and refunds work. Cancel anytime, no lock-in — and the Pro features are always free to build from source.",
+		},
+		intro: {
+			eyebrow: "Legal",
+			h1: "Refunds & cancellation",
+			sub: "How Fenek Pro billing, cancellation, and refunds work.",
+		},
+		sections: [
+			{
+				h2: "Cancel anytime",
+				body: "Fenek Pro is a monthly subscription with no lock-in. Cancel anytime in the Polar customer portal — you keep Pro until the end of the period you have already paid for, and it simply stops renewing after that.",
+			},
+			{
+				h2: "Refunds",
+				body: `Payments are handled by Polar, our merchant of record. If something went wrong or Pro is not what you expected, email [${SUPPORT_EMAIL}](${SUPPORT_MAILTO}) within 14 days of a charge and we will arrange a refund with Polar. If you are an EU consumer, your statutory rights still apply.`,
+			},
+			{
+				h2: "You can always use Pro for free",
+				body: `You never have to pay to use the Pro features — you can [build them from source](${BUILDING_PRO_URL}) for free. The classic brokers stay free forever.`,
+			},
+			{
+				h2: "Billing questions",
+				body: `Manage your payment details and invoices in the Polar customer portal, or email [${SUPPORT_EMAIL}](${SUPPORT_MAILTO}).`,
+			},
+		],
 	},
 }
 
