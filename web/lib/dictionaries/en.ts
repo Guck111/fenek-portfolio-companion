@@ -6,6 +6,7 @@ import { BUILDING_PRO_URL, CLAUDE_DESKTOP_URL, GITHUB_URL, RELEASES_LATEST_URL }
 const en = {
 	nav: {
 		security: "Security",
+		pricing: "Pricing",
 		install: "Install",
 		changelog: "Changelog",
 		github: "GitHub",
@@ -29,6 +30,7 @@ const en = {
 		colSource: "Source",
 		home: "Home",
 		security: "Security",
+		pricing: "Pricing",
 		install: "Install",
 		changelog: "Changelog",
 		privacy: "Privacy",
@@ -128,7 +130,7 @@ const en = {
 		pricing: {
 			badge: "Fenek Pro",
 			h2: "Crypto is Pro. Classic brokers free forever.",
-			body: "Crypto features — reading your Bybit and on-chain wallet balances — are part of Fenek Pro, under $5/mo. Classic brokers like Trading 212 and the cross-broker overview are free forever, and everything stays open source.",
+			body: "Crypto features — reading your Bybit and on-chain wallet balances — are part of Fenek Pro at $4.99/mo. Classic brokers like Trading 212 and the cross-broker overview are free forever, and everything stays open source.",
 			aside: `Prefer full anonymity? [Build the Pro features from source](${BUILDING_PRO_URL}) for free — no license, no checkout.`,
 			button: "Get Fenek Pro",
 		},
@@ -341,6 +343,52 @@ const en = {
 		},
 		body: `Changed your mind? No problem. Crypto features are part of Fenek Pro, but you can always [build them from source](${BUILDING_PRO_URL}) for free — no license, no checkout. Classic brokers like Trading 212 stay free forever.`,
 		cta: { retry: "Get Fenek Pro", home: "Back to home" },
+	},
+	pricing: {
+		meta: {
+			title: "Pricing",
+			description:
+				"Classic brokers are free forever. Crypto sources are Fenek Pro — $4.99/mo, cancel anytime. Everything is open source, and you can build Pro from source for free.",
+		},
+		intro: {
+			eyebrow: "Pricing",
+			h1: "Simple pricing",
+			sub: "Classic brokers and the cross-broker overview are free forever. The crypto sources are Fenek Pro — $4.99 a month, cancel anytime. It is all open source, so you can build Pro yourself for free.",
+		},
+		plans: {
+			free: {
+				name: "Free",
+				price: "$0",
+				period: "forever",
+				tagline: "Classic brokers and the whole cross-broker overview.",
+				cta: "Download Fenek",
+				features: [
+					"Trading 212 — positions, pies, dividends, transactions, order history",
+					"Every future classic broker (IBKR, eToro, …) as it ships",
+					"Cross-broker portfolio overview and analytics",
+					"Runs locally · keys in your OS keychain · zero telemetry",
+					"Open source (MIT)",
+				],
+			},
+			pro: {
+				name: "Fenek Pro",
+				price: "$4.99",
+				period: "per month",
+				badge: "All sources",
+				tagline: "Everything in Free, plus every crypto source.",
+				cta: "Get Fenek Pro",
+				features: [
+					"Everything in Free",
+					"Bybit — spot, derivatives, and Earn",
+					"On-chain wallets — Solana, TON, Bitcoin, Litecoin, Dogecoin",
+					"All future crypto exchanges and chains",
+					"Cancel anytime · billed monthly by Polar",
+				],
+			},
+		},
+		buildAside: `Prefer full anonymity? [Build the Pro features from source](${BUILDING_PRO_URL}) for free — no license, no checkout.`,
+		terms:
+			"Fenek Pro is a monthly subscription billed by Polar, our merchant of record — your card details never reach us. Cancel anytime in the Polar customer portal; there is no lock-in.",
 	},
 }
 

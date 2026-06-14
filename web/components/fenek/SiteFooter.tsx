@@ -35,6 +35,9 @@ export const SiteFooter = ({ dict, lang }: SiteFooterProps) => {
 									<Link href={localizedHref(lang, "/security")}>{f.security}</Link>
 								</li>
 								<li>
+									<Link href={localizedHref(lang, "/pricing")}>{f.pricing}</Link>
+								</li>
+								<li>
 									<Link href={localizedHref(lang, "/install")}>{f.install}</Link>
 								</li>
 								<li>

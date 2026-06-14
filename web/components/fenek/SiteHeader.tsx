@@ -20,6 +20,7 @@ export const SiteHeader = ({ lang, nav }: SiteHeaderProps) => {
 	const canonical = stripLocale(pathname)
 	const items = [
 		{ path: "/security", label: nav.security },
+		{ path: "/pricing", label: nav.pricing },
 		{ path: "/install", label: nav.install },
 		{ path: "/changelog", label: nav.changelog },
 	]

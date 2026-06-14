@@ -2,7 +2,6 @@ import Link from "next/link"
 import { DemoFrame } from "@/components/fenek/DemoFrame"
 import { SiteShell } from "@/components/fenek/SiteShell"
 import { TrustStrip } from "@/components/fenek/TrustStrip"
-import { CheckoutButton } from "@/components/ui/CheckoutButton"
 import { DownloadButton } from "@/components/ui/DownloadButton"
 import { BlockIcon, CheckIcon, DownloadIcon, GitHubIcon, PlusIcon } from "@/components/ui/icons"
 import { NewsletterForm } from "@/components/ui/NewsletterForm"
@@ -153,7 +152,9 @@ export const HomeView = ({ dict, lang }: { dict: Dictionary; lang: Lang }) => {
 							<RichText text={t.pricing.aside} lang={lang} />
 						</p>
 						<div className="cta-row">
-							<CheckoutButton label={t.pricing.button} />
+							<Link className="btn btn-pri" href={localizedHref(lang, "/pricing")}>
+								<span>{t.pricing.button}</span>
+							</Link>
 						</div>
 					</div>
 				</div>

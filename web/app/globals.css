@@ -1787,6 +1787,120 @@ section[id] {
 }
 
 /* ============================================================
+   Pricing plans
+   ============================================================ */
+.plans {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 18px;
+	max-width: 880px;
+}
+@media (max-width: 760px) {
+	.plans {
+		grid-template-columns: 1fr;
+	}
+}
+.plan {
+	background: var(--card);
+	border: 1px solid var(--line);
+	border-radius: var(--radius);
+	padding: 32px 28px;
+	display: flex;
+	flex-direction: column;
+}
+.plan.featured {
+	border-color: var(--accent);
+	box-shadow: 0 22px 50px -34px rgba(30, 90, 75, 0.45);
+}
+.plan-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+}
+.plan-name {
+	font-family: var(--geo);
+	font-weight: 500;
+	font-size: 20px;
+	letter-spacing: -0.01em;
+}
+.plan-badge {
+	font-family: var(--mono);
+	font-size: 11px;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	color: var(--accent-strong);
+	background: var(--accent-tint);
+	border-radius: 999px;
+	padding: 5px 10px;
+	white-space: nowrap;
+}
+.plan-cost {
+	display: flex;
+	align-items: baseline;
+	gap: 8px;
+	margin-top: 14px;
+}
+.plan-price {
+	font-family: var(--geo);
+	font-weight: 400;
+	font-size: 46px;
+	letter-spacing: -0.02em;
+	color: var(--ink);
+	line-height: 1;
+}
+.plan-period {
+	font-size: 15px;
+	color: var(--soft);
+}
+.plan-tagline {
+	margin: 12px 0 0;
+	font-size: 15px;
+	color: var(--soft);
+}
+.plan ul {
+	list-style: none;
+	margin: 22px 0 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	flex: 1 1 auto;
+}
+.plan li {
+	display: flex;
+	gap: 11px;
+	font-size: 15px;
+	line-height: 1.45;
+}
+.plan li .gi {
+	flex: 0 0 auto;
+	width: 18px;
+	height: 18px;
+	margin-top: 2px;
+	color: var(--accent);
+}
+.plan .btn {
+	margin-top: 26px;
+	width: 100%;
+	justify-content: center;
+}
+.plan-aside {
+	margin: 28px 0 0;
+	max-width: var(--measure);
+	font-size: 15px;
+	line-height: 1.6;
+	color: var(--soft);
+}
+.plan-terms {
+	margin: 14px 0 0;
+	max-width: var(--measure);
+	font-size: 13.5px;
+	line-height: 1.6;
+	color: var(--dim);
+}
+
+/* ============================================================
    Language switcher
    ============================================================ */
 .lang {

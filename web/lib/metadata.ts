@@ -5,6 +5,7 @@ import { type Lang, localizedPath } from "@/lib/i18n"
 type PageKey =
 	| "home"
 	| "security"
+	| "pricing"
 	| "privacy"
 	| "install"
 	| "changelog"
@@ -14,6 +15,7 @@ type PageKey =
 const PAGE_PATH: Record<PageKey, string> = {
 	home: "/",
 	security: "/security",
+	pricing: "/pricing",
 	privacy: "/privacy",
 	install: "/install",
 	changelog: "/changelog",
