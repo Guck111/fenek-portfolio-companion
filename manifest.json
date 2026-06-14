@@ -4,8 +4,8 @@
   "name": "fenek-portfolio-companion",
   "display_name": "Fenek Portfolio Companion",
   "version": "0.5.0",
-  "description": "Read-only aggregator of your portfolio data across EU-available wallets, exchanges and brokers (Trading 212, Interactive Brokers (end-of-day Flex), Bybit incl. derivatives & Earn, Bitcoin/Litecoin/Dogecoin/Solana/TON wallets). Data collection only — no recommendations.",
-  "long_description": "An unofficial, open-source MCP server that aggregates your portfolio data across wallets, exchanges and brokers available in Europe — Trading 212, Interactive Brokers (end-of-day, via the read-only Flex Web Service), Bybit, and Bitcoin/Litecoin/Dogecoin/Solana/TON wallets — and exposes it read-only to Claude so you can read it in plain language. Ask about positions, pies, dividends, balances, derivatives exposure, Earn/staked balances, concentration, and overlaps — descriptive figures on your own data, never advice. On Bybit it reads every money bucket: Unified coins, derivatives positions with leverage and liquidation price, Earn products with APY, the Funding wallet, and total equity across all account types. Strictly data collection plus neutral metrics on your own data; it never recommends trades. No telemetry. API keys are stored in your OS keychain.\n\nNew here? After installing, run the fenek_getting_started prompt (or tool) in chat — it explains what to set up and which sources are supported, and needs no keys. All fields below are optional: fill in only the sources you have.\n\nNot affiliated with any broker. Not financial advice.",
+  "description": "Read-only aggregator of your portfolio data across EU-available wallets, exchanges and brokers (Trading 212, Bybit incl. derivatives & Earn, Bitcoin/Litecoin/Dogecoin/Solana/TON wallets). Data collection only — no recommendations.",
+  "long_description": "An unofficial, open-source MCP server that aggregates your portfolio data across wallets, exchanges and brokers available in Europe — Trading 212, Bybit, and Bitcoin/Litecoin/Dogecoin/Solana/TON wallets — and exposes it read-only to Claude so you can read it in plain language. Ask about positions, pies, dividends, balances, derivatives exposure, Earn/staked balances, concentration, and overlaps — descriptive figures on your own data, never advice. On Bybit it reads every money bucket: Unified coins, derivatives positions with leverage and liquidation price, Earn products with APY, the Funding wallet, and total equity across all account types. Strictly data collection plus neutral metrics on your own data; it never recommends trades. No telemetry. API keys are stored in your OS keychain.\n\nNew here? After installing, run the fenek_getting_started prompt (or tool) in chat — it explains what to set up and which sources are supported, and needs no keys. All fields below are optional: fill in only the sources you have.\n\nNot affiliated with any broker. Not financial advice.",
   "author": {
     "name": "Arseni",
     "url": "https://github.com/Guck111"
@@ -19,7 +19,7 @@
   },
   "license": "MIT",
   "privacy_policies": ["https://fenek.tech/privacy"],
-  "keywords": ["portfolio", "trading212", "ibkr", "bybit", "crypto", "solana", "read-only", "aggregator", "tracker"],
+  "keywords": ["portfolio", "trading212", "bybit", "crypto", "solana", "read-only", "aggregator", "tracker"],
   "icon": "icon.png",
   "server": {
     "type": "node",
@@ -33,8 +33,6 @@
         "WALLET_ADDRESSES": "${user_config.WALLET_ADDRESSES}",
         "BYBIT_API_KEY": "${user_config.BYBIT_API_KEY}",
         "BYBIT_API_SECRET": "${user_config.BYBIT_API_SECRET}",
-        "IBKR_FLEX_TOKEN": "${user_config.IBKR_FLEX_TOKEN}",
-        "IBKR_FLEX_QUERY_ID": "${user_config.IBKR_FLEX_QUERY_ID}",
         "LICENSE_KEY": "${user_config.LICENSE_KEY}",
         "CHECK_UPDATES": "${user_config.CHECK_UPDATES}"
       }
@@ -77,20 +75,6 @@
       "description": "Shown once when you create the Bybit key. Stored in your OS keychain.",
       "required": false,
       "sensitive": true
-    },
-    "IBKR_FLEX_TOKEN": {
-      "type": "string",
-      "title": "Interactive Brokers · Flex token",
-      "description": "Read-only Flex Web Service token from IBKR Client Portal → Settings → Account Settings → Flex Web Service. Data is end-of-day, not live. Stored in your OS keychain. Blank to skip Interactive Brokers.",
-      "required": false,
-      "sensitive": true
-    },
-    "IBKR_FLEX_QUERY_ID": {
-      "type": "string",
-      "title": "Interactive Brokers · Flex Query ID",
-      "description": "The Query ID of an Activity Flex Query that includes Open Positions, Net Asset Value, Cash Report and Cash Transactions (optionally Trades). This is an identifier, not a secret. Blank to skip Interactive Brokers.",
-      "required": false,
-      "sensitive": false
     },
     "LICENSE_KEY": {
       "type": "string",
