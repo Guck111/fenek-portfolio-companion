@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FlexQueryResponse queryName="Fenek" type="AF">
+  <FlexStatements count="2">
+    <FlexStatement accountId="U1111111" fromDate="20240101" toDate="20240131" whenGenerated="20240201;120000">
+      <AccountInformation accountId="U1111111" currency="USD" name="Account One"/>
+      <OpenPositions>
+        <OpenPosition currency="USD" symbol="AAPL" position="10" markPrice="190.00" positionValue="1900.00"/>
+      </OpenPositions>
+    </FlexStatement>
+    <FlexStatement accountId="U2222222" fromDate="20240101" toDate="20240131" whenGenerated="20240201;120000">
+      <AccountInformation accountId="U2222222" currency="EUR" name="Account Two"/>
+      <OpenPositions>
+        <OpenPosition currency="EUR" symbol="SAP" position="5" markPrice="150.00" positionValue="750.00"/>
+      </OpenPositions>
+    </FlexStatement>
+  </FlexStatements>
+</FlexQueryResponse>
