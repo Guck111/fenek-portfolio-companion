@@ -3,6 +3,8 @@ import { BybitBroker } from "./brokers/bybit/index.js"
 import { createBybitTools } from "./brokers/bybit/tools.js"
 import { CryptoBroker } from "./brokers/crypto/index.js"
 import { createCryptoTools } from "./brokers/crypto/tools.js"
+import { IbkrBroker } from "./brokers/ibkr/index.js"
+import { createIbkrTools } from "./brokers/ibkr/tools.js"
 import { register, registerPrompts, registerTools } from "./brokers/registry.js"
 import { Trading212Broker } from "./brokers/trading212/index.js"
 import { createTrading212Tools } from "./brokers/trading212/tools.js"
@@ -50,6 +52,18 @@ async function configureBybitBroker(): Promise<void> {
   register(broker, createBybitTools(broker))
 }
 
+async function configureIbkrBroker(): Promise<void> {
+  const token = process.env["IBKR_FLEX_TOKEN"]
+  const queryId = process.env["IBKR_FLEX_QUERY_ID"]
+  if (token === undefined || queryId === undefined) return
+
+  const broker = new IbkrBroker()
+  await broker.authenticate({
+    credentials: { IBKR_FLEX_TOKEN: token, IBKR_FLEX_QUERY_ID: queryId },
+  })
+  register(broker, createIbkrTools(broker))
+}
+
 async function main(): Promise<void> {
   initLicensing({
     paywallEnabled: PAYWALL_ENABLED,
@@ -62,6 +76,7 @@ async function main(): Promise<void> {
   await configureBrokers()
   await configureCryptoBroker()
   await configureBybitBroker()
+  await configureIbkrBroker()
   registerTools([createGettingStartedTool()])
   registerTools(createAnalyticsTools())
   registerTools(createPlaybookTools())
