@@ -285,6 +285,15 @@ const en = {
 			demoLabel: "Installing Fenek",
 			demoCaption: "Install walkthrough coming soon",
 		},
+		requirements: {
+			h2: "What you need",
+			items: [
+				`The free [Claude Desktop](${CLAUDE_DESKTOP_URL}) app for macOS or Windows — Fenek runs inside it.`,
+				"Read-only API keys for the brokers you use (Trading 212, Bybit). Crypto wallets need only public addresses.",
+				"A [Fenek Pro](/pricing) subscription ($4.99/mo) only if you want the crypto sources — classic brokers are free.",
+				"Nothing else — no separate account, no backend, no command line.",
+			],
+		},
 		steps: {
 			h2: "Step by step",
 			items: [

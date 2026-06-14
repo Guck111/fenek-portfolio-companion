@@ -3,7 +3,7 @@ import { DemoFrame } from "@/components/fenek/DemoFrame"
 import { SiteShell } from "@/components/fenek/SiteShell"
 import { TrustStrip } from "@/components/fenek/TrustStrip"
 import { DownloadButton } from "@/components/ui/DownloadButton"
-import { BlockIcon, CheckIcon, DownloadIcon, GitHubIcon, PlusIcon } from "@/components/ui/icons"
+import { BlockIcon, CheckIcon, GitHubIcon, PlusIcon } from "@/components/ui/icons"
 import { NewsletterForm } from "@/components/ui/NewsletterForm"
 import type { Dictionary } from "@/lib/dictionaries"
 import { type Lang, localizedHref } from "@/lib/i18n"
@@ -25,10 +25,7 @@ export const HomeView = ({ dict, lang }: { dict: Dictionary; lang: Lang }) => {
 							</h1>
 							<p className="lede">{t.hero.lede}</p>
 							<div className="cta-row">
-								<a className="btn btn-pri" href="#install">
-									<DownloadIcon />
-									<span>{c.download}</span>
-								</a>
+								<DownloadButton label={c.download} />
 								<a
 									className="btn btn-sec"
 									href={GITHUB_URL}
