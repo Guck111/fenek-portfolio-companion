@@ -27,7 +27,7 @@ reviewers; it is not bundled into the `.mcpb` (see `.mcpbignore`).
 
 An unofficial, open-source MCP server that aggregates a user's portfolio data across
 wallets, exchanges, and brokers available in Europe — **Trading 212**, **Bybit**, and
-**Solana / TON** wallets — and exposes it **read-only** to Claude for analysis. The user
+**Ethereum & EVM / Solana / TON / Bitcoin** wallets — and exposes it **read-only** to Claude for analysis. The user
 can ask about positions, pies, dividends, balances, concentration, and overlap in plain
 language. It is strictly a data aggregator plus neutral metrics on the user's own data;
 it never recommends trades. No telemetry. API keys are held in the OS keychain.
@@ -57,7 +57,7 @@ is per-provider and read-only by design:
 |---|---|---|---|
 | `T212_API_KEY` | yes (keychain) | no | Trading 212 read-only API key |
 | `T212_API_SECRET` | yes (keychain) | no | Trading 212 API secret |
-| `WALLET_ADDRESSES` | no (public addresses) | no | Public wallet addresses (Solana, TON, Bitcoin, Litecoin, Dogecoin), any separator; chain auto-detected, read keyless |
+| `WALLET_ADDRESSES` | no (public addresses) | no | Public wallet addresses (Ethereum & EVM L2s, Solana, TON, Bitcoin, Litecoin, Dogecoin), any separator; chain auto-detected, read keyless |
 | `BYBIT_API_KEY` | yes (keychain) | no | Bybit read-only API key |
 | `BYBIT_API_SECRET` | yes (keychain) | no | Bybit API secret |
 
@@ -88,7 +88,7 @@ human-readable `annotations.title`. 23 tools total.
 | `t212_get_exchanges` | Trading 212: Exchange Working Hours | ✅ |
 | `t212_search_instrument` | Trading 212: Search Instruments | ✅ |
 
-### Crypto wallets — Solana, TON, Bitcoin, Litecoin, Dogecoin (registered when `WALLET_ADDRESSES` is set)
+### Crypto wallets — Ethereum & EVM L2s, Solana, TON, Bitcoin, Litecoin, Dogecoin (registered when `WALLET_ADDRESSES` is set)
 
 | Tool name | Title | Read-only |
 |---|---|---|
@@ -207,8 +207,9 @@ One or more **public** addresses holding a few tokens — non-personal, not the 
 own wallet. Public addresses cannot move funds. Every chain is read keyless (no API key).
 
 - `WALLET_ADDRESSES`: public wallet addresses separated by commas, spaces, or new lines. The
-  chain of each (Solana, TON, Bitcoin, Litecoin, Dogecoin) is auto-detected from its format —
-  e.g. a Solana address and a Bitcoin `bc1…` address in the same field.
+  chain of each (Ethereum & EVM L2s, Solana, TON, Bitcoin, Litecoin, Dogecoin) is auto-detected
+  from its format — e.g. an Ethereum `0x…` address (read across Arbitrum, Optimism, Base and
+  Polygon too), a Solana address, and a Bitcoin `bc1…` address in the same field.
 
 Try: `crypto_get_positions`, then `portfolio_overview` (the crypto USD total appears as its
 own currency bucket — currencies are never summed).

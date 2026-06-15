@@ -130,13 +130,14 @@ const en = {
 				{
 					name: "Crypto wallets",
 					type: "On-chain · by public address",
-					extra: "Solana, TON, Bitcoin, Litecoin, Dogecoin — keyless, read from public explorers.",
+					extra:
+						"Ethereum & EVM (Arbitrum, Optimism, Base, Polygon), Solana, TON, Bitcoin, Litecoin, Dogecoin — keyless, read from public explorers.",
 				},
 			],
 			voteKicker: "Vote for the next source",
 			voteButton: "Vote & subscribe",
 			voteFieldLabel: "Which source do you want next?",
-			voteFieldPlaceholder: "e.g. IBKR, Kraken, an Ethereum wallet…",
+			voteFieldPlaceholder: "e.g. IBKR, Kraken, Coinbase…",
 		},
 		pricing: {
 			badge: "Fenek Pro",
@@ -176,7 +177,7 @@ const en = {
 				},
 				{
 					q: "Which sources are supported?",
-					a: "Trading 212, Bybit (spot, derivatives, and Earn), and on-chain wallets for Solana, TON, Bitcoin, Litecoin, and Dogecoin. Want another? Vote for it in the Supported sources section above.",
+					a: "Trading 212, Bybit (spot, derivatives, and Earn), and on-chain wallets for Ethereum & EVM (Arbitrum, Optimism, Base, Polygon), Solana, TON, Bitcoin, Litecoin, and Dogecoin. Want another? Vote for it in the Supported sources section above.",
 				},
 				{
 					q: "Does Fenek send my data anywhere?",
@@ -403,7 +404,7 @@ const en = {
 				features: [
 					"Everything in Free",
 					"Bybit — spot, derivatives, and Earn",
-					"On-chain wallets — Solana, TON, Bitcoin, Litecoin, Dogecoin",
+					"On-chain wallets — Ethereum & EVM L2s, Solana, TON, Bitcoin, Litecoin, Dogecoin",
 					"All future crypto exchanges and chains",
 					"Cancel anytime · billed monthly by Polar",
 				],

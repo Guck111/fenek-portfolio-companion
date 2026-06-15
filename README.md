@@ -20,7 +20,7 @@
 
 # Fenek Portfolio Companion
 
-Read-only MCP server that aggregates your portfolio data across wallets, exchanges and brokers available in Europe — currently Trading 212, Bybit, and Solana, TON, Bitcoin, Litecoin and Dogecoin wallets (Interactive Brokers coming soon) — and makes it available to Claude to read and organize. It is a data aggregator: it reads your own data and shows neutral, descriptive figures on it, never advice and never recommendations. It places no trades, holds no funds, and has no custody. Architected to add more sources without changing the core or existing adapters.
+Read-only MCP server that aggregates your portfolio data across wallets, exchanges and brokers available in Europe — currently Trading 212, Bybit, and Ethereum & EVM (Arbitrum, Optimism, Base, Polygon), Solana, TON, Bitcoin, Litecoin and Dogecoin wallets (Interactive Brokers coming soon) — and makes it available to Claude to read and organize. It is a data aggregator: it reads your own data and shows neutral, descriptive figures on it, never advice and never recommendations. It places no trades, holds no funds, and has no custody. Architected to add more sources without changing the core or existing adapters.
 
 > **NOT FINANCIAL ADVICE.** This is an informational tool. You are solely responsible for any decisions you make based on its output. The author is not a registered investment advisor in any jurisdiction. Read [DISCLAIMER.md](DISCLAIMER.md) before using.
 >
@@ -39,7 +39,7 @@ Every source is read-only, opt-in, and additive — configure only the ones you 
 | Trading 212 | Classic broker | Free | API key + secret (read-only scopes) |
 | Interactive Brokers | Classic broker — end-of-day via Flex | Free | **Coming soon** — not yet configurable |
 | Bybit | Crypto exchange | Pro | API key + secret (read-only) |
-| On-chain wallets | Solana · TON · Bitcoin · Litecoin · Dogecoin | Pro | Public address (keyless) |
+| On-chain wallets | Ethereum & EVM (Arbitrum · Optimism · Base · Polygon) · Solana · TON · Bitcoin · Litecoin · Dogecoin | Pro | Public address (keyless) |
 
 ## Install
 
@@ -79,14 +79,14 @@ Interactive Brokers support is **in the works** (read-only, end-of-day via the *
 
 In addition to (or instead of) Trading 212, you can surface on-chain holdings by **public wallet address**. Opt-in and additive — leave the field blank to skip it entirely.
 
-- **Wallet addresses** — paste one or more public addresses into a single field, separated by commas, spaces, or new lines. The chain of each is detected automatically from its format. Supported today: **Solana, TON, Bitcoin, Litecoin, Dogecoin**. A public address is not a secret; it cannot move funds.
-- **No API keys, ever.** Every chain is read keyless via public endpoints (the Solana public RPC, [mempool.space](https://mempool.space), [blockcypher](https://www.blockcypher.com), tonapi) — nothing to sign up for. TON's non-custodial **TON Space** address is readable; the custodial Telegram `@wallet` balance is not, and is out of scope.
+- **Wallet addresses** — paste one or more public addresses into a single field, separated by commas, spaces, or new lines. The chain of each is detected automatically from its format. Supported today: **Ethereum & EVM (Arbitrum, Optimism, Base, Polygon), Solana, TON, Bitcoin, Litecoin, Dogecoin**. A single `0x…` address is read across every EVM network at once — native balance plus ERC-20 tokens (NFTs are excluded). A public address is not a secret; it cannot move funds.
+- **No API keys, ever.** Every chain is read keyless via public endpoints (the Solana public RPC, public [Blockscout](https://www.blockscout.com) instances for EVM, [mempool.space](https://mempool.space), [blockcypher](https://www.blockcypher.com), tonapi) — nothing to sign up for. TON's non-custodial **TON Space** address is readable; the custodial Telegram `@wallet` balance is not, and is out of scope.
 
 Notes and limitations:
 
 - **USD valuation only.** Holdings are priced in USD via [DefiLlama](https://defillama.com). On-chain wallets carry no cost basis, so **no average price and no profit/loss** are reported for crypto. In `portfolio_overview` the crypto USD total appears as its own currency bucket alongside your Trading 212 currency — the two are never summed (no FX conversion).
 - **Spam/unpriced tokens are omitted.** Only tokens with a non-zero balance and a resolvable price are shown.
-- **One address, not a whole wallet.** For account chains (Solana, TON) an address is the entire account. For UTXO chains (Bitcoin, Litecoin, Dogecoin) a single address is only part of an HD wallet — paste each address you want counted; xpub expansion is out of scope.
+- **One address, not a whole wallet.** For account chains (Ethereum/EVM, Solana, TON) an address is the entire account. For UTXO chains (Bitcoin, Litecoin, Dogecoin) a single address is only part of an HD wallet — paste each address you want counted; xpub expansion is out of scope.
 - **Skipped addresses are reported.** If an address isn't recognized, or its chain isn't readable yet, `crypto_get_positions` lists it so you know it was skipped rather than silently dropped.
 - **Jupiter limit orders (limited).** `crypto_get_limit_orders` reads open orders from Jupiter's public Trigger v1 API (no extra key — `lite-api.jup.ag`). **Heads-up:** Jupiter's current **Limit Order V2 keeps order details private** (hidden until execution), so those orders are not exposed by any public API and won't appear here — an empty result does **not** mean you have none; check jup.ag. Funds locked by open V2 orders are still visible indirectly as reduced wallet balances.
 - Read-only and not financial advice, exactly like the rest of this server.
@@ -124,7 +124,7 @@ Notes and limitations:
 - Show positions, pies (incl. dividend totals and goal progress), transactions, dividends (incl. per-share amounts and interest-type events), executed-order history with realized P&L per fill, and all-time realized P&L of the account
 - Show exchange working hours (pre-market / after-hours / overnight sessions) for Trading 212 venues
 - _Coming soon:_ Interactive Brokers (end-of-day, via the read-only Flex Web Service) — positions, account NAV and cash, dividends with withholding tax, cash transactions, and trade history
-- Read on-chain crypto holdings (Solana, TON, Bitcoin, Litecoin, Dogecoin) by public address — keyless, valued in USD — plus look up USD prices for any watchlist coin
+- Read on-chain crypto holdings (Ethereum & EVM L2s, Solana, TON, Bitcoin, Litecoin, Dogecoin) by public address — keyless, valued in USD — plus look up USD prices for any watchlist coin
 - See open Jupiter (Solana) limit orders — legacy Trigger v1 only; current Limit Order V2 is private (see Crypto notes)
 - Read Bybit balances across **all** account types: Unified coins, Funding wallet, Earn / staked positions with APY, and total equity in USD
 - Read Bybit derivatives positions (perpetuals, futures, options) with leverage, liquidation price, and P&L, plus margin health of the account

@@ -126,13 +126,13 @@ export const ru: Dictionary = {
 					name: "Криптокошельки",
 					type: "On-chain · по публичному адресу",
 					extra:
-						"Solana, TON, Bitcoin, Litecoin, Dogecoin — без ключей, читаются из публичных обозревателей.",
+						"Ethereum и EVM (Arbitrum, Optimism, Base, Polygon), Solana, TON, Bitcoin, Litecoin, Dogecoin — без ключей, читаются из публичных обозревателей.",
 				},
 			],
 			voteKicker: "Голосуйте за следующий источник",
 			voteButton: "Голосовать и подписаться",
 			voteFieldLabel: "Какой источник хотите дальше?",
-			voteFieldPlaceholder: "напр. IBKR, Kraken, кошелёк Ethereum…",
+			voteFieldPlaceholder: "напр. IBKR, Kraken, Coinbase…",
 		},
 		pricing: {
 			badge: "Fenek Pro",
@@ -172,7 +172,7 @@ export const ru: Dictionary = {
 				},
 				{
 					q: "Какие источники поддерживаются?",
-					a: "Trading 212, Bybit (спот, деривативы и Earn) и on-chain кошельки для Solana, TON, Bitcoin, Litecoin и Dogecoin. Нужен другой? Проголосуйте за него в разделе «Поддерживаемые источники» выше.",
+					a: "Trading 212, Bybit (спот, деривативы и Earn) и on-chain кошельки для Ethereum и EVM (Arbitrum, Optimism, Base, Polygon), Solana, TON, Bitcoin, Litecoin и Dogecoin. Нужен другой? Проголосуйте за него в разделе «Поддерживаемые источники» выше.",
 				},
 				{
 					q: "Отправляет ли Fenek ваши данные куда-либо?",
@@ -398,7 +398,7 @@ export const ru: Dictionary = {
 				features: [
 					"Всё, что в «Бесплатно»",
 					"Bybit — спот, деривативы и Earn",
-					"On-chain кошельки — Solana, TON, Bitcoin, Litecoin, Dogecoin",
+					"On-chain кошельки — Ethereum и EVM L2, Solana, TON, Bitcoin, Litecoin, Dogecoin",
 					"Все будущие крипто-биржи и сети",
 					"Отмена в любой момент · ежемесячная оплата через Polar",
 				],
