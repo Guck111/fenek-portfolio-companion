@@ -4,6 +4,25 @@ All notable changes to this project are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.2] - 2026-06-15
+
+### Fixed
+- **Bybit coin amounts are no longer mistakable for dollar values.** In
+  `bybit_get_balances_overview`, Bybit's `coinDetail[].equity` is a coin AMOUNT
+  (holdings), not a USD figure — a delisted/zero-price token shows its full coin
+  count while being worth ~$0. It was surfaced under the money-sounding name
+  `equity`, which could lead a reader to report, say, 48,707 BBL as $48,707. The
+  per-coin field is now labeled `quantity`; the only fiat figures are the
+  account/total `equity` totals (in `valuationCurrency`). The `bybit_get_account`
+  per-coin description was likewise clarified — `quantity`/`equity` are coin
+  amounts and `usdValue` (absent for coins with no USD market) is the dollar value.
+
+### Security
+- **Pinned `vite` to 8.0.16** to clear a high-severity advisory. `vite` is a
+  dev/test-only transitive dependency (via `vitest`) and never ships in the
+  `.mcpb` bundle, so released servers were unaffected — the pin keeps the CI
+  `npm audit` gate green.
+
 ## [0.6.1] - 2026-06-14
 
 ### Fixed
