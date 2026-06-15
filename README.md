@@ -11,7 +11,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/license-MIT-1E5A4B?style=flat-square" alt="License: MIT">
-  <img src="https://img.shields.io/github/v/release/Guck111/fenek-portfolio-companion?style=flat-square&color=1E5A4B&label=release" alt="Latest release">
+  <img src="https://img.shields.io/badge/release-v0.7.0-1E5A4B?style=flat-square" alt="Latest release: v0.7.0">
   <img src="https://img.shields.io/badge/read--only-enforced-1E5A4B?style=flat-square" alt="Read-only">
   <img src="https://img.shields.io/badge/telemetry-zero-1E5A4B?style=flat-square" alt="Zero telemetry">
   <img src="https://img.shields.io/badge/build_provenance-verified-1E5A4B?style=flat-square" alt="Build provenance verified">
