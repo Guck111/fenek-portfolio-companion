@@ -16,6 +16,7 @@
     "format": "prettier --write src tests",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:live": "FENEK_LIVE=1 vitest run tests/live",
     "prebuild": "node scripts/gen-build-flavor.mjs && node scripts/gen-build-info.mjs",
     "build": "tsc -p tsconfig.build.json",
     "pack": "mcpb pack",

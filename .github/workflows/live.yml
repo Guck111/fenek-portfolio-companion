@@ -1,0 +1,38 @@
+name: Live
+
+# Live schema-drift checks against real provider APIs (keyless on-chain wallets).
+# Deliberately NOT on push/pull_request: never runs on PRs or forks, so the
+# wallet-address secret is never exposed to untrusted code. It catches provider
+# response-shape changes that the mocked suite (which runs on every PR) cannot.
+#
+# Setup required once by the maintainer: add a repository secret
+# LIVE_WALLET_ADDRESSES holding one or more public watch-only wallet addresses
+# (whitespace/comma separated). Until it is set, the job runs but every test
+# self-skips (no addresses -> nothing to check), so this workflow stays green.
+on:
+  workflow_dispatch:
+  schedule:
+    # 06:00 UTC daily - a cadence that surfaces upstream API drift within a day.
+    - cron: '0 6 * * *'
+
+permissions:
+  contents: read
+
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+        with:
+          node-version: '20'
+          cache: 'npm'
+      # --ignore-scripts: dependency lifecycle scripts never run in CI.
+      - run: npm ci --ignore-scripts
+      # The secret is mapped into a named env var and consumed by the test
+      # process - never interpolated inline into the run command.
+      - run: npm run test:live
+        env:
+          WALLET_ADDRESSES: ${{ secrets.LIVE_WALLET_ADDRESSES }}
