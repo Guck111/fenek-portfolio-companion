@@ -1,7 +1,8 @@
 import type { Account } from "../../domain/account.js"
-import type { DerivativePosition } from "../../domain/derivative.js"
+import type { OffAccountBalances } from "../../domain/balances.js"
+import type { DerivativePosition, DerivativeReport } from "../../domain/derivative.js"
 import type { Dividend } from "../../domain/dividend.js"
-import type { EarnPosition } from "../../domain/earn.js"
+import type { EarnPosition, EarnReport } from "../../domain/earn.js"
 import type { OpenOrder } from "../../domain/order.js"
 import type { Page } from "../../domain/pagination.js"
 import type { Position } from "../../domain/position.js"
@@ -423,6 +424,35 @@ export function buildEarnReport(outcomes: readonly EarnFamilyOutcome[]): BybitEa
   return { positions, failures }
 }
 
+// Cross-broker snapshot adapters: normalize Bybit's broker-specific reports to
+// the shared IBroker.*Report shapes (failure keys folded to `source`). Thin and
+// pure so the existing broker-specific tools keep their own shapes untouched.
+export function toEarnReport(report: BybitEarnReport): EarnReport {
+  return {
+    positions: report.positions,
+    failures: report.failures.map((f) => ({ source: f.family, message: f.message })),
+  }
+}
+
+export function toDerivativeReport(report: {
+  readonly positions: readonly DerivativePosition[]
+  readonly failures: readonly { readonly category: string; readonly message: string }[]
+}): DerivativeReport {
+  return {
+    positions: report.positions,
+    failures: report.failures.map((f) => ({ source: f.category, message: f.message })),
+  }
+}
+
+export function toOffAccountBalances(overview: BybitBalancesOverview): OffAccountBalances {
+  return {
+    ...(overview.totalEquity !== undefined
+      ? { totalValue: { amount: overview.totalEquity, currency: USD } }
+      : {}),
+    coins: (overview.funding ?? []).map((c) => ({ coin: c.coin, quantity: c.quantity })),
+  }
+}
+
 export interface BybitKeyInfoReport {
   readonly readOnly?: boolean
   readonly permissions?: Readonly<Record<string, readonly string[]>>
@@ -751,6 +781,21 @@ export class BybitBroker implements IBroker {
           : { family, error: s.reason as unknown }
       }),
     )
+  }
+
+  // Normalized money-bucket reporters consumed by portfolio_snapshot. Thin
+  // wrappers over the broker-specific methods, which keep their own shapes and
+  // their own tools (bybit_get_earn_positions, etc.) untouched.
+  async getEarnReport(): Promise<EarnReport> {
+    return toEarnReport(await this.getEarnPositions())
+  }
+
+  async getDerivativeReport(): Promise<DerivativeReport> {
+    return toDerivativeReport(await this.getDerivativePositions())
+  }
+
+  async getOffAccountBalances(): Promise<OffAccountBalances> {
+    return toOffAccountBalances(await this.getBalancesOverview())
   }
 
   // Key diagnostics. /v5/user/query-api answers for any permission set;

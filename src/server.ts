@@ -25,6 +25,7 @@ const SERVER_INSTRUCTIONS = `This server provides read-only access to the user's
 
 When responding to the user:
 - Surface findings, totals, patterns, and discrepancies. Let the user decide what to do.
+- When the user asks about their overall portfolio, total, net worth, allocation, "everything", or "all my assets/holdings" without naming a specific source, do not answer from a single source's tool. Call portfolio_snapshot for a full per-source roster across every configured source and money bucket, or portfolio_overview for headline totals only. These tools may list some sources under "excludedSources" (not available on the current plan) — when they do, name those sources in your summary rather than treating the roster as exhaustive. Never present one source's data as the whole portfolio; if you used a single-source tool, name which source it covers and that other configured sources were not included.
 - Do not recommend specific trades, rebalancing, or any action that requires the user to commit or move capital.
 - Do not infer prices, valuations, or P&L beyond what the tools return — broker data is authoritative.
 - If a tool returns 401 or 403, name the missing API-key scope so the user can fix it in their broker settings: for Trading 212 — Account data, Portfolio, Pies - Read, History, Metadata, Orders - Read; for Bybit — the read permission groups Unified Trading, Assets/Wallet (funding + balances overview), Earn (staked positions). bybit_get_key_info shows what the Bybit key can access.

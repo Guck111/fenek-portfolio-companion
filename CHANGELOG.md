@@ -4,6 +4,25 @@ All notable changes to this project are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- **`portfolio_snapshot` — one call covers every configured source.** A new
+  cross-broker tool that reads all configured sources and every money bucket in a
+  single call: full position lists plus, where a source has them, Earn/staked
+  balances, open derivatives, and off-account holdings (e.g. a Bybit Funding
+  wallet). Each source carries a status (`ok` / `empty` / `error`) and per-bucket
+  failures — a read that was denied is never reported as "empty", so a partial
+  read is never passed off as the whole portfolio. Totals are per currency (no FX
+  conversion); Earn/derivatives/off-account holdings are listed in their own
+  sections and not summed into totals. Crypto sources remain Pro-gated (listed
+  under `excludedSources` on the free tier). A server instruction now routes broad
+  "whole portfolio / net worth / all my assets" questions to it, and each
+  single-source `*_get_positions` tool points to it. Implemented over the
+  `IBroker` interface via optional `getEarnReport` / `getDerivativeReport` /
+  `getOffAccountBalances` methods, so the existing Bybit tools are unchanged and
+  future sources plug in by implementing the same methods.
+
 ## [0.6.2] - 2026-06-15
 
 ### Fixed

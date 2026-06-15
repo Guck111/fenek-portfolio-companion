@@ -55,7 +55,7 @@ export function createTrading212Tools(broker: Trading212Broker): readonly ToolBi
         name: "t212_get_positions",
         annotations: { title: "Trading 212: Open Positions", openWorldHint: true },
         description:
-          "Returns all currently open Trading 212 positions with quantity, average price paid, current price, market value (in account currency), and unrealized P&L per holding.",
+          "Returns all currently open Trading 212 positions with quantity, average price paid, current price, market value (in account currency), and unrealized P&L per holding. Covers only Trading 212; for a complete cross-source picture (every configured source and money bucket) use portfolio_snapshot.",
         inputSchema: { type: "object", properties: {}, additionalProperties: false },
       },
       handler: async (args) => {

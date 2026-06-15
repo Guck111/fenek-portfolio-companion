@@ -18,7 +18,7 @@ export function createCryptoTools(broker: CryptoBroker): readonly ToolBinding[] 
         name: "crypto_get_positions",
         annotations: { title: "Crypto Wallets: Holdings", openWorldHint: true },
         description:
-          "Returns the user's on-chain crypto holdings across the configured wallet addresses (Ethereum & EVM L2s — Arbitrum, Optimism, Base, Polygon — plus Solana, TON, Bitcoin, Litecoin, Dogecoin; the chain of each address is auto-detected, and a single 0x address is read across every EVM network) valued in USD: token symbol, quantity, current price, and market value. No cost basis or P&L (on-chain wallets do not record purchase price). Unpriced/spam tokens are omitted. Also lists any addresses that were unrecognized, on a not-yet-supported chain, or failed to load, so you can tell the user which inputs were skipped.",
+          "Returns the user's on-chain crypto holdings across the configured wallet addresses (Ethereum & EVM L2s — Arbitrum, Optimism, Base, Polygon — plus Solana, TON, Bitcoin, Litecoin, Dogecoin; the chain of each address is auto-detected, and a single 0x address is read across every EVM network) valued in USD: token symbol, quantity, current price, and market value. No cost basis or P&L (on-chain wallets do not record purchase price). Unpriced/spam tokens are omitted. Also lists any addresses that were unrecognized, on a not-yet-supported chain, or failed to load, so you can tell the user which inputs were skipped. Covers only the configured crypto wallets; for a complete cross-source picture (every configured source and money bucket) use portfolio_snapshot.",
         inputSchema: { type: "object", properties: {}, additionalProperties: false },
       },
       handler: async (args) => {

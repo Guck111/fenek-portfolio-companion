@@ -14,7 +14,7 @@ export function createBybitTools(broker: BybitBroker): readonly ToolBinding[] {
         name: "bybit_get_positions",
         annotations: { title: "Bybit: Coin Balances", openWorldHint: true },
         description:
-          "Returns the user's Bybit coin balances (UNIFIED account) valued in USD by the exchange: coin symbol, quantity, current price, and market value. No cost basis or P&L. Derivatives (perpetual/futures) positions are not included. Requires a read-only API key with Account/Wallet read permission.",
+          "Returns the user's Bybit coin balances (UNIFIED account) valued in USD by the exchange: coin symbol, quantity, current price, and market value. No cost basis or P&L. Derivatives (perpetual/futures) positions are not included. Requires a read-only API key with Account/Wallet read permission. Covers only the Bybit Unified account (not Earn, derivatives, or the Funding wallet); for a complete cross-source picture (every configured source and money bucket) use portfolio_snapshot.",
         inputSchema: { type: "object", properties: {}, additionalProperties: false },
       },
       handler: async (args) => {

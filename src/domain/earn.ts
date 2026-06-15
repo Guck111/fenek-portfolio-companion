@@ -17,3 +17,11 @@ export interface EarnPosition {
   readonly settlementTime?: string
   readonly expectedReturn?: number
 }
+
+// Cross-broker Earn report: normalized positions plus any per-sub-source
+// failures (e.g. one Earn family denied) folded to a common {source, message}
+// shape so portfolio_snapshot can surface them without knowing broker internals.
+export interface EarnReport {
+  readonly positions: readonly EarnPosition[]
+  readonly failures: readonly { readonly source: string; readonly message: string }[]
+}

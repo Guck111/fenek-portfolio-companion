@@ -28,6 +28,7 @@ describe("server smoke", () => {
         "portfolio_dividend_history",
         "portfolio_overview",
         "portfolio_pie_overlap",
+        "portfolio_snapshot",
         "review_dividends",
         "review_pie",
       ])

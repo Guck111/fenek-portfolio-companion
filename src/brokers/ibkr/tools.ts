@@ -46,7 +46,7 @@ export function createIbkrTools(broker: IbkrBroker): readonly ToolBinding[] {
         name: "ibkr_get_positions",
         annotations: { title: "Interactive Brokers: Open Positions", openWorldHint: true },
         description:
-          "Returns Interactive Brokers open positions from the Flex Query: symbol, signed quantity, mark price, market value, cost basis and unrealized P&L per holding. End-of-day data, not live. Requires the Flex Query to include the Open Positions section.",
+          "Returns Interactive Brokers open positions from the Flex Query: symbol, signed quantity, mark price, market value, cost basis and unrealized P&L per holding. End-of-day data, not live. Requires the Flex Query to include the Open Positions section. Covers only Interactive Brokers; for a complete cross-source picture (every configured source and money bucket) use portfolio_snapshot.",
         inputSchema: { type: "object", properties: {}, additionalProperties: false },
       },
       handler: async (args) => {

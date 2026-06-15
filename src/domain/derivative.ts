@@ -20,3 +20,11 @@ export interface DerivativePosition {
   readonly stopLoss?: number
   readonly updatedAt?: string
 }
+
+// Cross-broker derivatives report: normalized positions plus any per-category
+// failures folded to a common {source, message} shape (mirrors EarnReport) so
+// portfolio_snapshot can surface them without knowing broker internals.
+export interface DerivativeReport {
+  readonly positions: readonly DerivativePosition[]
+  readonly failures: readonly { readonly source: string; readonly message: string }[]
+}

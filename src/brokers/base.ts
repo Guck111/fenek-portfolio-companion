@@ -6,6 +6,9 @@ import type {
 } from "@modelcontextprotocol/sdk/types.js"
 
 import type { Account } from "../domain/account.js"
+import type { OffAccountBalances } from "../domain/balances.js"
+import type { DerivativeReport } from "../domain/derivative.js"
+import type { EarnReport } from "../domain/earn.js"
 import type { Position } from "../domain/position.js"
 import type { Pie, PieDetails } from "../domain/pie.js"
 import type { Transaction } from "../domain/transaction.js"
@@ -49,4 +52,13 @@ export interface IBroker {
 
   getPies?(): Promise<readonly Pie[]>
   getPie?(id: string): Promise<PieDetails>
+
+  // Optional money buckets that live outside getPositions()/getAccount() — only
+  // declared by sources that have them (e.g. an exchange's Earn, derivatives, or
+  // Funding wallet). portfolio_snapshot gates on method presence, so a source
+  // without these is simply skipped for those sections. Normalized return types
+  // keep the cross-broker tool from knowing any broker's internals.
+  getEarnReport?(): Promise<EarnReport>
+  getDerivativeReport?(): Promise<DerivativeReport>
+  getOffAccountBalances?(): Promise<OffAccountBalances>
 }
