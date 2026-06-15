@@ -269,7 +269,10 @@ export function mapDualAssetPositions(result: BybitDualAssetPositionResult): Ear
 
 export interface BybitOverviewCoin {
   readonly coin: string
-  readonly equity?: number
+  // Bybit's coinDetail[].equity is a COIN AMOUNT (holdings), not a USD value —
+  // surfaced as `quantity` so it is never mistaken for money. The fiat figure
+  // lives only at the account/category level (`equity`, in valuationCurrency).
+  readonly quantity?: number
 }
 
 export interface BybitOverviewCategoryReport {
@@ -302,8 +305,11 @@ function mapOverviewCoins(
   detail: readonly { coin: string; equity?: string | undefined }[] | null | undefined,
 ): { coins?: readonly BybitOverviewCoin[] } {
   if (detail === null || detail === undefined) return {}
+  // Bybit names the per-coin field `equity`, but it carries the coin AMOUNT
+  // (e.g. 48707.23 BBL), not a USD value — re-label it `quantity` so a reader
+  // cannot mistake a delisted token's coin count for dollars.
   return {
-    coins: detail.map((c) => ({ coin: c.coin, ...maybe("equity", num(c.equity)) })),
+    coins: detail.map((c) => ({ coin: c.coin, ...maybe("quantity", num(c.equity)) })),
   }
 }
 

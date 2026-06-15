@@ -42,10 +42,43 @@ describe("bybit mapAssetOverview", () => {
     expect(overview.accounts).toHaveLength(2)
     const funding = overview.accounts.find((a) => a.type === "FundingAccount")
     expect(funding?.equity).toBe(345.67)
-    expect(funding?.coins?.[0]).toEqual({ coin: "TON", equity: 100 })
+    expect(funding?.coins?.[0]).toEqual({ coin: "TON", quantity: 100 })
     const earn = overview.accounts.find((a) => a.type === "Earn")
     expect(earn?.categories?.[0]?.category).toBe("Easy Earn")
-    expect(earn?.categories?.[0]?.coins?.[0]).toEqual({ coin: "USDT", equity: 2000 })
+    expect(earn?.categories?.[0]?.coins?.[0]).toEqual({ coin: "USDT", quantity: 2000 })
+  })
+
+  it("surfaces per-coin holdings as quantities (coin amounts), with USD only at account level", () => {
+    // Real bug: Bybit's coinDetail[].equity is a COIN AMOUNT, not a USD value.
+    // A delisted/zero-price token (BBL) carries a huge coin amount but is worth
+    // ~$0; only the account-level totalEquity is fiat. Surfacing the coin amount
+    // under the money-sounding name `equity` led a reader to report a $48,707
+    // phantom. The mapper must label per-coin numbers as `quantity`.
+    const overview = mapAssetOverview(
+      BybitAssetOverviewResult.parse({
+        totalEquity: "1182.93",
+        list: [
+          {
+            accountType: "UnifiedTradingAccount",
+            totalEquity: "1182.93",
+            valuationCurrency: "USD",
+            coinDetail: [
+              { coin: "TON", equity: "369.296" },
+              { coin: "BBL", equity: "48707.23401" },
+            ],
+          },
+        ],
+      }),
+    )
+    const uta = overview.accounts.find((a) => a.type === "UnifiedTradingAccount")
+    // Account-level equity is the authoritative USD figure.
+    expect(uta?.equity).toBe(1182.93)
+    // Per-coin numbers are coin amounts, surfaced as `quantity` — never a USD value.
+    expect(uta?.coins?.find((c) => c.coin === "BBL")).toEqual({
+      coin: "BBL",
+      quantity: 48707.23401,
+    })
+    expect(uta?.coins?.find((c) => c.coin === "TON")).toEqual({ coin: "TON", quantity: 369.296 })
   })
 })
 

@@ -29,7 +29,7 @@ export function createBybitTools(broker: BybitBroker): readonly ToolBinding[] {
         name: "bybit_get_account",
         annotations: { title: "Bybit: Account Summary & Margin Health", openWorldHint: true },
         description:
-          "Returns the Bybit UNIFIED account summary in USD: total equity (includes derivatives UPL and option value), wallet/margin/available balances, perp unrealized P&L, and margin health rates (accountIMRate/accountMMRate — an accountMMRate near 1 means liquidation risk), plus per-coin detail (equity, unrealized/cumulative realized P&L, borrow amount, accrued interest, locked). Requires a read-only key with Account/Wallet read permission.",
+          "Returns the Bybit UNIFIED account summary in USD: total equity (includes derivatives UPL and option value), wallet/margin/available balances, perp unrealized P&L, and margin health rates (accountIMRate/accountMMRate — an accountMMRate near 1 means liquidation risk), plus per-coin detail. In that per-coin detail, `quantity` and `equity` are COIN amounts (not dollars) and `usdValue` is the dollar value — `usdValue` is absent for coins with no USD market (e.g. delisted/zero-price tokens), so read a coin's worth from `usdValue` and never treat `quantity`/`equity` as money. Other per-coin fields: unrealized/cumulative realized P&L, borrow amount, accrued interest, locked. Requires a read-only key with Account/Wallet read permission.",
         inputSchema: { type: "object", properties: {}, additionalProperties: false },
       },
       handler: async (args) => {
@@ -74,7 +74,7 @@ export function createBybitTools(broker: BybitBroker): readonly ToolBinding[] {
         name: "bybit_get_balances_overview",
         annotations: { title: "Bybit: All-Account Balances Overview", openWorldHint: true },
         description:
-          "Returns total equity (USD) across ALL Bybit account types — Funding wallet, Unified Trading, Earn, Trading Bots, Copy Trading, Launchpool — with per-account coin holdings, plus Funding-wallet coin quantities. Catches money invisible to bybit_get_positions (which covers the Unified account only). Requires the Assets (Wallet) read permission on the API key; per-source failures are listed in a `failures` field.",
+          "Returns total equity (USD) across ALL Bybit account types — Funding wallet, Unified Trading, Earn, Trading Bots, Copy Trading, Launchpool — with per-account coin holdings, plus Funding-wallet coin quantities. The USD figures are the account/total `equity` fields (in valuationCurrency); the per-coin `quantity` is a COIN AMOUNT, NOT a dollar value — a delisted or zero-price token can show a large quantity worth ~$0, so never read a coin quantity as money (use bybit_get_positions for USD-valued per-coin holdings). Catches money invisible to bybit_get_positions (which covers the Unified account only). Requires the Assets (Wallet) read permission on the API key; per-source failures are listed in a `failures` field.",
         inputSchema: { type: "object", properties: {}, additionalProperties: false },
       },
       handler: async (args) => {

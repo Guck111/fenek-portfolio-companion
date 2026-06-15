@@ -143,10 +143,12 @@ export const BybitDualAssetPositionResult = z.object({
 })
 export type BybitDualAssetPositionResult = z.infer<typeof BybitDualAssetPositionResult>
 
-// GET /v5/asset/asset-overview → result. Total assets across ALL account
-// types (Funding, Unified Trading, Earn, TradingBot, CopyTrading, ...) in the
-// valuation currency (default USD). Accounts with product sub-categories
-// (e.g. Earn) report `categories`; flat accounts report `coinDetail`.
+// GET /v5/asset/asset-overview → result. Account/category/total `equity` totals
+// are fiat (the valuation currency, default USD), but coinDetail[].equity is the
+// per-coin AMOUNT (holdings), NOT a USD value — a zero-price/delisted token shows
+// its full coin count here while being worth ~$0. The mapper re-labels it
+// `quantity` (see mapOverviewCoins) so it is never read as money. Accounts with
+// product sub-categories (e.g. Earn) report `categories`; flat ones report `coinDetail`.
 export const BybitOverviewCoinDetail = z.object({
   coin: z.string(),
   equity: z.string().optional(),
