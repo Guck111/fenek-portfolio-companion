@@ -23,6 +23,18 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - README, PRIVACY and DISCLAIMER now describe Fenek as free. The `freepro`
   build guide is marked as no longer needed.
 
+### Security
+- **Dependency updates to clear `npm audit`:** `@modelcontextprotocol/sdk`
+  1.29.0 → 1.32.2, `zod` 4.3.6 → 4.6.7, `vitest` 4.1.5 → 4.1.12; overrides
+  raised for `brace-expansion`, `fast-uri`, `hono`, `ip-address`, `qs` and
+  `vite`; the packaging tool `@anthropic-ai/mcpb` now uses the patched `zod` 4
+  instead of `zod` 3. The lockfile was regenerated.
+
+### Fixed
+- A Bybit response with no `result` field is again logged as a schema mismatch
+  with its endpoint path. `zod` 4.6 made bare `z.unknown()` keys required, which
+  made such responses fail one step earlier, without the log line.
+
 ## [0.7.0] - 2026-06-15
 
 ### Added
