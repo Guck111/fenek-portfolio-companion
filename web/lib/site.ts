@@ -3,7 +3,9 @@
 // buttondown.com (newsletter form), polar.sh (Pro checkout + customer
 // portal, only while PAID_PLANS_ENABLED), and claude.ai (Claude Desktop download link). All of those except
 // the Buttondown form are user-click <a href>s, not automatic requests — the
-// only automatic outbound call the site makes is the Buttondown form.
+// only automatic outbound call in the site's own code is the Buttondown form.
+// Cloudflare additionally injects its Web Analytics beacon at the edge
+// (cookieless page-view counting); it is not part of this codebase.
 
 export const SITE_URL = "https://fenek.tech"
 
