@@ -2,7 +2,7 @@ import Link from "next/link"
 import { LogoMark } from "@/components/ui/icons"
 import type { Dictionary } from "@/lib/dictionaries"
 import { type Lang, localizedHref } from "@/lib/i18n"
-import { GITHUB_LICENSE_URL, GITHUB_URL, SUPPORT_MAILTO } from "@/lib/site"
+import { GITHUB_LICENSE_URL, GITHUB_URL, PAID_PLANS_ENABLED, SUPPORT_MAILTO } from "@/lib/site"
 
 const ext = { target: "_blank", rel: "noopener noreferrer" } as const
 
@@ -34,9 +34,11 @@ export const SiteFooter = ({ dict, lang }: SiteFooterProps) => {
 								<li>
 									<Link href={localizedHref(lang, "/security")}>{f.security}</Link>
 								</li>
-								<li>
-									<Link href={localizedHref(lang, "/pricing")}>{f.pricing}</Link>
-								</li>
+								{PAID_PLANS_ENABLED && (
+									<li>
+										<Link href={localizedHref(lang, "/pricing")}>{f.pricing}</Link>
+									</li>
+								)}
 								<li>
 									<Link href={localizedHref(lang, "/install")}>{f.install}</Link>
 								</li>
@@ -54,9 +56,11 @@ export const SiteFooter = ({ dict, lang }: SiteFooterProps) => {
 								<li>
 									<Link href={localizedHref(lang, "/terms")}>{f.terms}</Link>
 								</li>
-								<li>
-									<Link href={localizedHref(lang, "/refund")}>{f.refund}</Link>
-								</li>
+								{PAID_PLANS_ENABLED && (
+									<li>
+										<Link href={localizedHref(lang, "/refund")}>{f.refund}</Link>
+									</li>
+								)}
 							</ul>
 						</div>
 						<div className="footer-col">

@@ -8,7 +8,7 @@ import { NewsletterForm } from "@/components/ui/NewsletterForm"
 import type { Dictionary } from "@/lib/dictionaries"
 import { type Lang, localizedHref } from "@/lib/i18n"
 import { RichText } from "@/lib/markdown"
-import { GITHUB_URL } from "@/lib/site"
+import { GITHUB_URL, PAID_PLANS_ENABLED } from "@/lib/site"
 
 export const HomeView = ({ dict, lang }: { dict: Dictionary; lang: Lang }) => {
 	const t = dict.home
@@ -150,7 +150,10 @@ export const HomeView = ({ dict, lang }: { dict: Dictionary; lang: Lang }) => {
 							<RichText text={t.pricing.aside} lang={lang} />
 						</p>
 						<div className="cta-row">
-							<Link className="btn btn-pri" href={localizedHref(lang, "/pricing")}>
+							<Link
+								className="btn btn-pri"
+								href={localizedHref(lang, PAID_PLANS_ENABLED ? "/pricing" : "/install")}
+							>
 								<span>{t.pricing.button}</span>
 							</Link>
 						</div>

@@ -42,26 +42,23 @@ describe("manifest user_config", () => {
     }
   })
 
-  it("exposes the Pro license key field", () => {
-    expect(configKeys).toContain("LICENSE_KEY")
+  it("exposes no license key field (free for everyone; nothing to unlock)", () => {
+    expect(configKeys).not.toContain("LICENSE_KEY")
+    expect(Object.keys(envMap)).not.toContain("LICENSE_KEY")
+  })
+
+  it("mentions no paid plan or license in any field description", () => {
+    for (const key of configKeys) {
+      const description = manifest.user_config[key]?.description ?? ""
+      expect(description, `${key} still mentions a paid plan`).not.toMatch(
+        /Fenek Pro|license|subscri/i,
+      )
+    }
   })
 
   it("advertises Ethereum / EVM auto-detection on the wallet-addresses field", () => {
     const description = manifest.user_config["WALLET_ADDRESSES"]?.description ?? ""
     expect(description).toContain("Ethereum")
     expect(description).toContain("EVM")
-  })
-
-  it("keeps the license key sensitive (OS keychain)", () => {
-    expect(manifest.user_config["LICENSE_KEY"]?.sensitive).toBe(true)
-  })
-
-  it("points the user at fenek.tech for a Pro key and marks the field optional", () => {
-    const description = manifest.user_config["LICENSE_KEY"]?.description ?? ""
-    expect(description).toContain("Fenek Pro")
-    expect(description).toContain("fenek.tech")
-    expect(description.toLowerCase()).toContain("blank")
-    // Go-live: no "crypto is currently free / Pro hasn't launched" messaging.
-    expect(description).not.toContain("Not needed today")
   })
 })

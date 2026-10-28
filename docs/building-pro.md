@@ -1,5 +1,11 @@
 # Building Pro from source (the `freepro` flavor)
 
+> **No longer needed.** Since 0.8.0 Fenek Portfolio Companion is free for
+> everyone: the official release already includes every source, crypto too,
+> and never checks a license. Just [download the latest release](https://github.com/Guck111/fenek-portfolio-companion/releases/latest).
+> This page is kept for reference, because the `freepro` build flavor still
+> exists in the code.
+
 Fenek Portfolio Companion is MIT-licensed and fully open source — including
 every Pro feature. Paying for a license key is the convenient path; building
 the extension yourself is the official free path. There is no catch: a
