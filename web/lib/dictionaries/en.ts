@@ -213,7 +213,7 @@ const en = {
 			items: [
 				"**Calls to your brokers’ official APIs** (Trading 212, Bybit, public blockchain explorers) — that’s the product.",
 				"**A weekly anonymous version check** against `api.github.com`. Only the latest release number is read from the response. Turn it off with the “Check for updates weekly” toggle in extension settings.",
-				"**Nothing else.** No analytics, no error reporting, no telemetry. This website has no analytics or cookies either.",
+				"**Nothing else.** No analytics, no error reporting, no telemetry.",
 			],
 		},
 		verify: {
@@ -243,12 +243,12 @@ const en = {
 		meta: {
 			title: "Privacy",
 			description:
-				"Fenek collects nothing. The extension runs locally, this website has no analytics or cookies, and the newsletter is the only place an email is ever stored.",
+				"The Fenek extension collects nothing: it runs locally, and the newsletter is the only place an email is ever stored.",
 		},
 		intro: {
 			eyebrow: "Privacy",
 			h1: "Privacy policy",
-			sub: "The short version: Fenek collects nothing. Here is the long version.",
+			sub: "The short version: the Fenek extension collects nothing. Here is the long version.",
 		},
 		sections: [
 			{
@@ -257,7 +257,7 @@ const en = {
 			},
 			{
 				h2: "This website",
-				body: "This website sets no cookies and runs no analytics or third-party scripts.",
+				body: "This website sets no cookies. It counts page views with Cloudflare Web Analytics, which stores no cookies and no personal data.",
 			},
 			{
 				h2: "Newsletter",
