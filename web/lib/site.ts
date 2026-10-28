@@ -1,7 +1,7 @@
 // Canonical, build-time constants for the Fenek site.
 // External hosts the built site references: github.com, fenek.tech,
 // buttondown.com (newsletter form), polar.sh (Pro checkout + customer
-// portal), and claude.ai (Claude Desktop download link). All of those except
+// portal, only while PAID_PLANS_ENABLED), and claude.ai (Claude Desktop download link). All of those except
 // the Buttondown form are user-click <a href>s, not automatic requests — the
 // only automatic outbound call the site makes is the Buttondown form.
 
@@ -26,6 +26,13 @@ export const RELEASES_LATEST_URL = `${GITHUB_URL}/releases/latest`
 // GitHub 302-redirects this to the asset (served Content-Disposition: attachment),
 // so a click downloads the file straight away — no intermediate release page.
 export const MCPB_DOWNLOAD_URL = `${GITHUB_URL}/releases/latest/download/fenek-portfolio-companion.mcpb`
+
+// Paid plans switch. Fenek is free for everyone since 0.8.0 (mirrors
+// PAYWALL_ENABLED = false in the extension, src/license/config.ts). While this
+// is false the pricing, checkout and refund routes redirect to /install and
+// drop out of the navigation and the sitemap. Their pages, views and texts are
+// kept intact so paid plans can be switched back on by flipping this to true.
+export const PAID_PLANS_ENABLED = false
 
 // Polar (merchant of record). Pro checkout link — Polar redirects to /success
 // on payment and to /checkout-cancelled from its "back" button.

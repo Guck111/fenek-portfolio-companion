@@ -6,6 +6,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import type { ToolBinding } from "../../src/brokers/base.js"
 import { callTool, clear, listTools, registerTools } from "../../src/brokers/registry.js"
+import { PAYWALL_ENABLED } from "../../src/license/config.js"
 import { _resetLicensingForTests, initLicensing } from "../../src/license/manager.js"
 import { keyFingerprint, writeLicenseState } from "../../src/license/state.js"
 import { PRO_TOOL_DESCRIPTION_SUFFIX } from "../../src/license/texts.js"
@@ -50,6 +51,25 @@ describe("registry license gate", () => {
     expect(pro.calls()).toBe(1)
     const tool = listTools().find((t) => t.name === "bybit_fake")
     expect(tool?.description).toBe("bybit_fake description.")
+  })
+
+  it("shipped config (standard build, no key): pro tools run, no suffix, no license call", async () => {
+    const validate = vi.fn(() => Promise.resolve({ kind: "revoked" as const }))
+    initLicensing({
+      paywallEnabled: PAYWALL_ENABLED,
+      buildFlavor: "standard",
+      licenseKey: undefined,
+      provider: { validate },
+    })
+    const pro = binding("bybit_fake", "pro")
+    registerTools([pro])
+    const result = await callTool("bybit_fake", {})
+    expect(result.isError).toBeUndefined()
+    expect(pro.calls()).toBe(1)
+    expect(listTools().find((t) => t.name === "bybit_fake")?.description).toBe(
+      "bybit_fake description.",
+    )
+    expect(validate).not.toHaveBeenCalled()
   })
 
   it("paywall on without a key: pro tool is denied with the no-key text, handler untouched", async () => {

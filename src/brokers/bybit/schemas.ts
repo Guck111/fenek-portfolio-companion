@@ -6,7 +6,10 @@ import { z } from "zod"
 export const BybitEnvelope = z.object({
   retCode: z.number(),
   retMsg: z.string(),
-  result: z.unknown(),
+  // Optional on purpose: an envelope with no `result` key must still reach the
+  // per-endpoint schema, which logs the mismatch with its path. Since zod 4.6 a
+  // bare z.unknown() key is required, so the envelope would fail first.
+  result: z.unknown().optional(),
   time: z.number().optional(),
 })
 export type BybitEnvelope = z.infer<typeof BybitEnvelope>

@@ -1,8 +1,11 @@
 import type { MetadataRoute } from "next"
 import { LANGS, localizedPath } from "@/lib/i18n"
-import { SITE_URL } from "@/lib/site"
+import { PAID_PLANS_ENABLED, SITE_URL } from "@/lib/site"
 
 export const dynamic = "force-static"
+
+// Routes that exist only while paid plans are on; otherwise they redirect.
+const PAID_PATHS = new Set(["/pricing", "/refund"])
 
 const PATHS = [
 	"/",
@@ -13,7 +16,7 @@ const PATHS = [
 	"/terms",
 	"/refund",
 	"/changelog",
-]
+].filter((path) => PAID_PLANS_ENABLED || !PAID_PATHS.has(path))
 
 const sitemap = (): MetadataRoute.Sitemap =>
 	LANGS.flatMap((lang) =>

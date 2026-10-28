@@ -1,11 +1,12 @@
 // Master paywall switch.
 //
-// The purchase channel now exists (website fenek.tech + Polar merchant of
-// record), so the paywall is ARMED. On a standard build, Pro sources (crypto)
-// require a valid license key; classic brokers (T212) and cross-broker
-// analytics stay free. A `freepro` build ignores this switch entirely and never
-// gates or talks to the license server (see manager.ts `isPaywallActive`).
+// DISARMED since 0.8.0: Fenek Portfolio Companion is free for everyone. Every
+// tool (including the crypto sources) works without a license key, the
+// license server is never contacted, and no license state file is written.
 //
-// Flipping back to `false` instantly disarms the paywall: every tool works for
-// everyone, no license network calls, no license state file.
-export const PAYWALL_ENABLED = true
+// The licensing code (manager, Polar provider, gate, texts) is intentionally
+// kept and stays covered by tests that arm it explicitly via initLicensing().
+// Flipping this back to `true` re-arms the paywall on a standard build: Pro
+// sources (crypto) would again require a valid key. A `freepro` build ignores
+// this switch entirely (see manager.ts `isPaywallActive`).
+export const PAYWALL_ENABLED = false

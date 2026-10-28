@@ -7,7 +7,7 @@ import { LanguageSwitcher } from "@/components/fenek/LanguageSwitcher"
 import { GitHubIcon, LogoMark, MenuIcon } from "@/components/ui/icons"
 import type { Dictionary } from "@/lib/dictionaries"
 import { type Lang, localizedHref, stripLocale } from "@/lib/i18n"
-import { GITHUB_URL } from "@/lib/site"
+import { GITHUB_URL, PAID_PLANS_ENABLED } from "@/lib/site"
 
 type SiteHeaderProps = {
 	lang: Lang
@@ -20,7 +20,7 @@ export const SiteHeader = ({ lang, nav }: SiteHeaderProps) => {
 	const canonical = stripLocale(pathname)
 	const items = [
 		{ path: "/security", label: nav.security },
-		{ path: "/pricing", label: nav.pricing },
+		...(PAID_PLANS_ENABLED ? [{ path: "/pricing", label: nav.pricing }] : []),
 		{ path: "/install", label: nav.install },
 		{ path: "/changelog", label: nav.changelog },
 	]

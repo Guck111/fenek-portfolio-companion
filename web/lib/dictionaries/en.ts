@@ -140,11 +140,11 @@ const en = {
 			voteFieldPlaceholder: "e.g. IBKR, Kraken, Coinbase…",
 		},
 		pricing: {
-			badge: "Fenek Pro",
-			h2: "Crypto is Pro. Classic brokers free forever.",
-			body: "Crypto features — reading your Bybit and on-chain wallet balances — are part of Fenek Pro at $4.99/mo. Classic brokers like Trading 212 and the cross-broker overview are free forever, and everything stays open source.",
-			aside: `Prefer full anonymity? [Build the Pro features from source](${BUILDING_PRO_URL}) for free — no license, no checkout.`,
-			button: "Get Fenek Pro",
+			badge: "Free",
+			h2: "Free. Every source included.",
+			body: "Trading 212, Bybit, on-chain wallets, and the cross-broker overview are all free. No license key, no subscription, no checkout — and the code stays open source.",
+			aside: `Curious how it works? [Read every line on GitHub](${GITHUB_URL}).`,
+			button: "Install Fenek",
 		},
 		install: {
 			eyebrow: "Install",
@@ -169,11 +169,7 @@ const en = {
 				},
 				{
 					q: "What does it cost?",
-					a: `Classic brokers like Trading 212 and the cross-broker overview are free forever. The crypto sources — Bybit and on-chain wallets — are part of Fenek Pro at $4.99/mo. You can also [build Pro from source](${BUILDING_PRO_URL}) for free.`,
-				},
-				{
-					q: "How do I cancel Pro?",
-					a: "Anytime, in the Polar customer portal — it is a simple monthly subscription with no lock-in, billed by Polar as merchant of record.",
+					a: "Nothing. Every source — Trading 212, Bybit, and on-chain wallets — and the cross-broker overview are free, with no license key and no subscription.",
 				},
 				{
 					q: "Which sources are supported?",
@@ -181,7 +177,7 @@ const en = {
 				},
 				{
 					q: "Does Fenek send my data anywhere?",
-					a: "No analytics, no telemetry. The only outbound traffic is your brokers’ APIs, a weekly version check you can switch off, and — on Pro only — a monthly license check. [The security page lists all four](/security).",
+					a: "No analytics, no telemetry. The only outbound traffic is your brokers’ APIs and a weekly version check you can switch off. [The security page lists them all](/security).",
 				},
 			],
 		},
@@ -212,12 +208,11 @@ const en = {
 			foot: ["Read-only requests", "Keys stay in your OS keychain", "Zero telemetry"],
 		},
 		outbound: {
-			h2: "Four kinds of outbound requests",
-			lead: "Exactly four kinds of outbound requests leave your machine, and you can verify each one in the source code:",
+			h2: "Three kinds of outbound requests",
+			lead: "Exactly three kinds of outbound requests leave your machine, and you can verify each one in the source code:",
 			items: [
 				"**Calls to your brokers’ official APIs** (Trading 212, Bybit, public blockchain explorers) — that’s the product.",
 				"**A weekly anonymous version check** against `api.github.com`. Only the latest release number is read from the response. Turn it off with the “Check for updates weekly” toggle in extension settings.",
-				"**A monthly license check** against `api.polar.sh` — Pro only. It sends just your license key and reads back whether the subscription is active. Free builds and source builds never make this call.",
 				"**Nothing else.** No analytics, no error reporting, no telemetry. This website has no analytics or cookies either.",
 			],
 		},
@@ -268,10 +263,6 @@ const en = {
 				h2: "Newsletter",
 				body: "If you subscribe, your email is stored by Buttondown (our newsletter provider) and used only to send release notes and product updates. Unsubscribe anytime; see [Buttondown’s privacy policy](https://buttondown.com/legal/privacy).",
 			},
-			{
-				h2: "Pro subscriptions",
-				body: "Pro subscriptions are processed by Polar, our merchant of record; payment data never reaches us. The extension’s monthly license check sends only the license key.",
-			},
 		],
 	},
 	install: {
@@ -292,7 +283,6 @@ const en = {
 			items: [
 				`The free [Claude Desktop](${CLAUDE_DESKTOP_URL}) app for macOS or Windows — Fenek runs inside it.`,
 				"Read-only API keys for the brokers you use (Trading 212, Bybit). Crypto wallets need only public addresses.",
-				"A [Fenek Pro](/pricing) subscription ($4.99/mo) only if you want the crypto sources — classic brokers are free.",
 				"Nothing else — no separate account, no backend, no command line.",
 			],
 		},
@@ -419,12 +409,12 @@ const en = {
 		meta: {
 			title: "Terms of Service",
 			description:
-				"Plain-language terms for using Fenek and Fenek Pro: open source, read-only, not financial advice, billed by Polar.",
+				"Plain-language terms for using Fenek: open source, read-only, free, not financial advice.",
 		},
 		intro: {
 			eyebrow: "Legal",
 			h1: "Terms of Service",
-			sub: "The plain-language terms for using Fenek and Fenek Pro.",
+			sub: "The plain-language terms for using Fenek.",
 		},
 		sections: [
 			{
@@ -440,8 +430,8 @@ const en = {
 				body: "You connect your own broker and exchange API keys using read-only permissions. You are responsible for keeping them safe and for following each provider’s own terms. Keys are stored only in your operating system’s keychain through Claude Desktop; see the [Security page](/security).",
 			},
 			{
-				h2: "Fenek Pro",
-				body: "Fenek Pro is an optional paid subscription that unlocks the crypto sources, billed by Polar at $4.99/mo. See [Pricing](/pricing) and the [Refunds & cancellation policy](/refund). You can also build the Pro features from source for free — no payment required.",
+				h2: "Price",
+				body: "Fenek is free. Every source, including Bybit and on-chain wallets, works without a license key or a subscription.",
 			},
 			{
 				h2: "Acceptable use",
@@ -453,7 +443,7 @@ const en = {
 			},
 			{
 				h2: "Changes to these terms",
-				body: "These terms may change over time; the current version always lives on this page. Material changes affecting Fenek Pro will be communicated to subscribers.",
+				body: "These terms may change over time; the current version always lives on this page.",
 			},
 			{
 				h2: "Contact",

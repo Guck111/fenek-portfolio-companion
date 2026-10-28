@@ -28,18 +28,18 @@ Read-only MCP server that aggregates your portfolio data across wallets, exchang
 >
 > **UNOFFICIAL.** Not affiliated with, endorsed by, or sponsored by Trading 212, Bybit, or any other broker, exchange, or wallet provider.
 >
-> **OPEN SOURCE.** MIT License, no telemetry, no affiliate relationships. Crypto features (Bybit, on-chain wallets) are part of paid Fenek Pro — under $5/mo (see [the website](https://fenek.tech)); classic brokers (Trading 212 today, Interactive Brokers coming soon, more to come) and the cross-broker overview are free forever; and building Pro from source stays officially free.
+> **OPEN SOURCE.** MIT License, no telemetry, no affiliate relationships. Free for everyone: every source — classic brokers (Trading 212 today, Interactive Brokers coming soon), Bybit, and on-chain wallets — plus the cross-broker overview works with no license key and no subscription.
 
 ## Supported sources
 
 Every source is read-only, opt-in, and additive — configure only the ones you use; leave the rest blank to skip them.
 
-| Source | Type | Tier | Auth |
+| Source | Type | Price | Auth |
 |---|---|---|---|
 | Trading 212 | Classic broker | Free | API key + secret (read-only scopes) |
 | Interactive Brokers | Classic broker — end-of-day via Flex | Free | **Coming soon** — not yet configurable |
-| Bybit | Crypto exchange | Pro | API key + secret (read-only) |
-| On-chain wallets | Ethereum & EVM (Arbitrum · Optimism · Base · Polygon) · Solana · TON · Bitcoin · Litecoin · Dogecoin | Pro | Public address (keyless) |
+| Bybit | Crypto exchange | Free | API key + secret (read-only) |
+| On-chain wallets | Ethereum & EVM (Arbitrum · Optimism · Base · Polygon) · Solana · TON · Bitcoin · Litecoin · Dogecoin | Free | Public address (keyless) |
 
 ## Install
 
@@ -147,7 +147,7 @@ Notes and limitations:
 | [SECURITY.md](SECURITY.md) | Vulnerability disclosure process |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | How to contribute (DCO required) |
 | [docs/adding-a-broker.md](docs/adding-a-broker.md) | Adding a new broker adapter |
-| [docs/building-pro.md](docs/building-pro.md) | Building the free `freepro` flavor from source |
+| [docs/building-pro.md](docs/building-pro.md) | Legacy: the `freepro` build flavor (no longer needed — every build is free) |
 
 ## Privacy Policy
 
@@ -160,13 +160,8 @@ number is read; turn it off with `CHECK_UPDATES=false`). Your API keys are store
 system's keychain by Claude Desktop, are never logged, and are transmitted only to the
 broker endpoints they belong to.
 
-Crypto features (Bybit, on-chain wallets) are part of paid Fenek Pro; classic
-brokers (Trading 212 today, Interactive Brokers coming soon, more to come) plus the cross-broker overview are
-free forever. On a standard build, a Pro subscriber's build makes exactly one extra
-outbound call: a monthly license check to api.polar.sh that transmits the
-license key and nothing else. Free users and source builds never make it, and
-building Pro from source for free stays official: see
-[docs/building-pro.md](docs/building-pro.md).
+Every source, crypto included, is free and needs no license key, so there is no
+license check and no call to any license or payment server.
 
 Full policy: **[PRIVACY.md](PRIVACY.md)**.
 
